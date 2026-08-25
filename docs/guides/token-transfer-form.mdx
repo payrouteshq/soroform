@@ -1,0 +1,83 @@
+---
+title: "Building a token transfer form end to end"
+description: "A complete, working transfer form using useContractForm and useContractWrite together"
+---
+
+This walks through a complete token transfer form: a validated input for the recipient, a `bigint` amount field, and a submit button wired to `useContractWrite`.
+
+## The bigint problem
+
+`sorobanTypeToZod` maps `i128` (and every other 64-bit-or-larger integer type) to `z.bigint()`, since JS numbers lose precision above 2^53 and token amounts routinely exceed it (see [How the spec-to-Zod pipeline works](/concepts/spec-to-zod)). An HTML `<input>` always produces a string, though, so a plain `register("amount")` would fail validation: the schema wants a `bigint`, not a string.
+
+`react-hook-form`'s `setValueAs` solves this: it runs before validation, converting the raw input value into the type your schema actually expects.
+
+## The full form
+
+```tsx components/transfer-form.tsx
+"use client";
+
+import { useContractForm } from "@soroform/contract";
+import { useContractWrite } from "@soroform/contract";
+
+const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
+
+interface TransferFields {
+  to: string;
+  amount: bigint;
+}
+
+export function TransferForm() {
+  const { register, handleSubmit, formState } = useContractForm<TransferFields>({
+    contractId: CONTRACT_ID,
+    method: "transfer",
+  });
+  const { status, writeAsync, error } = useContractWrite<boolean>({
+    contractId: CONTRACT_ID,
+    method: "transfer",
+  });
+
+  const onSubmit = handleSubmit(async (values) => {
+    await writeAsync(values);
+  });
+
+  return (
+    <form onSubmit={onSubmit}>
+      <label>
+        Recipient
+        <input {...register("to")} placeholder="G..." />
+        {formState.errors.to && <p>{String(formState.errors.to.message)}</p>}
+      </label>
+
+      <label>
+        Amount
+        <input
+          type="text"
+          inputMode="decimal"
+          {...register("amount", {
+            setValueAs: (value: string) => {
+              if (value === "") return undefined;
+              // Assumes a 7-decimal asset; adjust to the token's real decimals.
+              return BigInt(Math.round(Number(value) * 10_000_000));
+            },
+          })}
+        />
+        {formState.errors.amount && <p>{String(formState.errors.amount.message)}</p>}
+      </label>
+
+      <button type="submit" disabled={status === "simulating" || status === "submitting"}>
+        {status === "idle" || status === "success" ? "Transfer" : status}
+      </button>
+
+      {error && <p>{error.message}</p>}
+    </form>
+  );
+}
+```
+
+## Why two hooks
+
+`useContractForm` and `useContractWrite` are both called with the same `contractId` and `method` on purpose. `useContractForm` owns field-level validation and error messages as the user types; `useContractWrite` owns the build, simulate, sign, and send lifecycle once the form is actually submitted. Both derive from the same cached spec and schema (see [Query key and cache invalidation model](/concepts/query-keys-and-caching)), so there is no duplicated network cost in using both.
+
+<Tip>
+  If your app already knows a token's real decimal count (from [`useBalance`](/hooks/use-balance)'s `decimals` field, for example), use that instead of the hardcoded `10_000_000` above.
+</Tip>

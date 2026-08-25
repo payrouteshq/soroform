@@ -1,0 +1,43 @@
+---
+title: "useTransactionStatus"
+description: "Poll for a submitted transaction's final status"
+---
+
+Polls for a submitted transaction's final status, via `rpc.Server.pollTransaction` (using the SDK's own `BasicSleepStrategy` between attempts, not a hand-rolled polling loop). Resolves once the transaction is found, successful or failed, or the poll's attempt limit is reached.
+
+```ts
+import { useTransactionStatus } from "@soroform/hooks";
+
+function useTransactionStatus(
+  hash: string,
+  options?: UseTransactionStatusOptions,
+): UseQueryResult<Api.GetTransactionResponse>;
+```
+
+## Parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `hash` | `string` | Yes | The transaction hash to poll for. |
+| `options.enabled` | `boolean` | No | Whether the query should run. Defaults to `true`. |
+
+## Return value
+
+`data` resolves to the SDK's `Api.GetTransactionResponse`, whose `status` field is one of `"SUCCESS"`, `"FAILED"`, or `"NOT_FOUND"`. On success, `returnValue` holds the transaction's raw `ScVal` result.
+
+## Example
+
+```tsx
+import { useTransactionStatus } from "@soroform/hooks";
+
+function TxStatus({ hash }: { hash: string }) {
+  const { data, isLoading } = useTransactionStatus(hash);
+
+  if (isLoading) return <p>Polling...</p>;
+  return <p>{data?.status}</p>;
+}
+```
+
+<Tip>
+  If you got the transaction from `useContractWrite`, you already have its decoded result via `writeAsync`'s return value; reach for `useTransactionStatus` when you have a hash from elsewhere (a webhook, a link, a multi-auth workflow) and need to check on it independently.
+</Tip>

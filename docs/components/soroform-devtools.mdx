@@ -1,0 +1,42 @@
+---
+title: "SoroformDevtools"
+description: "A development-only panel logging contract write activity and the TanStack Query cache"
+---
+
+A development-only devtools panel for Soroform. Renders nothing when `process.env.NODE_ENV !== "development"`, matching `@tanstack/react-query-devtools`'s own convention, so it is always safe to leave mounted in an app.
+
+```tsx
+import { SoroformDevtools } from "@soroform/devtools";
+```
+
+## Props
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `initialOpen` | `boolean` | No | Renders the panel open by default instead of collapsed. |
+
+## Example
+
+```tsx
+import { SoroformDevtools } from "@soroform/devtools";
+
+export function App({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      {children}
+      <SoroformDevtools />
+    </>
+  );
+}
+```
+
+## What it shows
+
+A floating toggle opens a panel with two tabs:
+
+- **Writes**: every [`useContractWrite`](/hooks/use-contract-write) invocation this session, its current status, and, once available, its decoded args and result. For each write, a readable summary of the built transaction (operation type, source account, and simulated minimum resource fee) is shown alongside a button to copy its raw XDR, rather than a full XDR tree decode.
+- **Query cache**: the app's TanStack Query cache, via an embedded `@tanstack/react-query-devtools` panel. Soroform's own hooks namespace every query key under `"soroform"`, so they're easy to pick out from your app's own queries in the same view.
+
+<Tip>
+  The write log is powered by `@soroform/core`'s `devtoolsWriteLog` store, which `useContractWrite` writes to regardless of whether `@soroform/devtools` is installed. Installing this package only adds the panel that reads from it; it never needs to be a dependency of `@soroform/contract`.
+</Tip>

@@ -1,0 +1,46 @@
+---
+title: "Query key and cache invalidation model"
+description: "How Soroform builds TanStack Query keys, and how cache invalidation stays consistent"
+---
+
+Every hook in Soroform that touches the network is a TanStack Query hook, and every one of them builds its query key from `@soroform/core`'s `queryKeys` object rather than constructing a key array by hand. This is the single source of truth for how Soroform's cache is shaped, so reads, invalidation, and the devtools cache viewer never drift out of sync with each other.
+
+```ts
+import { queryKeys } from "@soroform/core";
+
+queryKeys.account(address);
+queryKeys.balance(address, assetId);
+queryKeys.transactionStatus(hash);
+queryKeys.networkStatus();
+queryKeys.contractSpec(networkPassphrase, contractId);
+queryKeys.contractRead(networkPassphrase, contractId, method, args);
+queryKeys.contractReadsByContract(networkPassphrase, contractId);
+```
+
+Every key is namespaced under `"soroform"`, so Soroform's cache entries are trivially distinguishable from your app's own TanStack Query usage in the devtools cache viewer.
+
+## Invalidation after a write
+
+`queryKeys.contractReadsByContract(networkPassphrase, contractId)` returns the prefix shared by every `contractRead` query for a given contract. `useContractWrite` passes this prefix to `queryClient.invalidateQueries` on success, which invalidates every read for that contract regardless of which methods or args have been queried, without needing to know them in advance:
+
+```ts
+queryClient.invalidateQueries({
+  queryKey: queryKeys.contractReadsByContract(networkPassphrase, contractId),
+});
+```
+
+## Args containing bigint or bytes
+
+Contract args routinely contain `bigint` (any `u64`/`u128`/`u256`-typed argument) and `Uint8Array` (bytes arguments). TanStack Query hashes query keys with `JSON.stringify`, which throws on a raw `bigint`. `queryKeys.contractRead` handles this for you: it recursively converts `bigint` to a tagged string and `Uint8Array` / `Map` values to JSON-safe forms before building the key array. This only affects the cache key; the actual values passed to the contract call are untouched.
+
+## Spec caching
+
+`queryKeys.contractSpec(networkPassphrase, contractId)` is cached with an infinite `staleTime`, since a deployed contract's spec cannot change without redeploying under a new contract ID. This is what makes Soroform's no-codegen model work: the first hook call for a contract pays the cost of fetching and deriving its schema, and every later call, anywhere in your app, reuses the cached result.
+
+## Reusing a QueryClient
+
+If your app already renders its own `QueryClientProvider`, pass that client's instance to `SoroformProvider`'s `queryClient` prop instead of letting it create a second one:
+
+```tsx
+<SoroformProvider network="testnet" queryClient={myExistingQueryClient}>
+```

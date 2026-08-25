@@ -6,5 +6,17 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   clean: true,
-  external: ["react", "react-dom"],
+  external: [
+    "react",
+    "react-dom",
+    "react-hook-form",
+    "@hookform/resolvers",
+    "@hookform/resolvers/zod",
+    "zod",
+    "@stellar/stellar-sdk",
+    "@soroform/core",
+    "@soroform/provider",
+    "@soroform/wallet",
+  ],
+  banner: { js: '"use client";' },
 });

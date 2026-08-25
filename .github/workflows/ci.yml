@@ -50,9 +50,5 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check docs for broken internal links
-        run: |
-          if [ -d docs ]; then
-            npx --yes mint broken-links --root docs || true
-          else
-            echo "docs directory not present yet, skipping"
-          fi
+        working-directory: docs
+        run: npx --yes mint@latest broken-links

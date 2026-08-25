@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { SOROFORM_WALLET_VERSION } from "./index.js";
+import * as wallet from "./index.js";
 
-describe("@soroform/wallet placeholder", () => {
-  it("exports a version string", () => {
-    expect(typeof SOROFORM_WALLET_VERSION).toBe("string");
+describe("@soroform/wallet public exports", () => {
+  it("exports the documented public API", () => {
+    expect(typeof wallet.WalletProvider).toBe("function");
+    expect(typeof wallet.useWallet).toBe("function");
+    expect(typeof wallet.ConnectWalletButton).toBe("function");
+    expect(typeof wallet.createDefaultModules).toBe("function");
+    expect(typeof wallet.toWalletKitNetwork).toBe("function");
   });
 });

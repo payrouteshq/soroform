@@ -1,0 +1,72 @@
+---
+title: "SoroformProvider"
+description: "The root provider: resolves network configuration and supplies a TanStack Query client"
+---
+
+The root provider for Soroform. Resolves a `SoroformConfig` from the given network (and any overrides) and supplies it to the rest of the tree via `useSoroformConfig`, while also wrapping children in a TanStack Query `QueryClientProvider`.
+
+```tsx
+import { SoroformProvider } from "@soroform/provider";
+```
+
+## Props
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `network` | `"testnet" \| "mainnet" \| "futurenet" \| "custom"` | Yes | The Stellar network to target. |
+| `rpcUrl` | `string` | No | Overrides the network's default Soroban RPC URL. Required for `"mainnet"` and `"custom"`. |
+| `horizonUrl` | `string` | No | Overrides the network's default Horizon URL. Required for `"custom"`. |
+| `networkPassphrase` | `string` | No | Overrides the network's default passphrase. Required for `"custom"`. |
+| `queryClient` | `QueryClient` | No | A pre-constructed TanStack Query client to share instead of creating a new one. |
+
+<Note>
+  `"testnet"` and `"futurenet"` have well-known defaults for every field. `"mainnet"` has no default `rpcUrl`, since there is no single free public RPC endpoint for the public network; pass one explicitly. `"custom"` requires all three of `rpcUrl`, `horizonUrl`, and `networkPassphrase`.
+</Note>
+
+## Example
+
+```tsx
+import { SoroformProvider } from "@soroform/provider";
+
+export function App({ children }: { children: React.ReactNode }) {
+  return (
+    <SoroformProvider network="testnet">
+      {children}
+    </SoroformProvider>
+  );
+}
+```
+
+Sharing an existing `QueryClient`:
+
+```tsx
+import { QueryClient } from "@tanstack/react-query";
+import { SoroformProvider } from "@soroform/provider";
+
+const queryClient = new QueryClient();
+
+export function App({ children }: { children: React.ReactNode }) {
+  return (
+    <SoroformProvider network="testnet" queryClient={queryClient}>
+      {children}
+    </SoroformProvider>
+  );
+}
+```
+
+## Default QueryClient
+
+When no `queryClient` is passed, Soroform creates one with `staleTime: 5000` (5 seconds) and `refetchOnWindowFocus: false`. Blockchain data does not follow typical web app refetch-on-focus heuristics, and a 5 second stale window keeps repeated reads from hammering your RPC endpoint without going stale for long.
+
+## useSoroformConfig
+
+Reads the resolved config from context. Throws if called outside a `SoroformProvider`.
+
+```tsx
+import { useSoroformConfig } from "@soroform/provider";
+
+function NetworkBadge() {
+  const config = useSoroformConfig();
+  return <span>{config.network}</span>;
+}
+```

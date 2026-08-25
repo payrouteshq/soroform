@@ -1,0 +1,60 @@
+---
+title: "useContractForm"
+description: "A react-hook-form useForm wired to a contract method's generated Zod schema"
+---
+
+Wraps `react-hook-form`'s `useForm`, sourcing its `resolver` from the Zod args schema generated for the given contract method. The schema is resolved lazily and asynchronously, which `react-hook-form` supports natively, so there is no separate loading state to manage before the form can be used.
+
+```ts
+import { useContractForm } from "@soroform/contract";
+
+function useContractForm<TFieldValues extends FieldValues = FieldValues>(
+  options: UseContractFormOptions,
+): UseFormReturn<TFieldValues>;
+```
+
+<Note>
+  `react-hook-form` and `@hookform/resolvers` are peer dependencies. This package does not bundle its own copy, so your app controls their versions.
+</Note>
+
+## Parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `contractId` | `string` | Yes | The deployed contract's address (`C...`). |
+| `method` | `string` | Yes | The method whose args schema this form should validate against. |
+| `network` | `SoroformNetwork` | No | Overrides the network from the nearest `SoroformProvider`. |
+
+## Return value
+
+The full `UseFormReturn` object from `react-hook-form` (`register`, `handleSubmit`, `formState`, `setValue`, and everything else), typed to your field values.
+
+## Example
+
+```tsx
+import { useContractForm } from "@soroform/contract";
+
+interface TransferFields {
+  to: string;
+  amount: bigint;
+}
+
+function TransferForm({ contractId }: { contractId: string }) {
+  const { register, handleSubmit, formState } = useContractForm<TransferFields>({
+    contractId,
+    method: "transfer",
+  });
+
+  return (
+    <form onSubmit={handleSubmit((values) => console.log(values))}>
+      <input {...register("to")} placeholder="Recipient address" />
+      {formState.errors.to && <p>{String(formState.errors.to.message)}</p>}
+      <button type="submit">Transfer</button>
+    </form>
+  );
+}
+```
+
+<Tip>
+  Fields typed `bigint` (any `u64`/`u128`/`u256` argument) need the string from a text input converted to a real `bigint` before validation sees it. See [Building a token transfer form end to end](/guides/token-transfer-form) for the full pattern using `setValueAs`.
+</Tip>

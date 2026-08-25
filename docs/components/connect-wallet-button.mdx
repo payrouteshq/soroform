@@ -1,0 +1,48 @@
+---
+title: "ConnectWalletButton"
+description: "A minimally styled button that opens the wallet picker and shows the connected address"
+---
+
+A minimally styled button that opens the wallet picker modal when no wallet is connected, and shows the connected address (disconnecting on click) once one is. Styled entirely through CSS custom properties, so you can restyle it without overriding classes.
+
+```tsx
+import { ConnectWalletButton } from "@soroform/wallet";
+```
+
+<Note>
+  The defaults are intentionally plain: this component is about behavior, not design. Most apps will want their own look; that's what the CSS variables below are for.
+</Note>
+
+## Props
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `className` | `string` | No | Applied to the underlying `<button>`. |
+| `connectLabel` | `string` | No | Label shown when no wallet is connected. Defaults to `"Connect Wallet"`. |
+
+## Example
+
+```tsx
+import { ConnectWalletButton } from "@soroform/wallet";
+
+function Header() {
+  return <ConnectWalletButton connectLabel="Sign in" />;
+}
+```
+
+## Restyling
+
+```css
+:root {
+  --soroform-button-bg: #4f46e5;
+  --soroform-button-fg: #ffffff;
+  --soroform-button-radius: 0.75rem;
+  --soroform-button-padding: 0.6rem 1.2rem;
+  --soroform-button-font-family: "Inter", sans-serif;
+  --soroform-button-font-size: 0.9rem;
+  --soroform-button-font-weight: 500;
+  --soroform-button-border: none;
+}
+```
+
+Every variable falls back to a plain default if unset, so you only need to override the ones you want to change.

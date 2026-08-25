@@ -1,0 +1,67 @@
+:root {
+  --soroform-button-bg: #0f172a;
+  --soroform-button-fg: #ffffff;
+  --soroform-button-radius: 0.5rem;
+  --soroform-button-padding: 0.6rem 1.1rem;
+  --soroform-button-font-family:
+    ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --soroform-button-font-size: 0.875rem;
+  --soroform-button-font-weight: 600;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+main {
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 1rem;
+}
+
+label {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+input {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+}
+
+button {
+  font-family: inherit;
+}
+
+.error {
+  color: #dc2626;
+  font-size: 0.8rem;
+}

@@ -1,0 +1,53 @@
+---
+title: "WalletProvider"
+description: "Wallet connection context, backed by a multi-wallet Stellar connector"
+---
+
+Wraps the app in a wallet connection context, backed by `@creit.tech/stellar-wallets-kit`. Must be rendered inside a [`SoroformProvider`](/components/soroform-provider), which supplies the network this provider connects wallets on.
+
+```tsx
+import { WalletProvider } from "@soroform/wallet";
+```
+
+## Props
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `modules` | `ModuleInterface[]` | No | Wallet modules to offer in the connection picker. Defaults to Freighter, xBull, Albedo, Lobstr, Hana, and Rabet. |
+| `selectedWalletId` | `string` | No | The wallet ID to preselect, if any was previously connected. |
+
+<Note>
+  The default module list only includes wallets with a no-argument constructor, so no extra setup (API keys, project IDs) is required out of the box. Hardware wallets and WalletConnect-based modules need such setup; pass them explicitly via `modules` if you need them.
+</Note>
+
+## Example
+
+```tsx
+import { SoroformProvider } from "@soroform/provider";
+import { WalletProvider } from "@soroform/wallet";
+
+export function App({ children }: { children: React.ReactNode }) {
+  return (
+    <SoroformProvider network="testnet">
+      <WalletProvider>{children}</WalletProvider>
+    </SoroformProvider>
+  );
+}
+```
+
+Adding a hardware wallet module:
+
+```tsx
+import { WalletProvider, createDefaultModules } from "@soroform/wallet";
+import { LedgerModule } from "@creit.tech/stellar-wallets-kit/modules/ledger";
+
+<WalletProvider modules={[...createDefaultModules(), new LedgerModule()]}>
+  {children}
+</WalletProvider>;
+```
+
+<Warning>
+  `LedgerModule` requires a `Buffer` polyfill in your app; without one, it breaks the rest of your app rather than failing gracefully. Most Next.js and Vite setups need to add this explicitly.
+</Warning>
+
+See [`useWallet`](/hooks/use-wallet) for reading connection state, and [`ConnectWalletButton`](/components/connect-wallet-button) for a ready-made connect button.

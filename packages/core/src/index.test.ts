@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { SOROFORM_CORE_VERSION } from "./index.js";
+import * as core from "./index.js";
 
-describe("@soroform/core placeholder", () => {
-  it("exports a version string", () => {
-    expect(typeof SOROFORM_CORE_VERSION).toBe("string");
+describe("@soroform/core public exports", () => {
+  it("exports the documented public API", () => {
+    expect(typeof core.resolveSoroformConfig).toBe("function");
+    expect(typeof core.normalizeError).toBe("function");
+    expect(typeof core.createRpcServer).toBe("function");
+    expect(typeof core.createHorizonServer).toBe("function");
+    expect(core.queryKeys).toBeDefined();
+    expect(core.Horizon).toBeDefined();
   });
 });

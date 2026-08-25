@@ -1,0 +1,38 @@
+{
+  "name": "vite-app",
+  "private": true,
+  "version": "0.0.0",
+  "description": "A simpler, non-Next Vite + React example demonstrating Soroform end to end.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "typecheck": "tsc -b --noEmit",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "5.9.1",
+    "@soroform/contract": "workspace:*",
+    "@soroform/core": "workspace:*",
+    "@soroform/devtools": "workspace:*",
+    "@soroform/hooks": "workspace:*",
+    "@soroform/provider": "workspace:*",
+    "@soroform/wallet": "workspace:*",
+    "@stellar/stellar-sdk": "17.0.0",
+    "@tanstack/react-query": "5.102.2",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-hook-form": "7.86.0",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "26.2.0",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "@vitejs/plugin-react": "6.1.0",
+    "typescript": "5.9.3",
+    "vite": "8.2.2"
+  }
+}

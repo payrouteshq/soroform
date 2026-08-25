@@ -52,6 +52,19 @@ To record a changeset for a change you are about to commit:
 pnpm changeset
 ```
 
+## Documentation
+
+The docs site lives in `docs/` and is built with Mintlify. To preview it
+locally:
+
+```
+pnpm docs:dev
+```
+
+The `docs/logo/` and `docs/favicon.svg` files are Mintlify's generic
+starter placeholders; drop in Soroform's real logo and favicon before
+publishing the site.
+
 ## License
 
 Apache-2.0, see `LICENSE`.

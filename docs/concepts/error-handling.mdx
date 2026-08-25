@@ -1,0 +1,74 @@
+---
+title: "Error handling and the SoroformError shape"
+description: "How every error surfaced by Soroform is normalized into one discriminated union"
+---
+
+Every error thrown by `@stellar/stellar-sdk` or by Soroform's own code is normalized into a single shape before it reaches your app: `SoroformError`, from `@soroform/core`. This is the one place error-to-message mapping lives in Soroform; individual hooks do not each reimplement it.
+
+```ts
+interface SoroformError {
+  kind: SoroformErrorKind;
+  message: string;
+  cause: unknown;
+}
+```
+
+`kind` is a discriminated union member, so you can `switch` over it exhaustively. `message` is a plain-language default suitable for displaying directly; override it per `kind` if you want different copy. `cause` retains the original thrown value for logging.
+
+## Every error kind
+
+`@stellar/stellar-sdk/contract` defines 16 distinct error classes. Soroform maps all 16 to a `SoroformErrorKind`:
+
+| `kind` | Thrown when |
+| --- | --- |
+| `expired-state` | The call touched ledger entries that have expired and need restoring. |
+| `restore-failure` | Restoring those expired entries failed. |
+| `needs-more-signatures` | The transaction needs signatures from other accounts before it can be sent. |
+| `no-signature-needed` | The call was a read-only simulation; there is nothing to sign or send. |
+| `no-unsigned-non-invoker-auth-entries` | There are no remaining auth entries from other accounts left to sign. |
+| `no-signer` | No signing function was provided. |
+| `not-yet-simulated` | The transaction has not been simulated yet. |
+| `fake-account` | The source account used for simulation does not exist on-chain. |
+| `simulation-failed` | Simulating the call failed. |
+| `internal-wallet-error` | The connected wallet hit an internal error. |
+| `external-service-error` | A service the wallet depends on failed to respond. |
+| `invalid-client-request` | The request sent to the wallet was invalid. |
+| `user-rejected` | The request was rejected in the connected wallet. |
+| `send-failed` | Sending the transaction to the network failed. |
+| `send-result-only` | The transaction was sent, but its final result is not yet available. |
+| `transaction-still-pending` | The transaction's final status is not yet known. |
+| `unknown` | Anything else: a plain `Error`, a network failure, or a non-Error thrown value. |
+
+## Using it
+
+Every contract-facing hook exposes its error, already normalized, through its usual TanStack Query or mutation state:
+
+```tsx
+const { error } = useContractRead({ contractId, method: "balance", args: { id } });
+
+if (error) {
+  switch (error.kind) {
+    case "user-rejected":
+      return <p>You'll need to approve the request in your wallet.</p>;
+    case "fake-account":
+      return <p>That account does not exist on this network.</p>;
+    default:
+      return <p>{error.message}</p>;
+  }
+}
+```
+
+## Normalizing an error yourself
+
+If you call `@stellar/stellar-sdk` directly somewhere outside a Soroform hook, run the same normalizer:
+
+```ts
+import { normalizeError } from "@soroform/core";
+
+try {
+  await someSdkCall();
+} catch (rawError) {
+  const error = normalizeError(rawError);
+  console.log(error.kind, error.message);
+}
+```

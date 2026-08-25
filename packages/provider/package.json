@@ -30,7 +30,23 @@
     "test": "vitest run",
     "clean": "rm -rf dist .turbo"
   },
+  "dependencies": {
+    "@soroform/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "react": "^18.0.0 || ^19.0.0"
+  },
   "devDependencies": {
+    "@tanstack/react-query": "5.102.2",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.2",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "@vitejs/plugin-react": "6.1.0",
+    "jsdom": "30.0.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
     "tsup": "8.5.1",
     "typescript": "5.9.3",
     "vitest": "4.1.11"

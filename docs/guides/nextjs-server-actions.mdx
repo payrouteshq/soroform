@@ -1,0 +1,102 @@
+---
+title: "Using Soroform in a Next.js Server Component + Server Action setup"
+description: "Build and simulate on the server, sign and send on the client"
+---
+
+Soroform's hooks are client-side by design: they need a browser wallet to sign with. You can still do the build-and-simulate step on the server, which is useful when you want to keep RPC calls off the client, validate args server-side before a user's wallet ever sees them, or read the same contract state during server rendering that a client hook will read again later (cache warm-up).
+
+The pattern: a Server Action builds and simulates the transaction and returns its serialized form; a Client Component reconstructs it, signs with the connected wallet, and sends it.
+
+## The Server Action
+
+```ts app/actions.ts
+"use server";
+
+import { AssembledTransaction } from "@stellar/stellar-sdk/contract";
+import { fetchContractSpec } from "@soroform/contract";
+import { resolveSoroformConfig } from "@soroform/core";
+import { QueryClient } from "@tanstack/react-query";
+
+const config = resolveSoroformConfig({ network: "testnet" });
+const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
+
+export async function buildTransfer(sourceAddress: string, to: string, amount: bigint) {
+  // A short-lived QueryClient just to reuse fetchContractSpec's caching
+  // helper; nothing here needs to persist across requests.
+  const queryClient = new QueryClient();
+  const spec = await fetchContractSpec(CONTRACT_ID, config, queryClient);
+  const args = spec.funcArgsToScVals("transfer", { to, amount });
+
+  const tx = await AssembledTransaction.build({
+    contractId: CONTRACT_ID,
+    networkPassphrase: config.networkPassphrase,
+    rpcUrl: config.rpcUrl,
+    publicKey: sourceAddress,
+    method: "transfer",
+    args,
+    parseResultXdr: (xdr) => spec.funcResToNative("transfer", xdr),
+  });
+
+  return tx.toJson();
+}
+```
+
+Notice `AssembledTransaction.build` is called with no `signTransaction`: the server has no wallet and does not need one to simulate. `AssembledTransaction.build` still performs the simulation, which is the expensive network round-trip this pattern moves off the client.
+
+## The Client Component
+
+```tsx app/transfer-button.tsx
+"use client";
+
+import { useState } from "react";
+import { AssembledTransaction } from "@stellar/stellar-sdk/contract";
+import { fetchContractSpec } from "@soroform/contract";
+import { useSoroformConfig } from "@soroform/provider";
+import { useWallet } from "@soroform/wallet";
+import { useQueryClient } from "@tanstack/react-query";
+import { buildTransfer } from "../actions";
+
+const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
+
+export function TransferButton({ to }: { to: string }) {
+  const config = useSoroformConfig();
+  const wallet = useWallet();
+  const queryClient = useQueryClient();
+  const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
+
+  async function handleClick() {
+    if (!wallet.address) return;
+    setStatus("sending");
+
+    const json = await buildTransfer(wallet.address, to, 100n);
+    const spec = await fetchContractSpec(CONTRACT_ID, config, queryClient);
+
+    const tx = AssembledTransaction.fromJson(
+      {
+        contractId: CONTRACT_ID,
+        networkPassphrase: config.networkPassphrase,
+        rpcUrl: config.rpcUrl,
+        parseResultXdr: (xdr) => spec.funcResToNative("transfer", xdr),
+      },
+      JSON.parse(json),
+    );
+
+    await tx.signAndSend({ signTransaction: wallet.signTransaction });
+    setStatus("sent");
+  }
+
+  return (
+    <button onClick={handleClick} disabled={status === "sending"}>
+      {status === "sent" ? "Sent" : "Transfer"}
+    </button>
+  );
+}
+```
+
+<Note>
+  `fetchContractSpec` is called on both sides. Each call hits the same cache key (`queryKeys.contractSpec`), so on the client this resolves instantly if a hook elsewhere in the tree already fetched the same contract's spec; on the server, each request gets its own short-lived `QueryClient` since server code has no persistent client-side cache to share.
+</Note>
+
+## When to reach for this
+
+Most apps do not need this split; `useContractWrite` alone covers the common case with less code. Reach for the server/client split when you specifically want simulation off the client's network path, or when you are already fetching the same contract state during server rendering and want to avoid a second round-trip for a form that appears immediately after.

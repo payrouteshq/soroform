@@ -1,0 +1,48 @@
+---
+title: "useAccount"
+description: "Fetch a Stellar account's existence and sequence number"
+---
+
+Fetches a Stellar account's existence and sequence number, via `rpc.Server.getAccount`.
+
+```ts
+import { useAccount } from "@soroform/hooks";
+
+function useAccount(
+  address: string,
+  options?: UseAccountOptions,
+): UseQueryResult<AccountState>;
+```
+
+## Parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `address` | `string` | Yes | The account address (`G...`) to look up. |
+| `options.enabled` | `boolean` | No | Whether the query should run. Defaults to `true`. |
+
+## Return value
+
+`data` resolves to an `AccountState`:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `exists` | `boolean` | Whether the account exists on-chain. |
+| `sequence` | `string \| undefined` | The account's current sequence number, if it exists. |
+
+## Example
+
+```tsx
+import { useAccount } from "@soroform/hooks";
+
+function AccountBadge({ address }: { address: string }) {
+  const { data, isLoading } = useAccount(address);
+
+  if (isLoading) return <p>Loading...</p>;
+  return <p>{data?.exists ? `Sequence ${data.sequence}` : "Not found"}</p>;
+}
+```
+
+## Notes
+
+A missing account is not treated as a query error. `rpc.Server.getAccount` throws for any account that does not exist on-chain; that specific failure is caught and reported as `{ exists: false, sequence: undefined }` instead, leaving genuine network or RPC errors to surface through `error` as usual.

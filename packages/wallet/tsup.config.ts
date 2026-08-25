@@ -6,5 +6,6 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   clean: true,
-  external: ["react", "react-dom"],
+  external: ["react", "react-dom", "@creit.tech/stellar-wallets-kit", "@soroform/provider"],
+  banner: { js: '"use client";' },
 });

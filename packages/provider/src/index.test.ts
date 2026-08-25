@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { SOROFORM_PROVIDER_VERSION } from "./index.js";
+import * as provider from "./index.js";
 
-describe("@soroform/provider placeholder", () => {
-  it("exports a version string", () => {
-    expect(typeof SOROFORM_PROVIDER_VERSION).toBe("string");
+describe("@soroform/provider public exports", () => {
+  it("exports the documented public API", () => {
+    expect(typeof provider.SoroformProvider).toBe("function");
+    expect(typeof provider.useSoroformConfig).toBe("function");
   });
 });

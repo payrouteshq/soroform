@@ -1,9 +1,19 @@
-/**
- * @soroform/contract is not yet implemented.
- *
- * This placeholder exists so the package builds, lints, typechecks, and
- * tests cleanly as part of the monorepo's tooling scaffold.
- * sorobanTypeToZod, generateContractSchemas, useContractRead,
- * useContractWrite, and useContractForm land here in later milestones.
- */
-export const SOROFORM_CONTRACT_VERSION = "0.0.0";
+export { sorobanTypeToZod } from "./type-mapping.js";
+
+export type { ContractMethodSchema, ContractSchemas } from "./generate-schemas.js";
+export { generateContractSchemas } from "./generate-schemas.js";
+
+export { fetchContractSpec } from "./spec-cache.js";
+
+export type { UseContractReadOptions } from "./use-contract-read.js";
+export { useContractRead } from "./use-contract-read.js";
+
+export type {
+  ContractWriteStatus,
+  UseContractWriteOptions,
+  UseContractWriteResult,
+} from "./use-contract-write.js";
+export { useContractWrite } from "./use-contract-write.js";
+
+export type { UseContractFormOptions } from "./use-contract-form.js";
+export { useContractForm } from "./use-contract-form.js";

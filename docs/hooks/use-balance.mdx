@@ -1,0 +1,60 @@
+---
+title: "useBalance"
+description: "Fetch an address's balance of any asset, classic or Soroban, normalized to one shape"
+---
+
+Fetches an address's balance of a given asset, normalized to `{ raw, formatted, decimals }` regardless of which kind of asset it is, so a component never has to branch on asset type itself.
+
+```ts
+import { useBalance } from "@soroform/hooks";
+
+function useBalance(
+  address: string,
+  assetId: string,
+  options?: UseBalanceOptions,
+): UseQueryResult<BalanceState>;
+```
+
+## Parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `address` | `string` | Yes | The account or contract address whose balance to fetch. |
+| `assetId` | `string` | Yes | `"native"` for XLM, a classic asset as `"CODE:ISSUER"`, or a Soroban token contract address (`C...`). |
+| `options.enabled` | `boolean` | No | Whether the query should run. Defaults to `true`. |
+
+## Return value
+
+`data` resolves to a `BalanceState`:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `raw` | `bigint` | The raw integer amount, in the asset's smallest unit. |
+| `formatted` | `string` | `raw` formatted as a decimal string using `decimals`. |
+| `decimals` | `number` | The asset's decimal places. |
+
+## Example
+
+```tsx
+import { useBalance } from "@soroform/hooks";
+
+function XlmBalance({ address }: { address: string }) {
+  const { data, isLoading } = useBalance(address, "native");
+
+  if (isLoading) return <p>Loading...</p>;
+  return <p>{data?.formatted} XLM</p>;
+}
+```
+
+```tsx
+// A classic issued asset
+useBalance(address, "USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5");
+
+// A custom Soroban token contract
+useBalance(address, "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5");
+```
+
+## How each asset kind resolves
+
+- `"native"` and `"CODE:ISSUER"` resolve through `rpc.Server.getAssetBalance`, which covers both account and contract holders in one call and always uses 7 decimal places, the Stellar convention for classic assets and their Stellar Asset Contract representation alike.
+- Any other value is treated as a custom Soroban token contract address, and resolved by calling that contract's own `balance` and `decimals` methods.

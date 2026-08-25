@@ -21,19 +21,23 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "turbo run build && changeset publish",
-    "docs:dev": "pnpm --filter ./docs dev"
+    "docs:dev": "cd docs && npx --yes mint@latest dev"
   },
   "devDependencies": {
     "@changesets/cli": "3.0.1",
     "@eslint/js": "10.0.1",
     "eslint": "10.9.0",
     "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-react-hooks": "7.1.1",
     "prettier": "3.9.6",
     "turbo": "2.10.11",
     "typescript": "5.9.3",
     "typescript-eslint": "8.67.0"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "@stellar/stellar-sdk"
+    ]
   }
 }

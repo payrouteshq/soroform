@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { SOROFORM_CONTRACT_VERSION } from "./index.js";
+import * as contract from "./index.js";
 
-describe("@soroform/contract placeholder", () => {
-  it("exports a version string", () => {
-    expect(typeof SOROFORM_CONTRACT_VERSION).toBe("string");
+describe("@soroform/contract public exports", () => {
+  it("exports the documented public API", () => {
+    expect(typeof contract.sorobanTypeToZod).toBe("function");
+    expect(typeof contract.generateContractSchemas).toBe("function");
+    expect(typeof contract.fetchContractSpec).toBe("function");
+    expect(typeof contract.useContractRead).toBe("function");
+    expect(typeof contract.useContractWrite).toBe("function");
+    expect(typeof contract.useContractForm).toBe("function");
   });
 });
