@@ -13,6 +13,8 @@ export default tseslint.config(
       "**/coverage/**",
       "docs/**",
       "**/.next/**",
+      "**/*.generated.ts",
+      "**/*.generated.css",
     ],
   },
   eslint.configs.recommended,

@@ -56,5 +56,5 @@ useBalance(address, "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5");
 
 ## How each asset kind resolves
 
-- `"native"` and `"CODE:ISSUER"` resolve through `rpc.Server.getAssetBalance`, which covers both account and contract holders in one call and always uses 7 decimal places, the Stellar convention for classic assets and their Stellar Asset Contract representation alike.
-- Any other value is treated as a custom Soroban token contract address, and resolved by calling that contract's own `balance` and `decimals` methods.
+- `"native"` and `"CODE:ISSUER"` resolve as classic Stellar assets, covering both account and contract holders, and always use 7 decimal places, the Stellar convention for classic assets and their Stellar Asset Contract representation alike.
+- Any other value is treated as a custom Soroban token contract address, and resolved by reading that contract's own balance and decimals.

@@ -10,12 +10,10 @@ export function App() {
   return (
     <SoroformProvider network="testnet">
       <WalletProvider>
-        <main>
-          <header
-            style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-          >
+        <main className="mx-auto flex max-w-lg flex-col gap-6 px-6 py-8">
+          <header className="flex items-center justify-between">
             <div>
-              <h1 style={{ fontSize: "1.25rem", margin: 0 }}>Soroform example</h1>
+              <h1 className="text-xl font-semibold">Soroform example</h1>
               <NetworkStatus />
             </div>
             <ConnectWalletButton />

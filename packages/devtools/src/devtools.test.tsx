@@ -1,5 +1,6 @@
 import { describe, expect, it, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { SoroformDevtools } from "./devtools.js";
 
@@ -39,13 +40,21 @@ describe("SoroformDevtools", () => {
   it("can be opened by default via initialOpen", () => {
     process.env.NODE_ENV = "development";
     renderWithQueryClient(<SoroformDevtools initialOpen />);
-    expect(screen.getByRole("button", { name: "Writes" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Writes" })).toBeInTheDocument();
   });
 
-  it("switches to the Query cache tab", () => {
+  it("switches to the Query cache tab", async () => {
     process.env.NODE_ENV = "development";
+    const user = userEvent.setup();
     renderWithQueryClient(<SoroformDevtools initialOpen />);
-    fireEvent.click(screen.getByRole("button", { name: "Query cache" }));
-    expect(screen.queryByText(/No contract writes logged yet/)).not.toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "Query cache" }));
+    expect(screen.getByRole("tab", { name: "Query cache" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(screen.getByRole("tab", { name: "Writes" })).toHaveAttribute(
+      "aria-selected",
+      "false",
+    );
   });
 });

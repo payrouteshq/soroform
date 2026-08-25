@@ -14,4 +14,5 @@ export default defineConfig({
     "@soroform/core",
   ],
   banner: { js: '"use client";' },
+  loader: { ".css": "text" },
 });

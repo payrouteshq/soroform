@@ -3,7 +3,7 @@ title: "useAccount"
 description: "Fetch a Stellar account's existence and sequence number"
 ---
 
-Fetches a Stellar account's existence and sequence number, via `rpc.Server.getAccount`.
+Fetches a Stellar account's existence and sequence number.
 
 ```ts
 import { useAccount } from "@soroform/hooks";
@@ -45,4 +45,4 @@ function AccountBadge({ address }: { address: string }) {
 
 ## Notes
 
-A missing account is not treated as a query error. `rpc.Server.getAccount` throws for any account that does not exist on-chain; that specific failure is caught and reported as `{ exists: false, sequence: undefined }` instead, leaving genuine network or RPC errors to surface through `error` as usual.
+A missing account is not treated as a query error. An account that does not exist on-chain is reported as `{ exists: false, sequence: undefined }` instead, leaving genuine network or RPC errors to surface through `error` as usual.

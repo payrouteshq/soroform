@@ -23,15 +23,20 @@
   "files": ["dist"],
   "sideEffects": false,
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
+    "build": "pnpm run build:css && tsup",
+    "build:css": "tailwindcss -i ./src/tailwind.css -o ./src/styles.generated.css --minify",
+    "dev": "pnpm run build:css && tsup --watch",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "typecheck": "pnpm run build:css && tsc --noEmit",
+    "test": "pnpm run build:css && vitest run",
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "@soroform/core": "workspace:*"
+    "@soroform/core": "workspace:*",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "radix-ui": "1.6.7",
+    "tailwind-merge": "3.6.0"
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.0.0",
@@ -39,10 +44,12 @@
     "react": "^18.0.0 || ^19.0.0"
   },
   "devDependencies": {
+    "@tailwindcss/cli": "4.3.3",
     "@tanstack/react-query": "5.102.2",
     "@tanstack/react-query-devtools": "5.102.2",
     "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "16.3.2",
+    "@testing-library/user-event": "14.6.6",
     "@types/node": "26.2.0",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.5",
@@ -50,6 +57,7 @@
     "jsdom": "30.0.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "tailwindcss": "4.3.3",
     "tsup": "8.5.1",
     "typescript": "5.9.3",
     "vitest": "4.1.11"

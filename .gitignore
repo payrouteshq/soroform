@@ -10,3 +10,4 @@ coverage/
 .next/
 .vite/
 docs/.mintlify/
+packages/devtools/src/styles.generated.css

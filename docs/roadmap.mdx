@@ -5,9 +5,9 @@ description: "What's planned but not yet implemented"
 
 The following were discussed as valuable future additions but are not part of the current build. If you need one of these today, you'll need to build it on top of Soroform's existing hooks.
 
-- **`useStellarStream`**: a hook for subscribing to Horizon's Server-Sent Events streams, for live-updating payment, operation, and effect feeds without polling.
-- **A unified classic/Soroban asset orchestrator**: a polymorphic `useAssetBalance` that detects asset type automatically, a polymorphic `useTransfer` that picks the right call path (classic payment vs. token contract invocation) for a given asset, and trustline preflight checks before a classic-asset transfer.
-- **A passkey and multi-wallet-adapter identity provider** beyond what `@creit.tech/stellar-wallets-kit` already provides out of the box.
-- **stellar.toml (SEP-1) driven anchor and asset metadata discovery**.
+- `useStellarStream`: a hook for subscribing to Horizon's Server-Sent Events streams, for live-updating payment, operation, and effect feeds without polling.
+- A unified classic/Soroban asset orchestrator: a polymorphic `useAssetBalance` that detects asset type automatically, a polymorphic `useTransfer` that picks the right call path (classic payment vs. token contract invocation) for a given asset, and trustline preflight checks before a classic-asset transfer.
+- A passkey and multi-wallet-adapter identity provider beyond what `@creit.tech/stellar-wallets-kit` already provides out of the box.
+- stellar.toml (SEP-1) driven anchor and asset metadata discovery.
 
 None of these are scheduled. If one would unblock something you're building, that's useful signal, open an issue describing the use case.

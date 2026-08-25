@@ -1,5 +1,9 @@
 import { useContractForm, useContractWrite } from "@soroform/contract";
 import { useWallet } from "@soroform/wallet";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { NATIVE_SAC_CONTRACT_ID } from "./contract";
 
 interface TransferFields {
@@ -20,58 +24,67 @@ export function TransferForm() {
 
   const onSubmit = handleSubmit(async (values) => {
     if (!wallet.address) return;
-    // The SAC's transfer method also takes `from`, the authorizing
-    // account; it is always the connected wallet's own address, so it is
-    // supplied here rather than asked for in the form.
-    await writeAsync({ from: wallet.address, ...values }).catch(() => {
-      // useContractWrite's own `error` field already reflects the failure;
-      // this catch only stops the rejection from becoming unhandled.
-    });
+    await writeAsync({ from: wallet.address, ...values }).catch(() => {});
   });
 
   const isBusy = status === "simulating" || status === "submitting";
 
   if (!wallet.isConnected) {
     return (
-      <div className="card">
-        <h2>Transfer native XLM</h2>
-        <p>Connect a wallet to send a transfer.</p>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Transfer native XLM</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-muted-foreground">
+          Connect a wallet to send a transfer.
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="card">
-      <h2>Transfer native XLM</h2>
-      <form onSubmit={onSubmit}>
-        <label>
-          Recipient address
-          <input {...register("to")} placeholder="G..." />
-          {formState.errors.to && (
-            <span className="error">{String(formState.errors.to.message)}</span>
-          )}
-        </label>
-        <label>
-          Amount (whole XLM)
-          <input
-            type="text"
-            inputMode="decimal"
-            placeholder="1.5"
-            {...register("amount", {
-              setValueAs: (value: string) =>
-                value === "" ? undefined : BigInt(Math.round(Number(value) * 10_000_000)),
-            })}
-          />
-          {formState.errors.amount && (
-            <span className="error">{String(formState.errors.amount.message)}</span>
-          )}
-        </label>
-        <button type="submit" disabled={isBusy}>
-          {status === "idle" || status === "success" ? "Transfer" : status}
-        </button>
-      </form>
-      {error && <p className="error">{error.message}</p>}
-      {status === "success" && <p>Sent. Result: {String(data)}</p>}
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Transfer native XLM</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="to">Recipient address</Label>
+            <Input id="to" placeholder="G..." {...register("to")} />
+            {formState.errors.to && (
+              <p className="text-sm text-destructive">
+                {String(formState.errors.to.message)}
+              </p>
+            )}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="amount">Amount (whole XLM)</Label>
+            <Input
+              id="amount"
+              type="text"
+              inputMode="decimal"
+              placeholder="1.5"
+              {...register("amount", {
+                setValueAs: (value: string) =>
+                  value === "" ? undefined : BigInt(Math.round(Number(value) * 10_000_000)),
+              })}
+            />
+            {formState.errors.amount && (
+              <p className="text-sm text-destructive">
+                {String(formState.errors.amount.message)}
+              </p>
+            )}
+          </div>
+          <Button type="submit" disabled={isBusy}>
+            {status === "idle" || status === "success" ? "Transfer" : status}
+          </Button>
+        </form>
+        {error && <p className="mt-3 text-sm text-destructive">{error.message}</p>}
+        {status === "success" && (
+          <p className="mt-3 text-sm text-muted-foreground">Sent. Result: {String(data)}</p>
+        )}
+      </CardContent>
+    </Card>
   );
 }

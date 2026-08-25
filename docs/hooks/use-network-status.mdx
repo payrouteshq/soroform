@@ -3,7 +3,7 @@ title: "useNetworkStatus"
 description: "Fetch RPC node health and the latest ledger, refetched on an interval"
 ---
 
-Fetches RPC node health and the latest ledger, via `rpc.Server.getHealth` and `rpc.Server.getLatestLedger`. Refetches every 30 seconds, making it suitable for a network status indicator.
+Fetches RPC node health and the latest ledger. Refetches every 30 seconds, making it suitable for a network status indicator.
 
 ```ts
 import { useNetworkStatus } from "@soroform/hooks";

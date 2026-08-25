@@ -30,12 +30,16 @@ export function App({ children }: { children: React.ReactNode }) {
 }
 ```
 
+## Theming
+
+The panel is built with shadcn/ui components. If your app already uses shadcn, the panel picks up your theme automatically, no setup needed. If not, it falls back to shadcn's default look.
+
 ## What it shows
 
 A floating toggle opens a panel with two tabs:
 
-- **Writes**: every [`useContractWrite`](/hooks/use-contract-write) invocation this session, its current status, and, once available, its decoded args and result. For each write, a readable summary of the built transaction (operation type, source account, and simulated minimum resource fee) is shown alongside a button to copy its raw XDR, rather than a full XDR tree decode.
-- **Query cache**: the app's TanStack Query cache, via an embedded `@tanstack/react-query-devtools` panel. Soroform's own hooks namespace every query key under `"soroform"`, so they're easy to pick out from your app's own queries in the same view.
+- Writes: every [`useContractWrite`](/hooks/use-contract-write) invocation this session, its current status, and, once available, its decoded args and result. For each write, a readable summary of the built transaction (operation type, source account, and simulated minimum resource fee) is shown alongside a button to copy its raw XDR, rather than a full XDR tree decode.
+- Query cache: the app's TanStack Query cache, via an embedded `@tanstack/react-query-devtools` panel. Soroform's own hooks namespace every query key under `"soroform"`, so they're easy to pick out from your app's own queries in the same view.
 
 <Tip>
   The write log is powered by `@soroform/core`'s `devtoolsWriteLog` store, which `useContractWrite` writes to regardless of whether `@soroform/devtools` is installed. Installing this package only adds the panel that reads from it; it never needs to be a dependency of `@soroform/contract`.

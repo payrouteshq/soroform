@@ -2,16 +2,22 @@
 
 import { useWallet } from "@soroform/wallet";
 import { useAccount, useBalance } from "@soroform/hooks";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export function BalanceCard() {
   const { address, isConnected } = useWallet();
 
   if (!isConnected || !address) {
     return (
-      <div className="card">
-        <h2>Your account</h2>
-        <p>Connect a wallet to see your balance.</p>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Your account</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-muted-foreground">
+          Connect a wallet to see your balance.
+        </CardContent>
+      </Card>
     );
   }
 
@@ -23,15 +29,21 @@ function ConnectedBalance({ address }: { address: string }) {
   const balance = useBalance(address, "native");
 
   return (
-    <div className="card">
-      <h2>Your account</h2>
-      <p style={{ fontFamily: "ui-monospace, monospace", fontSize: "0.8rem" }}>{address}</p>
-      <p>
-        {account.data?.exists
-          ? `Sequence ${account.data.sequence}`
-          : "This account does not exist on testnet yet. Fund it with Friendbot."}
-      </p>
-      <p>Balance: {balance.data?.formatted ?? "..."} XLM</p>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Your account</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2 text-sm">
+        <p className="truncate font-mono text-xs text-muted-foreground">{address}</p>
+        {account.data?.exists ? (
+          <Badge variant="secondary">Sequence {account.data.sequence}</Badge>
+        ) : (
+          <p className="text-muted-foreground">
+            This account does not exist on testnet yet. Fund it with Friendbot.
+          </p>
+        )}
+        <p>Balance: {balance.data?.formatted ?? "..."} XLM</p>
+      </CardContent>
+    </Card>
   );
 }
