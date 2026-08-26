@@ -1,6 +1,6 @@
 "use client";
 
-import { useContractForm, useContractWrite } from "@soroform/contract";
+import { useSorobanForm, useContractSend } from "@soroform/contract";
 import { useWallet } from "@soroform/wallet";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,18 +15,18 @@ interface TransferFields {
 
 export function TransferForm() {
   const wallet = useWallet();
-  const { register, handleSubmit, formState } = useContractForm<TransferFields>({
+  const { register, handleSubmit, formState } = useSorobanForm<TransferFields>({
     contractId: NATIVE_SAC_CONTRACT_ID,
     method: "transfer",
   });
-  const { status, writeAsync, error, data } = useContractWrite<null>({
+  const { status, sendAsync, error, data } = useContractSend<null>({
     contractId: NATIVE_SAC_CONTRACT_ID,
     method: "transfer",
   });
 
   const onSubmit = handleSubmit(async (values) => {
     if (!wallet.address) return;
-    await writeAsync({ from: wallet.address, ...values }).catch(() => {});
+    await sendAsync({ from: wallet.address, ...values }).catch(() => {});
   });
 
   const isBusy = status === "simulating" || status === "submitting";

@@ -3,7 +3,7 @@ title: "Quickstart"
 description: "Install Soroform, wrap your app in its providers, and call your first hook"
 ---
 
-This walks through going from a fresh React or Next.js app to a working contract read and write. There is no code generation step: every hook below works from just a `contractId`.
+This walks through going from a fresh React or Next.js app to a working contract call and send. There is no code generation step: every hook below works from just a `contractId`.
 
 ## Prerequisites
 
@@ -66,17 +66,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
 ## Read from a contract
 
-`useContractRead` simulates a read-only method call and returns the decoded result. It needs no connected wallet, since reads are simulation-only.
+`useContractCall` simulates a read-only method call and returns the decoded result. It needs no connected wallet, since reads are simulation-only.
 
 ```tsx app/balance.tsx
 "use client";
 
-import { useContractRead } from "@soroform/contract";
+import { useContractCall } from "@soroform/contract";
 
 const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
 
 export function Balance({ address }: { address: string }) {
-  const { data, isLoading, error } = useContractRead<bigint>({
+  const { data, isLoading, error } = useContractCall<bigint>({
     contractId: CONTRACT_ID,
     method: "balance",
     args: { id: address },
@@ -90,18 +90,18 @@ export function Balance({ address }: { address: string }) {
 
 ## Write to a contract
 
-`useContractWrite` builds, simulates, signs, and sends a state-changing call. Connect a wallet first with `useWallet` or `ConnectWalletButton`.
+`useContractSend` builds, simulates, signs, and sends a state-changing call. Connect a wallet first with `useWallet` or `ConnectWalletButton`.
 
 ```tsx app/transfer.tsx
 "use client";
 
 import { ConnectWalletButton } from "@soroform/wallet";
-import { useContractWrite } from "@soroform/contract";
+import { useContractSend } from "@soroform/contract";
 
 const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
 
 export function TransferButton({ to }: { to: string }) {
-  const { status, writeAsync, error } = useContractWrite({
+  const { status, sendAsync, error } = useContractSend({
     contractId: CONTRACT_ID,
     method: "transfer",
   });
@@ -111,7 +111,7 @@ export function TransferButton({ to }: { to: string }) {
       <ConnectWalletButton />
       <button
         disabled={status === "simulating" || status === "submitting"}
-        onClick={() => writeAsync({ to, amount: 100n })}
+        onClick={() => sendAsync({ to, amount: 100n })}
       >
         {status === "idle" || status === "success" ? "Transfer" : status}
       </button>
@@ -127,9 +127,9 @@ The first call for `CONTRACT_ID` fetches its spec and derives a Zod schema for t
 
 <CardGroup cols={2}>
   <Card title="Core Concepts" icon="book" href="/concepts/spec-to-zod">
-    Understand how the spec-to-Zod pipeline and the write status machine work.
+    Understand how the spec-to-Zod pipeline and the send status machine work.
   </Card>
-  <Card title="Hooks Reference" icon="code" href="/hooks/use-contract-read">
+  <Card title="Hooks Reference" icon="code" href="/hooks/use-contract-call">
     See every hook's full signature, parameters, and return value.
   </Card>
 </CardGroup>

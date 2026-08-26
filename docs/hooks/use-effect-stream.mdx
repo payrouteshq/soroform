@@ -1,0 +1,54 @@
+---
+title: "useEffectStream"
+description: "Subscribe to every ledger effect an account is involved in, over Horizon's SSE stream"
+---
+
+Subscribes to every effect an account is involved in (trustline changes, sponsorship changes, signer changes, and more, not just payments), live for as long as the component is mounted. On every effect, automatically invalidates that address's [`useAccount`](/hooks/use-account) and [`useBalance`](/hooks/use-balance) queries.
+
+```ts
+import { useEffectStream } from "@soroform/hooks";
+
+function useEffectStream(
+  address: string,
+  options?: UseEffectStreamOptions,
+): UseHorizonStreamResult<EffectStreamRecord>;
+```
+
+## Parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `address` | `string` | Yes | The account address (`G...`) to watch. |
+| `options.enabled` | `boolean` | No | Whether the stream should be open. Defaults to `true`. |
+| `options.onEffect` | `(record) => void` | No | Called for every effect received. |
+| `options.cursor` | `string` | No | The Horizon cursor to start from. Defaults to `"now"`, so only effects that arrive after mounting are received. |
+| `options.maxEvents` | `number` | No | How many recent effects to keep in `events`. Defaults to 50. |
+
+## Return value
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `events` | `EffectStreamRecord[]` | Effects received this session, newest first. |
+| `latest` | `EffectStreamRecord \| undefined` | The most recently received effect, if any. |
+| `isStreaming` | `boolean` | Whether the stream connection is currently open. |
+
+## Example
+
+```tsx
+import { useEffectStream } from "@soroform/hooks";
+
+function ActivityFeed({ address }: { address: string }) {
+  const { events } = useEffectStream(address);
+  return (
+    <ul>
+      {events.map((effect) => (
+        <li key={effect.id}>{effect.type}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+<Tip>
+  Reach for [`usePaymentStream`](/hooks/use-payment-stream) instead if you only care about payments; it covers the common "show a live balance" case with a narrower, more specific event type.
+</Tip>

@@ -1,5 +1,5 @@
-import { useSyncExternalStore } from "react";
-import { devtoolsWriteLog, type ContractWriteLogEntry } from "@soroform/core";
+import * as React from "react";
+import { devtoolsSendLog, type ContractSendLogEntry } from "@soroform/core";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 
 const STATUS_VARIANT: Record<
-  ContractWriteLogEntry["status"],
+  ContractSendLogEntry["status"],
   "default" | "secondary" | "destructive" | "outline"
 > = {
   idle: "secondary",
@@ -34,7 +34,7 @@ async function copyToClipboard(text: string): Promise<void> {
   }
 }
 
-function WriteLogRow({ entry }: { entry: ContractWriteLogEntry }) {
+function SendLogRow({ entry }: { entry: ContractSendLogEntry }) {
   return (
     <Card className="rounded-none border-x-0 border-t-0 shadow-none">
       <CardHeader>
@@ -89,16 +89,16 @@ function WriteLogRow({ entry }: { entry: ContractWriteLogEntry }) {
   );
 }
 
-export function WriteLogPanel() {
-  const entries = useSyncExternalStore(
-    devtoolsWriteLog.subscribe.bind(devtoolsWriteLog),
-    devtoolsWriteLog.getAll.bind(devtoolsWriteLog),
+export function SendLogPanel() {
+  const entries = React.useSyncExternalStore(
+    devtoolsSendLog.subscribe.bind(devtoolsSendLog),
+    devtoolsSendLog.getAll.bind(devtoolsSendLog),
   );
 
   if (entries.length === 0) {
     return (
       <p className="text-muted-foreground p-4 text-sm">
-        No contract writes logged yet this session.
+        No contract sends logged yet this session.
       </p>
     );
   }
@@ -108,7 +108,7 @@ export function WriteLogPanel() {
       {entries.map((entry, index) => (
         <div key={entry.id}>
           {index > 0 && <Separator />}
-          <WriteLogRow entry={entry} />
+          <SendLogRow entry={entry} />
         </div>
       ))}
     </ScrollArea>

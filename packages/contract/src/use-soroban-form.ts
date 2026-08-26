@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import * as React from "react";
 import { useForm, type FieldValues, type Resolver, type UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -7,7 +7,7 @@ import { useSoroformConfig } from "@soroform/provider";
 import { fetchContractSpec } from "./spec-cache.js";
 import { generateContractSchemas } from "./generate-schemas.js";
 
-export interface UseContractFormOptions {
+export interface UseSorobanFormOptions {
   /** The deployed contract's address (`C...`). */
   contractId: string;
   /** The method whose args schema this form should validate against. */
@@ -31,10 +31,10 @@ export interface UseContractFormOptions {
  *
  * @example
  * ```tsx
- * import { useContractForm } from "@soroform/contract";
+ * import { useSorobanForm } from "@soroform/contract";
  *
  * function TransferForm({ contractId }: { contractId: string }) {
- *   const { register, handleSubmit, formState } = useContractForm({
+ *   const { register, handleSubmit, formState } = useSorobanForm({
  *     contractId,
  *     method: "transfer",
  *   });
@@ -48,15 +48,15 @@ export interface UseContractFormOptions {
  * }
  * ```
  */
-export function useContractForm<TFieldValues extends FieldValues = FieldValues>(
-  options: UseContractFormOptions,
+export function useSorobanForm<TFieldValues extends FieldValues = FieldValues>(
+  options: UseSorobanFormOptions,
 ): UseFormReturn<TFieldValues> {
   const { contractId, method, network } = options;
   const contextConfig = useSoroformConfig();
   const config = network ? resolveSoroformConfig({ network }) : contextConfig;
   const queryClient = useQueryClient();
 
-  const resolver = useMemo<Resolver<TFieldValues>>(
+  const resolver = React.useMemo<Resolver<TFieldValues>>(
     () => async (values, context, resolverOptions) => {
       const spec = await fetchContractSpec(contractId, config, queryClient);
       const schema = generateContractSchemas(spec)[method];

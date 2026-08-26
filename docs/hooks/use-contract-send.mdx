@@ -1,16 +1,16 @@
 ---
-title: "useContractWrite"
+title: "useContractSend"
 description: "Build, simulate, sign, and send a state-changing contract method call"
 ---
 
-Builds, simulates, signs, and sends a state-changing contract method call, exposing the full lifecycle as a `status` field rather than a single boolean. Requires a connected wallet. See [The useContractRead / useContractWrite state machine](/concepts/read-write-state-machine) for the full phase-by-phase breakdown.
+Builds, simulates, signs, and sends a state-changing contract method call, exposing the full lifecycle as a `status` field rather than a single boolean. Requires a connected wallet. See [The useContractCall / useContractSend state machine](/concepts/call-send-state-machine) for the full phase-by-phase breakdown.
 
 ```ts
-import { useContractWrite } from "@soroform/contract";
+import { useContractSend } from "@soroform/contract";
 
-function useContractWrite<TResult = unknown>(
-  options: UseContractWriteOptions,
-): UseContractWriteResult<TResult>;
+function useContractSend<TResult = unknown>(
+  options: UseContractSendOptions,
+): UseContractSendResult<TResult>;
 ```
 
 ## Parameters
@@ -28,16 +28,16 @@ function useContractWrite<TResult = unknown>(
 | `status` | `"idle" \| "simulating" \| "needsSignature" \| "submitting" \| "success" \| "error"` | The current phase. |
 | `data` | `TResult \| undefined` | The decoded result, once `status` is `"success"`. |
 | `error` | `SoroformError \| undefined` | A normalized error, once `status` is `"error"`. |
-| `writeAsync` | `(args?: Record<string, unknown>) => Promise<TResult>` | Validates args, simulates, signs, and sends. |
+| `sendAsync` | `(args?: Record<string, unknown>) => Promise<TResult>` | Validates args, simulates, signs, and sends. |
 | `reset` | `() => void` | Resets `status`, `data`, and `error` back to their initial values. |
 
 ## Example
 
 ```tsx
-import { useContractWrite } from "@soroform/contract";
+import { useContractSend } from "@soroform/contract";
 
 function TransferButton({ contractId, to }: { contractId: string; to: string }) {
-  const { status, writeAsync, error } = useContractWrite<boolean>({
+  const { status, sendAsync, error } = useContractSend<boolean>({
     contractId,
     method: "transfer",
   });
@@ -46,7 +46,7 @@ function TransferButton({ contractId, to }: { contractId: string; to: string }) 
     <div>
       <button
         disabled={status === "simulating" || status === "submitting"}
-        onClick={() => writeAsync({ to, amount: 100n })}
+        onClick={() => sendAsync({ to, amount: 100n })}
       >
         {status === "idle" || status === "success" ? "Transfer" : status}
       </button>
@@ -58,8 +58,8 @@ function TransferButton({ contractId, to }: { contractId: string; to: string }) 
 
 ## Caching and invalidation
 
-On success, every [`useContractRead`](/hooks/use-contract-read) query for the same `contractId` is invalidated automatically, so reads reflect the new state without a manual refetch. See [Query key and cache invalidation model](/concepts/query-keys-and-caching).
+On success, every [`useContractCall`](/hooks/use-contract-call) query for the same `contractId` is invalidated automatically, so calls reflect the new state without a manual refetch. See [Query key and cache invalidation model](/concepts/query-keys-and-caching).
 
 ## Devtools logging
 
-In development (`process.env.NODE_ENV === "development"`), every status transition is recorded to `@soroform/core`'s `devtoolsWriteLog` store, which [`SoroformDevtools`](/components/soroform-devtools) reads from. This has no effect if `@soroform/devtools` is not installed.
+In development (`process.env.NODE_ENV === "development"`), every status transition is recorded to `@soroform/core`'s `devtoolsSendLog` store, which [`SoroformDevtools`](/components/soroform-devtools) reads from. This has no effect if `@soroform/devtools` is not installed.

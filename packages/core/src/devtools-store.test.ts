@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { devtoolsWriteLog, type ContractWriteLogEntry } from "./devtools-store.js";
+import { devtoolsSendLog, type ContractSendLogEntry } from "./devtools-store.js";
 
-function entry(overrides: Partial<ContractWriteLogEntry> = {}): ContractWriteLogEntry {
+function entry(overrides: Partial<ContractSendLogEntry> = {}): ContractSendLogEntry {
   return {
     id: "1",
     contractId: "CABC",
@@ -12,53 +12,53 @@ function entry(overrides: Partial<ContractWriteLogEntry> = {}): ContractWriteLog
   };
 }
 
-describe("devtoolsWriteLog", () => {
+describe("devtoolsSendLog", () => {
   it("records and lists entries", () => {
-    devtoolsWriteLog.clear();
-    devtoolsWriteLog.record(entry({ id: "a" }));
-    devtoolsWriteLog.record(entry({ id: "b" }));
-    expect(devtoolsWriteLog.getAll().map((e) => e.id)).toEqual(["a", "b"]);
+    devtoolsSendLog.clear();
+    devtoolsSendLog.record(entry({ id: "a" }));
+    devtoolsSendLog.record(entry({ id: "b" }));
+    expect(devtoolsSendLog.getAll().map((e) => e.id)).toEqual(["a", "b"]);
   });
 
   it("overwrites an entry recorded again with the same id", () => {
-    devtoolsWriteLog.clear();
-    devtoolsWriteLog.record(entry({ id: "a", status: "idle" }));
-    devtoolsWriteLog.record(entry({ id: "a", status: "success" }));
-    const all = devtoolsWriteLog.getAll();
+    devtoolsSendLog.clear();
+    devtoolsSendLog.record(entry({ id: "a", status: "idle" }));
+    devtoolsSendLog.record(entry({ id: "a", status: "success" }));
+    const all = devtoolsSendLog.getAll();
     expect(all).toHaveLength(1);
     expect(all[0]?.status).toBe("success");
   });
 
   it("notifies subscribers on record and clear", () => {
-    devtoolsWriteLog.clear();
+    devtoolsSendLog.clear();
     const listener = vi.fn();
-    const unsubscribe = devtoolsWriteLog.subscribe(listener);
-    devtoolsWriteLog.record(entry());
+    const unsubscribe = devtoolsSendLog.subscribe(listener);
+    devtoolsSendLog.record(entry());
     expect(listener).toHaveBeenCalledTimes(1);
-    devtoolsWriteLog.clear();
+    devtoolsSendLog.clear();
     expect(listener).toHaveBeenCalledTimes(2);
     unsubscribe();
-    devtoolsWriteLog.record(entry());
+    devtoolsSendLog.record(entry());
     expect(listener).toHaveBeenCalledTimes(2);
   });
 
   it("returns a stable getAll() reference between calls when unchanged", () => {
-    devtoolsWriteLog.clear();
-    devtoolsWriteLog.record(entry({ id: "a" }));
-    expect(devtoolsWriteLog.getAll()).toBe(devtoolsWriteLog.getAll());
+    devtoolsSendLog.clear();
+    devtoolsSendLog.record(entry({ id: "a" }));
+    expect(devtoolsSendLog.getAll()).toBe(devtoolsSendLog.getAll());
   });
 
   it("returns a new getAll() reference after a mutation", () => {
-    devtoolsWriteLog.clear();
-    devtoolsWriteLog.record(entry({ id: "a" }));
-    const first = devtoolsWriteLog.getAll();
-    devtoolsWriteLog.record(entry({ id: "b" }));
-    expect(devtoolsWriteLog.getAll()).not.toBe(first);
+    devtoolsSendLog.clear();
+    devtoolsSendLog.record(entry({ id: "a" }));
+    const first = devtoolsSendLog.getAll();
+    devtoolsSendLog.record(entry({ id: "b" }));
+    expect(devtoolsSendLog.getAll()).not.toBe(first);
   });
 
   it("carries an optional transaction summary", () => {
-    devtoolsWriteLog.clear();
-    devtoolsWriteLog.record(
+    devtoolsSendLog.clear();
+    devtoolsSendLog.record(
       entry({
         id: "a",
         transaction: {
@@ -69,7 +69,7 @@ describe("devtoolsWriteLog", () => {
         },
       }),
     );
-    expect(devtoolsWriteLog.getAll()[0]?.transaction?.operationType).toBe(
+    expect(devtoolsSendLog.getAll()[0]?.transaction?.operationType).toBe(
       "invokeHostFunction",
     );
   });

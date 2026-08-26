@@ -6,8 +6,9 @@ describe("@soroform/contract public exports", () => {
     expect(typeof contract.sorobanTypeToZod).toBe("function");
     expect(typeof contract.generateContractSchemas).toBe("function");
     expect(typeof contract.fetchContractSpec).toBe("function");
-    expect(typeof contract.useContractRead).toBe("function");
-    expect(typeof contract.useContractWrite).toBe("function");
-    expect(typeof contract.useContractForm).toBe("function");
+    expect(typeof contract.toValidationError).toBe("function");
+    expect(typeof contract.useContractCall).toBe("function");
+    expect(typeof contract.useContractSend).toBe("function");
+    expect(typeof contract.useSorobanForm).toBe("function");
   });
 });

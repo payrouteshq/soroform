@@ -3,7 +3,7 @@ title: "Handling multi-signature/multi-auth contract calls"
 description: "Collecting signatures from multiple accounts for a single contract call"
 ---
 
-`useContractWrite` covers the common case: one signer, who is also the transaction's source account, signs and sends in one step. Soroban also supports calls that need authorization from accounts other than the one invoking the transaction, for example an atomic swap where both parties must authorize their side. That needs the lower-level `AssembledTransaction` API directly.
+`useContractSend` covers the common case: one signer, who is also the transaction's source account, signs and sends in one step. Soroban also supports calls that need authorization from accounts other than the one invoking the transaction, for example an atomic swap where both parties must authorize their side. That needs the lower-level `AssembledTransaction` API directly.
 
 ## The shape of the problem
 
@@ -11,7 +11,7 @@ Say Alice invokes a `swap` call that also needs Bob's authorization. Alice's bro
 
 ## Building the initial transaction
 
-Use `fetchContractSpec` (the same runtime spec-fetching Soroform's own hooks use) to get a `Spec`, then build with `AssembledTransaction.build` directly instead of going through `useContractWrite`, since the built-in hook only expects one signer.
+Use `fetchContractSpec` (the same runtime spec-fetching Soroform's own hooks use) to get a `Spec`, then build with `AssembledTransaction.build` directly instead of going through `useContractSend`, since the built-in hook only expects one signer.
 
 ```ts
 import { AssembledTransaction } from "@stellar/stellar-sdk/contract";
@@ -94,7 +94,7 @@ const sentTx = await final.signAndSend({ signTransaction: alice.signTransaction 
 ```
 
 <Note>
-  `signAuthEntries` and `signAndSend` both accept `signAuthEntry` / `signTransaction` directly, matching `useWallet()`'s `signTransaction` and `signAuthEntry` fields, so they can be passed straight through the same way `useContractWrite` does internally.
+  `signAuthEntries` and `signAndSend` both accept `signAuthEntry` / `signTransaction` directly, matching `useWallet()`'s `signTransaction` and `signAuthEntry` fields, so they can be passed straight through the same way `useContractSend` does internally.
 </Note>
 
 <Warning>

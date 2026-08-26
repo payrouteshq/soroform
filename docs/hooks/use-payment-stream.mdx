@@ -1,0 +1,51 @@
+---
+title: "usePaymentStream"
+description: "Subscribe to an account's live payments over Horizon's SSE stream"
+---
+
+Subscribes to an account's incoming and outgoing payments, live for as long as the component is mounted. On every payment, automatically invalidates that address's [`useAccount`](/hooks/use-account) and [`useBalance`](/hooks/use-balance) queries, so a balance or sequence number displayed elsewhere in the app updates without a manual refetch.
+
+```ts
+import { usePaymentStream } from "@soroform/hooks";
+
+function usePaymentStream(
+  address: string,
+  options?: UsePaymentStreamOptions,
+): UseHorizonStreamResult<PaymentStreamRecord>;
+```
+
+## Parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `address` | `string` | Yes | The account address (`G...`) to watch. |
+| `options.enabled` | `boolean` | No | Whether the stream should be open. Defaults to `true`. |
+| `options.onPayment` | `(record) => void` | No | Called for every payment received. |
+| `options.cursor` | `string` | No | The Horizon cursor to start from. Defaults to `"now"`, so only payments that arrive after mounting are received. |
+| `options.maxEvents` | `number` | No | How many recent payments to keep in `events`. Defaults to 50. |
+
+## Return value
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `events` | `PaymentStreamRecord[]` | Payments received this session, newest first. |
+| `latest` | `PaymentStreamRecord \| undefined` | The most recently received payment, if any. |
+| `isStreaming` | `boolean` | Whether the stream connection is currently open. |
+
+## Example
+
+```tsx
+import { usePaymentStream, useBalance } from "@soroform/hooks";
+
+function LiveBalance({ address }: { address: string }) {
+  const { data: balance } = useBalance(address, "native");
+  usePaymentStream(address, {
+    onPayment: (payment) => toast(`New payment: ${payment.type}`),
+  });
+  return <p>{balance?.formatted} XLM</p>;
+}
+```
+
+<Tip>
+  Reach for [`useEffectStream`](/hooks/use-effect-stream) instead if you need more than payments, for example trustline or sponsorship changes.
+</Tip>

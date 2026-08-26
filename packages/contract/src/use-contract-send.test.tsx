@@ -1,11 +1,13 @@
+import * as React from "react";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { xdr } from "@stellar/stellar-sdk";
 import { Spec } from "@stellar/stellar-sdk/contract";
 import { QueryClient } from "@tanstack/react-query";
+import { z } from "zod";
 import { SoroformProvider } from "@soroform/provider";
-import { devtoolsWriteLog } from "@soroform/core";
-import { useContractWrite } from "./use-contract-write.js";
+import { devtoolsSendLog, type SoroformError } from "@soroform/core";
+import { useContractSend } from "./use-contract-send.js";
 
 const T = xdr.ScSpecTypeDef;
 
@@ -62,20 +64,28 @@ function renderWithProviders(children: React.ReactNode) {
   ) };
 }
 
-function TransferProbe(props: { args?: Record<string, unknown> }) {
-  const { status, data, error, writeAsync } = useContractWrite<boolean>({
+function TransferProbe(props: {
+  args?: Record<string, unknown>;
+  onError?: (error: SoroformError) => void;
+}) {
+  const { status, data, error, sendAsync } = useContractSend<boolean>({
     contractId: CONTRACT_ID,
     method: "transfer",
   });
   const args = props.args ?? { to: TO_ADDRESS, amount: 100n };
+  const { onError } = props;
+  React.useEffect(() => {
+    if (error) onError?.(error);
+  }, [error, onError]);
   return (
     <div>
       <span data-testid="status">{status}</span>
       <span data-testid="data">{String(data)}</span>
       <span data-testid="error">{error?.message ?? "none"}</span>
+      <span data-testid="kind">{error?.kind ?? "none"}</span>
       <button
         onClick={() => {
-          void writeAsync(args).catch(() => {});
+          void sendAsync(args).catch(() => {});
         }}
       >
         write
@@ -84,10 +94,10 @@ function TransferProbe(props: { args?: Record<string, unknown> }) {
   );
 }
 
-describe("useContractWrite", () => {
+describe("useContractSend", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    devtoolsWriteLog.clear();
+    devtoolsSendLog.clear();
   });
 
   it("moves through simulating -> needsSignature -> submitting -> success", async () => {
@@ -112,7 +122,7 @@ describe("useContractWrite", () => {
     expect(mockSend).toHaveBeenCalled();
   });
 
-  it("invalidates contractRead queries for the contract on success", async () => {
+  it("invalidates contractCall queries for the contract on success", async () => {
     mockClientFrom.mockResolvedValue({ spec: buildFixtureSpec() });
     mockSign.mockResolvedValue(undefined);
     mockSend.mockResolvedValue({ result: true });
@@ -139,6 +149,25 @@ describe("useContractWrite", () => {
       expect(screen.getByTestId("status")).toHaveTextContent("error");
     });
     expect(mockBuild).not.toHaveBeenCalled();
+  });
+
+  it("normalizes a validation failure into kind validation-failed with a Zod-prettified message and a raw ZodError cause", async () => {
+    mockClientFrom.mockResolvedValue({ spec: buildFixtureSpec() });
+    const onError = vi.fn();
+
+    renderWithProviders(
+      <TransferProbe args={{ to: "not-an-address", amount: 100n }} onError={onError} />,
+    );
+    screen.getByText("write").click();
+
+    await waitFor(() => expect(onError).toHaveBeenCalled());
+    const error = onError.mock.calls[0]![0] as SoroformError;
+
+    expect(error.kind).toBe("validation-failed");
+    expect(error.message).not.toContain('"code"');
+    expect(error.cause).toBeInstanceOf(z.ZodError);
+    expect((error.cause as z.ZodError).issues.length).toBeGreaterThan(0);
+    expect(screen.getByTestId("kind")).toHaveTextContent("validation-failed");
   });
 
   it("moves to error when the network call fails, normalizing the error message", async () => {
@@ -168,7 +197,7 @@ describe("useContractWrite", () => {
     await waitFor(() => {
       expect(screen.getByTestId("status")).toHaveTextContent("success");
     });
-    const entries = devtoolsWriteLog.getAll();
+    const entries = devtoolsSendLog.getAll();
     expect(entries.length).toBeGreaterThan(0);
     expect(entries.at(-1)?.status).toBe("success");
     expect(entries.at(-1)?.contractId).toBe(CONTRACT_ID);

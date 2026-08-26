@@ -1,7 +1,7 @@
 # @soroform/devtools
 
 A development-only devtools panel for Soroform. Renders nothing in
-production builds. In development, shows a log of `useContractWrite`
+production builds. In development, shows a log of `useContractSend`
 activity and the TanStack Query cache relevant to Soroform's query keys.
 
 Built with shadcn/ui components. If your app already uses shadcn, the

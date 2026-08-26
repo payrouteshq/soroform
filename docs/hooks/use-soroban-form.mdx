@@ -1,15 +1,15 @@
 ---
-title: "useContractForm"
+title: "useSorobanForm"
 description: "A react-hook-form useForm wired to a contract method's generated Zod schema"
 ---
 
 Wraps `react-hook-form`'s `useForm`, sourcing its `resolver` from the Zod args schema generated for the given contract method. The schema is resolved lazily and asynchronously, which `react-hook-form` supports natively, so there is no separate loading state to manage before the form can be used.
 
 ```ts
-import { useContractForm } from "@soroform/contract";
+import { useSorobanForm } from "@soroform/contract";
 
-function useContractForm<TFieldValues extends FieldValues = FieldValues>(
-  options: UseContractFormOptions,
+function useSorobanForm<TFieldValues extends FieldValues = FieldValues>(
+  options: UseSorobanFormOptions,
 ): UseFormReturn<TFieldValues>;
 ```
 
@@ -32,7 +32,7 @@ The full `UseFormReturn` object from `react-hook-form` (`register`, `handleSubmi
 ## Example
 
 ```tsx
-import { useContractForm } from "@soroform/contract";
+import { useSorobanForm } from "@soroform/contract";
 
 interface TransferFields {
   to: string;
@@ -40,7 +40,7 @@ interface TransferFields {
 }
 
 function TransferForm({ contractId }: { contractId: string }) {
-  const { register, handleSubmit, formState } = useContractForm<TransferFields>({
+  const { register, handleSubmit, formState } = useSorobanForm<TransferFields>({
     contractId,
     method: "transfer",
   });

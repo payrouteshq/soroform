@@ -1,8 +1,8 @@
-import { useState } from "react";
+import * as React from "react";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { WriteLogPanel } from "./write-log-panel.js";
+import { SendLogPanel } from "./send-log-panel.js";
 import css from "./styles.generated.css";
 
 export interface SoroformDevtoolsProps {
@@ -10,7 +10,7 @@ export interface SoroformDevtoolsProps {
 }
 
 export function SoroformDevtools(props: SoroformDevtoolsProps) {
-  const [isOpen, setIsOpen] = useState(props.initialOpen ?? false);
+  const [isOpen, setIsOpen] = React.useState(props.initialOpen ?? false);
 
   if (process.env.NODE_ENV !== "development") return null;
 
@@ -26,10 +26,10 @@ export function SoroformDevtools(props: SoroformDevtoolsProps) {
         </Button>
       ) : (
         <div className="bg-background text-foreground fixed inset-x-0 bottom-0 z-99999 flex h-88 flex-col border-t">
-          <Tabs defaultValue="writes" className="flex min-h-0 flex-1 gap-0">
+          <Tabs defaultValue="sends" className="flex min-h-0 flex-1 gap-0">
             <div className="flex items-center gap-2 border-b px-3 py-2">
               <TabsList>
-                <TabsTrigger value="writes">Writes</TabsTrigger>
+                <TabsTrigger value="sends">Sends</TabsTrigger>
                 <TabsTrigger value="cache">Query cache</TabsTrigger>
               </TabsList>
               <Button
@@ -41,8 +41,8 @@ export function SoroformDevtools(props: SoroformDevtoolsProps) {
                 Close
               </Button>
             </div>
-            <TabsContent value="writes" className="min-h-0 flex-1">
-              <WriteLogPanel />
+            <TabsContent value="sends" className="min-h-0 flex-1">
+              <SendLogPanel />
             </TabsContent>
             <TabsContent value="cache" className="min-h-0 flex-1">
               <ReactQueryDevtoolsPanel

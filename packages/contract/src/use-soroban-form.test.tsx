@@ -4,7 +4,7 @@ import { xdr } from "@stellar/stellar-sdk";
 import { Spec } from "@stellar/stellar-sdk/contract";
 import { QueryClient } from "@tanstack/react-query";
 import { SoroformProvider } from "@soroform/provider";
-import { useContractForm } from "./use-contract-form.js";
+import { useSorobanForm } from "./use-soroban-form.js";
 
 const T = xdr.ScSpecTypeDef;
 
@@ -46,7 +46,7 @@ interface TransferFields {
 }
 
 function TransferForm(props: { initial: Partial<TransferFields> }) {
-  const { setValue, handleSubmit, formState } = useContractForm<TransferFields>({
+  const { setValue, handleSubmit, formState } = useSorobanForm<TransferFields>({
     contractId: CONTRACT_ID,
     method: "transfer",
   });
@@ -68,7 +68,7 @@ function TransferForm(props: { initial: Partial<TransferFields> }) {
   );
 }
 
-describe("useContractForm", () => {
+describe("useSorobanForm", () => {
   it("rejects an invalid address, populating formState.errors.to", async () => {
     mockClientFrom.mockResolvedValue({ spec: buildFixtureSpec() });
     renderWithProviders(<TransferForm initial={{ to: "not-an-address", amount: 100n }} />);

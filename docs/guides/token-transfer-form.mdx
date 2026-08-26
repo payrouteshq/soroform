@@ -1,9 +1,9 @@
 ---
 title: "Building a token transfer form end to end"
-description: "A complete, working transfer form using useContractForm and useContractWrite together"
+description: "A complete, working transfer form using useSorobanForm and useContractSend together"
 ---
 
-This walks through a complete token transfer form: a validated input for the recipient, a `bigint` amount field, and a submit button wired to `useContractWrite`.
+This walks through a complete token transfer form: a validated input for the recipient, a `bigint` amount field, and a submit button wired to `useContractSend`.
 
 ## The bigint problem
 
@@ -16,8 +16,8 @@ This walks through a complete token transfer form: a validated input for the rec
 ```tsx components/transfer-form.tsx
 "use client";
 
-import { useContractForm } from "@soroform/contract";
-import { useContractWrite } from "@soroform/contract";
+import { useSorobanForm } from "@soroform/contract";
+import { useContractSend } from "@soroform/contract";
 
 const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
 
@@ -27,17 +27,17 @@ interface TransferFields {
 }
 
 export function TransferForm() {
-  const { register, handleSubmit, formState } = useContractForm<TransferFields>({
+  const { register, handleSubmit, formState } = useSorobanForm<TransferFields>({
     contractId: CONTRACT_ID,
     method: "transfer",
   });
-  const { status, writeAsync, error } = useContractWrite<boolean>({
+  const { status, sendAsync, error } = useContractSend<boolean>({
     contractId: CONTRACT_ID,
     method: "transfer",
   });
 
   const onSubmit = handleSubmit(async (values) => {
-    await writeAsync(values);
+    await sendAsync(values);
   });
 
   return (
@@ -76,7 +76,7 @@ export function TransferForm() {
 
 ## Why two hooks
 
-`useContractForm` and `useContractWrite` are both called with the same `contractId` and `method` on purpose. `useContractForm` owns field-level validation and error messages as the user types; `useContractWrite` owns the build, simulate, sign, and send lifecycle once the form is actually submitted. Both derive from the same cached spec and schema (see [Query key and cache invalidation model](/concepts/query-keys-and-caching)), so there is no duplicated network cost in using both.
+`useSorobanForm` and `useContractSend` are both called with the same `contractId` and `method` on purpose. `useSorobanForm` owns field-level validation and error messages as the user types; `useContractSend` owns the build, simulate, sign, and send lifecycle once the form is actually submitted. Both derive from the same cached spec and schema (see [Query key and cache invalidation model](/concepts/query-keys-and-caching)), so there is no duplicated network cost in using both.
 
 <Tip>
   If your app already knows a token's real decimal count (from [`useBalance`](/hooks/use-balance)'s `decimals` field, for example), use that instead of the hardcoded `10_000_000` above.

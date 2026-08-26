@@ -1,20 +1,20 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { devtoolsWriteLog } from "@soroform/core";
-import { WriteLogPanel } from "./write-log-panel.js";
+import { devtoolsSendLog } from "@soroform/core";
+import { SendLogPanel } from "./send-log-panel.js";
 
-describe("WriteLogPanel", () => {
+describe("SendLogPanel", () => {
   beforeEach(() => {
-    devtoolsWriteLog.clear();
+    devtoolsSendLog.clear();
   });
 
-  it("shows an empty-state message with no logged writes", () => {
-    render(<WriteLogPanel />);
-    expect(screen.getByText(/No contract writes logged yet/)).toBeInTheDocument();
+  it("shows an empty-state message with no logged sends", () => {
+    render(<SendLogPanel />);
+    expect(screen.getByText(/No contract sends logged yet/)).toBeInTheDocument();
   });
 
-  it("renders a logged write's contract, method, and status", () => {
-    devtoolsWriteLog.record({
+  it("renders a logged send's contract, method, and status", () => {
+    devtoolsSendLog.record({
       id: "a",
       contractId: "CABC",
       method: "transfer",
@@ -23,14 +23,14 @@ describe("WriteLogPanel", () => {
       result: true,
       updatedAt: Date.now(),
     });
-    render(<WriteLogPanel />);
+    render(<SendLogPanel />);
     expect(screen.getByText("CABC")).toBeInTheDocument();
     expect(screen.getByText(".transfer(...)")).toBeInTheDocument();
     expect(screen.getByText("success")).toBeInTheDocument();
   });
 
-  it("renders an error message when the write failed", () => {
-    devtoolsWriteLog.record({
+  it("renders an error message when the send failed", () => {
+    devtoolsSendLog.record({
       id: "a",
       contractId: "CABC",
       method: "transfer",
@@ -38,7 +38,7 @@ describe("WriteLogPanel", () => {
       error: { kind: "user-rejected", message: "The user rejected the request", cause: undefined },
       updatedAt: Date.now(),
     });
-    render(<WriteLogPanel />);
+    render(<SendLogPanel />);
     expect(screen.getByText(/user-rejected: The user rejected the request/)).toBeInTheDocument();
   });
 
@@ -46,7 +46,7 @@ describe("WriteLogPanel", () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.assign(navigator, { clipboard: { writeText } });
 
-    devtoolsWriteLog.record({
+    devtoolsSendLog.record({
       id: "a",
       contractId: "CABC",
       method: "transfer",
@@ -59,7 +59,7 @@ describe("WriteLogPanel", () => {
       },
       updatedAt: Date.now(),
     });
-    render(<WriteLogPanel />);
+    render(<SendLogPanel />);
     screen.getByText("Copy transaction XDR").click();
     await Promise.resolve();
     expect(writeText).toHaveBeenCalledWith("AAAAAgAAAAA=");

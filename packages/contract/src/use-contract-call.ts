@@ -1,16 +1,19 @@
 import { useQuery, useQueryClient, type UseQueryResult } from "@tanstack/react-query";
+import { z } from "zod";
 import {
   createRpcServer,
   normalizeError,
   queryKeys,
   resolveSoroformConfig,
+  type SoroformError,
   type SoroformNetwork,
 } from "@soroform/core";
 import { useSoroformConfig } from "@soroform/provider";
 import { fetchContractSpec } from "./spec-cache.js";
 import { generateContractSchemas } from "./generate-schemas.js";
+import { toValidationError } from "./validation-error.js";
 
-export interface UseContractReadOptions {
+export interface UseContractCallOptions {
   /** The deployed contract's address (`C...`). */
   contractId: string;
   /** The read-only method to call. */
@@ -36,10 +39,10 @@ export interface UseContractReadOptions {
  *
  * @example
  * ```tsx
- * import { useContractRead } from "@soroform/contract";
+ * import { useContractCall } from "@soroform/contract";
  *
  * function Balance({ contractId, address }: { contractId: string; address: string }) {
- *   const { data, isLoading, error } = useContractRead<bigint>({
+ *   const { data, isLoading, error } = useContractCall<bigint>({
  *     contractId,
  *     method: "balance",
  *     args: { id: address },
@@ -50,16 +53,16 @@ export interface UseContractReadOptions {
  * }
  * ```
  */
-export function useContractRead<TResult = unknown>(
-  options: UseContractReadOptions,
-): UseQueryResult<TResult> {
+export function useContractCall<TResult = unknown>(
+  options: UseContractCallOptions,
+): UseQueryResult<TResult, SoroformError> {
   const { contractId, method, args, network, enabled } = options;
   const contextConfig = useSoroformConfig();
   const config = network ? resolveSoroformConfig({ network }) : contextConfig;
   const queryClient = useQueryClient();
 
-  return useQuery<TResult>({
-    queryKey: queryKeys.contractRead(
+  return useQuery<TResult, SoroformError>({
+    queryKey: queryKeys.contractCall(
       config.networkPassphrase,
       contractId,
       method,
@@ -83,6 +86,7 @@ export function useContractRead<TResult = unknown>(
         );
         return result;
       } catch (error) {
+        if (error instanceof z.ZodError) throw toValidationError(error);
         throw normalizeError(error);
       }
     },

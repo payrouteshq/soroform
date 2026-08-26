@@ -39,5 +39,5 @@ function TxStatus({ hash }: { hash: string }) {
 ```
 
 <Tip>
-  If you got the transaction from `useContractWrite`, you already have its decoded result via `writeAsync`'s return value; reach for `useTransactionStatus` when you have a hash from elsewhere (a webhook, a link, a multi-auth workflow) and need to check on it independently.
+  If you got the transaction from `useContractSend`, you already have its decoded result via `sendAsync`'s return value; reach for `useTransactionStatus` when you have a hash from elsewhere (a webhook, a link, a multi-auth workflow) and need to check on it independently.
 </Tip>

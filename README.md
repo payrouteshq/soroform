@@ -24,12 +24,14 @@ packages/
   core/       @soroform/core       framework-agnostic config, query keys, error normalization
   provider/   @soroform/provider   SoroformProvider, useSoroformConfig
   wallet/     @soroform/wallet     WalletProvider, useWallet, ConnectWalletButton
-  hooks/      @soroform/hooks      useAccount, useBalance, useTransactionStatus, useNetworkStatus
-  contract/   @soroform/contract   runtime spec-to-Zod pipeline, useContractRead, useContractWrite, useContractForm
+  hooks/      @soroform/hooks      useAccount, useBalance, useTransactionStatus, useNetworkStatus, usePaymentStream, useEffectStream
+  contract/   @soroform/contract   runtime spec-to-Zod pipeline, useContractCall, useContractSend, useSorobanForm
   devtools/   @soroform/devtools   SoroformDevtools panel
 examples/
   next-app/   Next.js 15 App Router example
   vite-app/   Vite + React example
+apps/
+  landing/    Marketing site
 docs/         Mintlify documentation site
 ```
 

@@ -1,13 +1,14 @@
-import { useCallback, useState } from "react";
+import * as React from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AssembledTransaction } from "@stellar/stellar-sdk/contract";
+import { z } from "zod";
 import {
-  devtoolsWriteLog,
+  devtoolsSendLog,
   normalizeError,
   queryKeys,
   resolveSoroformConfig,
-  type ContractWriteLogEntry,
-  type ContractWriteStatus,
+  type ContractSendLogEntry,
+  type ContractSendStatus,
   type SoroformError,
   type SoroformNetwork,
 } from "@soroform/core";
@@ -15,10 +16,11 @@ import { useSoroformConfig } from "@soroform/provider";
 import { useWallet } from "@soroform/wallet";
 import { fetchContractSpec } from "./spec-cache.js";
 import { generateContractSchemas } from "./generate-schemas.js";
+import { toValidationError } from "./validation-error.js";
 
-export type { ContractWriteStatus };
+export type { ContractSendStatus };
 
-export interface UseContractWriteOptions {
+export interface UseContractSendOptions {
   /** The deployed contract's address (`C...`). */
   contractId: string;
   /** The state-changing method to call. */
@@ -27,15 +29,15 @@ export interface UseContractWriteOptions {
   network?: SoroformNetwork;
 }
 
-export interface UseContractWriteResult<TResult = unknown> {
-  /** The current phase of the write, for rendering distinct UI per phase. */
-  status: ContractWriteStatus;
+export interface UseContractSendResult<TResult = unknown> {
+  /** The current phase of the send, for rendering distinct UI per phase. */
+  status: ContractSendStatus;
   /** The decoded result, once `status` is `"success"`. */
   data: TResult | undefined;
   /** The normalized error, once `status` is `"error"`. */
   error: SoroformError | undefined;
   /** Validates args, simulates, signs, and sends the transaction. */
-  writeAsync: (args?: Record<string, unknown>) => Promise<TResult>;
+  sendAsync: (args?: Record<string, unknown>) => Promise<TResult>;
   /** Resets `status`, `data`, and `error` back to their initial values. */
   reset: () => void;
 }
@@ -52,17 +54,17 @@ function isDevelopment(): boolean {
  * consuming app can render distinct UI per phase.
  *
  * Requires a connected wallet (see `useWallet` from `@soroform/wallet`).
- * On success, invalidates every `useContractRead` query for this contract,
- * so reads reflect the new state automatically. On error, the thrown
+ * On success, invalidates every `useContractCall` query for this contract,
+ * so calls reflect the new state automatically. On error, the thrown
  * error is normalized via `@soroform/core`'s `normalizeError` before being
  * exposed.
  *
  * @example
  * ```tsx
- * import { useContractWrite } from "@soroform/contract";
+ * import { useContractSend } from "@soroform/contract";
  *
  * function TransferButton({ contractId }: { contractId: string }) {
- *   const { status, writeAsync, error } = useContractWrite({
+ *   const { status, sendAsync, error } = useContractSend({
  *     contractId,
  *     method: "transfer",
  *   });
@@ -70,7 +72,7 @@ function isDevelopment(): boolean {
  *     <div>
  *       <button
  *         disabled={status === "simulating" || status === "submitting"}
- *         onClick={() => writeAsync({ to: "G...", amount: 100n })}
+ *         onClick={() => sendAsync({ to: "G...", amount: 100n })}
  *       >
  *         {status === "idle" || status === "success" ? "Transfer" : status}
  *       </button>
@@ -80,23 +82,23 @@ function isDevelopment(): boolean {
  * }
  * ```
  */
-export function useContractWrite<TResult = unknown>(
-  options: UseContractWriteOptions,
-): UseContractWriteResult<TResult> {
+export function useContractSend<TResult = unknown>(
+  options: UseContractSendOptions,
+): UseContractSendResult<TResult> {
   const { contractId, method, network } = options;
   const contextConfig = useSoroformConfig();
   const config = network ? resolveSoroformConfig({ network }) : contextConfig;
   const wallet = useWallet();
   const queryClient = useQueryClient();
-  const [status, setStatus] = useState<ContractWriteStatus>("idle");
+  const [status, setStatus] = React.useState<ContractSendStatus>("idle");
 
   const mutation = useMutation<TResult, SoroformError, Record<string, unknown> | undefined>({
     mutationFn: async (args) => {
       const id = `${contractId}:${method}:${Date.now()}:${Math.random()}`;
 
-      const log = (partial: Partial<ContractWriteLogEntry>) => {
+      const log = (partial: Partial<ContractSendLogEntry>) => {
         if (!isDevelopment()) return;
-        devtoolsWriteLog.record({
+        devtoolsSendLog.record({
           id,
           contractId,
           method,
@@ -153,7 +155,8 @@ export function useContractWrite<TResult = unknown>(
         log({ status: "success", result: sentTx.result });
         return sentTx.result;
       } catch (rawError) {
-        const normalized = normalizeError(rawError);
+        const normalized =
+          rawError instanceof z.ZodError ? toValidationError(rawError) : normalizeError(rawError);
         setStatus("error");
         log({ status: "error", error: normalized });
         throw normalized;
@@ -161,17 +164,17 @@ export function useContractWrite<TResult = unknown>(
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({
-        queryKey: queryKeys.contractReadsByContract(config.networkPassphrase, contractId),
+        queryKey: queryKeys.contractCallsByContract(config.networkPassphrase, contractId),
       });
     },
   });
 
-  const writeAsync = useCallback(
+  const sendAsync = React.useCallback(
     (args?: Record<string, unknown>) => mutation.mutateAsync(args),
     [mutation],
   );
 
-  const reset = useCallback(() => {
+  const reset = React.useCallback(() => {
     setStatus("idle");
     mutation.reset();
   }, [mutation]);
@@ -180,7 +183,7 @@ export function useContractWrite<TResult = unknown>(
     status,
     data: mutation.data,
     error: mutation.error ?? undefined,
-    writeAsync,
+    sendAsync,
     reset,
   };
 }

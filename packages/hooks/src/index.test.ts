@@ -7,6 +7,8 @@ describe("@soroform/hooks public exports", () => {
     expect(typeof hooks.useBalance).toBe("function");
     expect(typeof hooks.useTransactionStatus).toBe("function");
     expect(typeof hooks.useNetworkStatus).toBe("function");
+    expect(typeof hooks.usePaymentStream).toBe("function");
+    expect(typeof hooks.useEffectStream).toBe("function");
     expect(typeof hooks.formatAmount).toBe("function");
   });
 });

@@ -52,6 +52,15 @@ export const queryKeys = {
   balance: (address: string, assetId: string) =>
     ["soroform", "balance", address, assetId] as const,
 
+  /**
+   * The prefix shared by every `balance` query for a given address, across
+   * every asset. Pass this to `queryClient.invalidateQueries` to refresh
+   * all of an address's balances after a live event (see
+   * `usePaymentStream`), without needing to know every asset that has been
+   * queried.
+   */
+  balancesByAddress: (address: string) => ["soroform", "balance", address] as const,
+
   /** The status of a submitted transaction, by hash. */
   transactionStatus: (hash: string) =>
     ["soroform", "transactionStatus", hash] as const,
@@ -68,16 +77,16 @@ export const queryKeys = {
     ["soroform", "contractSpec", networkPassphrase, contractId] as const,
 
   /**
-   * The prefix shared by every `contractRead` query for a given contract.
-   * Pass this to `queryClient.invalidateQueries` to refresh all reads for
-   * a contract after a write, without needing to know every method/args
+   * The prefix shared by every `contractCall` query for a given contract.
+   * Pass this to `queryClient.invalidateQueries` to refresh all calls for
+   * a contract after a send, without needing to know every method/args
    * combination that has been queried.
    */
-  contractReadsByContract: (networkPassphrase: string, contractId: string) =>
-    ["soroform", "contractRead", networkPassphrase, contractId] as const,
+  contractCallsByContract: (networkPassphrase: string, contractId: string) =>
+    ["soroform", "contractCall", networkPassphrase, contractId] as const,
 
-  /** The decoded result of simulating a specific contract read call. */
-  contractRead: (
+  /** The decoded result of simulating a specific contract call. */
+  contractCall: (
     networkPassphrase: string,
     contractId: string,
     method: string,
@@ -85,7 +94,7 @@ export const queryKeys = {
   ) =>
     [
       "soroform",
-      "contractRead",
+      "contractCall",
       networkPassphrase,
       contractId,
       method,

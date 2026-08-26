@@ -14,8 +14,8 @@ export type { RpcServer } from "./rpc.js";
 export { createRpcServer, createHorizonServer, Horizon } from "./rpc.js";
 
 export type {
-  ContractWriteStatus,
-  ContractWriteLogEntry,
-  ContractWriteTransactionSummary,
+  ContractSendStatus,
+  ContractSendLogEntry,
+  ContractSendTransactionSummary,
 } from "./devtools-store.js";
-export { devtoolsWriteLog } from "./devtools-store.js";
+export { devtoolsSendLog } from "./devtools-store.js";

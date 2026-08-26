@@ -30,17 +30,17 @@ describe("SoroformDevtools", () => {
     expect(screen.getByRole("button", { name: "Soroform" })).toBeInTheDocument();
   });
 
-  it("opens the panel on toggle click, defaulting to the Writes tab", () => {
+  it("opens the panel on toggle click, defaulting to the Sends tab", () => {
     process.env.NODE_ENV = "development";
     renderWithQueryClient(<SoroformDevtools />);
     fireEvent.click(screen.getByRole("button", { name: "Soroform" }));
-    expect(screen.getByText(/No contract writes logged yet/)).toBeInTheDocument();
+    expect(screen.getByText(/No contract sends logged yet/)).toBeInTheDocument();
   });
 
   it("can be opened by default via initialOpen", () => {
     process.env.NODE_ENV = "development";
     renderWithQueryClient(<SoroformDevtools initialOpen />);
-    expect(screen.getByRole("tab", { name: "Writes" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Sends" })).toBeInTheDocument();
   });
 
   it("switches to the Query cache tab", async () => {
@@ -52,7 +52,7 @@ describe("SoroformDevtools", () => {
       "aria-selected",
       "true",
     );
-    expect(screen.getByRole("tab", { name: "Writes" })).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: "Sends" })).toHaveAttribute(
       "aria-selected",
       "false",
     );

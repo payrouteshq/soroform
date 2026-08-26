@@ -1,11 +1,11 @@
 import type { SoroformError } from "./errors.js";
 
 /**
- * The literal states a `useContractWrite` call moves through, exposed
+ * The literal states a `useContractSend` call moves through, exposed
  * directly (rather than a boolean `isLoading`) so a consuming app can
  * render distinct UI per phase.
  */
-export type ContractWriteStatus =
+export type ContractSendStatus =
   | "idle"
   | "simulating"
   | "needsSignature"
@@ -20,7 +20,7 @@ export type ContractWriteStatus =
  * `transactionXdr` is kept alongside it so a devtools UI can offer a raw
  * copy button for anything this summary does not surface.
  */
-export interface ContractWriteTransactionSummary {
+export interface ContractSendTransactionSummary {
   /** The built transaction's single operation type, e.g. "invokeHostFunction". */
   operationType: string | undefined;
   /** The source account that will submit the transaction. */
@@ -32,25 +32,25 @@ export interface ContractWriteTransactionSummary {
 }
 
 /**
- * One logged `useContractWrite` invocation, as recorded by
+ * One logged `useContractSend` invocation, as recorded by
  * `@soroform/contract` and read by `@soroform/devtools`.
  */
-export interface ContractWriteLogEntry {
+export interface ContractSendLogEntry {
   id: string;
   contractId: string;
   method: string;
-  status: ContractWriteStatus;
+  status: ContractSendStatus;
   args?: unknown;
   result?: unknown;
   error?: SoroformError;
-  transaction?: ContractWriteTransactionSummary;
+  transaction?: ContractSendTransactionSummary;
   updatedAt: number;
 }
 
 type Listener = () => void;
 
 /**
- * A minimal in-memory pub-sub store logging `useContractWrite` activity
+ * A minimal in-memory pub-sub store logging `useContractSend` activity
  * for `@soroform/devtools` to display. Lives in `@soroform/core`, not in
  * either package that actually cares about it, so that `@soroform/contract`
  * can write to it without depending on `@soroform/devtools`, and
@@ -58,8 +58,8 @@ type Listener = () => void;
  * `@soroform/contract`. Recording is a no-op with no listeners subscribed,
  * so it stays effectively free when devtools is not installed.
  */
-class DevtoolsWriteLogStore {
-  private entries = new Map<string, ContractWriteLogEntry>();
+class DevtoolsSendLogStore {
+  private entries = new Map<string, ContractSendLogEntry>();
   private listeners = new Set<Listener>();
   /**
    * `getAll()`'s result cached until the next mutation, so it returns a
@@ -69,15 +69,15 @@ class DevtoolsWriteLogStore {
    * when the underlying data has not changed, or it will re-render in a
    * loop.
    */
-  private cachedSnapshot: ContractWriteLogEntry[] | null = null;
+  private cachedSnapshot: ContractSendLogEntry[] | null = null;
 
-  record(entry: ContractWriteLogEntry): void {
+  record(entry: ContractSendLogEntry): void {
     this.entries.set(entry.id, entry);
     this.cachedSnapshot = null;
     this.emit();
   }
 
-  getAll(): ContractWriteLogEntry[] {
+  getAll(): ContractSendLogEntry[] {
     if (!this.cachedSnapshot) {
       this.cachedSnapshot = Array.from(this.entries.values()).sort(
         (a, b) => a.updatedAt - b.updatedAt,
@@ -105,9 +105,9 @@ class DevtoolsWriteLogStore {
 }
 
 /**
- * The shared devtools write-log store instance. `useContractWrite` calls
- * `devtoolsWriteLog.record(...)` on every status transition (guarded by
+ * The shared devtools send-log store instance. `useContractSend` calls
+ * `devtoolsSendLog.record(...)` on every status transition (guarded by
  * `process.env.NODE_ENV === "development"`); `<SoroformDevtools>` calls
- * `devtoolsWriteLog.subscribe(...)` and `getAll()` to render it.
+ * `devtoolsSendLog.subscribe(...)` and `getAll()` to render it.
  */
-export const devtoolsWriteLog = new DevtoolsWriteLogStore();
+export const devtoolsSendLog = new DevtoolsSendLogStore();

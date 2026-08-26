@@ -99,4 +99,4 @@ export function TransferButton({ to }: { to: string }) {
 
 ## When to reach for this
 
-Most apps do not need this split; `useContractWrite` alone covers the common case with less code. Reach for the server/client split when you specifically want simulation off the client's network path, or when you are already fetching the same contract state during server rendering and want to avoid a second round-trip for a form that appears immediately after.
+Most apps do not need this split; `useContractSend` alone covers the common case with less code. Reach for the server/client split when you specifically want simulation off the client's network path, or when you are already fetching the same contract state during server rendering and want to avoid a second round-trip for a form that appears immediately after.

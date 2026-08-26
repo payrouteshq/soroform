@@ -5,15 +5,17 @@ export { generateContractSchemas } from "./generate-schemas.js";
 
 export { fetchContractSpec } from "./spec-cache.js";
 
-export type { UseContractReadOptions } from "./use-contract-read.js";
-export { useContractRead } from "./use-contract-read.js";
+export { toValidationError } from "./validation-error.js";
+
+export type { UseContractCallOptions } from "./use-contract-call.js";
+export { useContractCall } from "./use-contract-call.js";
 
 export type {
-  ContractWriteStatus,
-  UseContractWriteOptions,
-  UseContractWriteResult,
-} from "./use-contract-write.js";
-export { useContractWrite } from "./use-contract-write.js";
+  ContractSendStatus,
+  UseContractSendOptions,
+  UseContractSendResult,
+} from "./use-contract-send.js";
+export { useContractSend } from "./use-contract-send.js";
 
-export type { UseContractFormOptions } from "./use-contract-form.js";
-export { useContractForm } from "./use-contract-form.js";
+export type { UseSorobanFormOptions } from "./use-soroban-form.js";
+export { useSorobanForm } from "./use-soroban-form.js";

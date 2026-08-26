@@ -16,8 +16,8 @@ Soroform is a React and Next.js SDK layered on top of `@stellar/stellar-sdk`. It
 ## What's in the box
 
 <CardGroup cols={2}>
-  <Card title="Contract hooks" icon="file-code" href="/hooks/use-contract-read">
-    `useContractRead`, `useContractWrite`, and `useContractForm` turn any contract method into a typed, validated React hook or form, derived from the contract's spec at runtime.
+  <Card title="Contract hooks" icon="file-code" href="/hooks/use-contract-call">
+    `useContractCall`, `useContractSend`, and `useSorobanForm` turn any contract method into a typed, validated React hook or form, derived from the contract's spec at runtime.
   </Card>
   <Card title="Wallet layer" icon="wallet" href="/components/wallet-provider">
     `WalletProvider`, `useWallet`, and `ConnectWalletButton` handle signing across Freighter, xBull, Albedo, Lobstr, Hana, and Rabet out of the box.
@@ -25,7 +25,10 @@ Soroform is a React and Next.js SDK layered on top of `@stellar/stellar-sdk`. It
   <Card title="General hooks" icon="chart-line" href="/hooks/use-account">
     `useAccount`, `useBalance`, `useTransactionStatus`, and `useNetworkStatus` cover the account and network state most apps need beyond contract calls.
   </Card>
+  <Card title="Live streams" icon="satellite-dish" href="/hooks/use-payment-stream">
+    `usePaymentStream` and `useEffectStream` subscribe to an account's activity over Horizon's SSE stream, invalidating balance and account queries automatically as events arrive.
+  </Card>
   <Card title="Devtools" icon="bug" href="/components/soroform-devtools">
-    A development-only panel that logs every contract write's status transitions and shows a readable summary of the built transaction.
+    A development-only panel that logs every contract send's status transitions and shows a readable summary of the built transaction.
   </Card>
 </CardGroup>

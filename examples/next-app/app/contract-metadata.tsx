@@ -1,15 +1,15 @@
 "use client";
 
-import { useContractRead } from "@soroform/contract";
+import { useContractCall } from "@soroform/contract";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { NATIVE_SAC_CONTRACT_ID } from "./contract";
 
 export function ContractMetadata() {
-  const symbol = useContractRead<string>({
+  const symbol = useContractCall<string>({
     contractId: NATIVE_SAC_CONTRACT_ID,
     method: "symbol",
   });
-  const decimals = useContractRead<number>({
+  const decimals = useContractCall<number>({
     contractId: NATIVE_SAC_CONTRACT_ID,
     method: "decimals",
   });

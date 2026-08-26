@@ -17,7 +17,7 @@ interface SoroformError {
 
 ## Every error kind
 
-`@stellar/stellar-sdk/contract` defines 16 distinct error classes. Soroform maps all 16 to a `SoroformErrorKind`:
+`@stellar/stellar-sdk/contract` defines 16 distinct error classes. Soroform maps all 16 to a `SoroformErrorKind`, plus one more kind of its own for args that fail validation before ever reaching the network:
 
 | `kind` | Thrown when |
 | --- | --- |
@@ -37,14 +37,19 @@ interface SoroformError {
 | `send-failed` | Sending the transaction to the network failed. |
 | `send-result-only` | The transaction was sent, but its final result is not yet available. |
 | `transaction-still-pending` | The transaction's final status is not yet known. |
+| `validation-failed` | The args passed to `useContractCall` or `useContractSend` failed the method's generated Zod schema. |
 | `unknown` | Anything else: a plain `Error`, a network failure, or a non-Error thrown value. |
+
+<Tip>
+  For `validation-failed`, `cause` is the original `ZodError`, not just a stringified message. See [How the spec-to-Zod pipeline works](/concepts/spec-to-zod#validation-errors) for `issues`, `flatten()`, and everything else it gives you.
+</Tip>
 
 ## Using it
 
 Every contract-facing hook exposes its error, already normalized, through its usual TanStack Query or mutation state:
 
 ```tsx
-const { error } = useContractRead({ contractId, method: "balance", args: { id } });
+const { error } = useContractCall({ contractId, method: "balance", args: { id } });
 
 if (error) {
   switch (error.kind) {

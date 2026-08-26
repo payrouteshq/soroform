@@ -2,8 +2,8 @@
 
 A simpler, non-Next React app demonstrating the same Soroform flow as
 `examples/next-app`: `SoroformProvider`, `WalletProvider`,
-`ConnectWalletButton`, `useContractRead`, `useContractForm`,
-`useContractWrite`, `useAccount`, `useBalance`, `useNetworkStatus`, and
+`ConnectWalletButton`, `useContractCall`, `useSorobanForm`,
+`useContractSend`, `useAccount`, `useBalance`, `useNetworkStatus`, and
 `SoroformDevtools`.
 
 It targets the testnet native XLM Stellar Asset Contract

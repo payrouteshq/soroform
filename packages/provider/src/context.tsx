@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import * as React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   resolveSoroformConfig,
@@ -6,7 +6,7 @@ import {
   type SoroformNetwork,
 } from "@soroform/core";
 
-const SoroformConfigContext = createContext<SoroformConfig | undefined>(undefined);
+const SoroformConfigContext = React.createContext<SoroformConfig | undefined>(undefined);
 
 /**
  * Reads the {@link SoroformConfig} supplied by the nearest
@@ -25,7 +25,7 @@ const SoroformConfigContext = createContext<SoroformConfig | undefined>(undefine
  * ```
  */
 export function useSoroformConfig(): SoroformConfig {
-  const config = useContext(SoroformConfigContext);
+  const config = React.useContext(SoroformConfigContext);
   if (!config) {
     throw new Error(
       "useSoroformConfig must be called within a <SoroformProvider>.",
@@ -69,7 +69,7 @@ export interface SoroformProviderProps {
    * share.
    */
   queryClient?: QueryClient;
-  children?: ReactNode;
+  children?: React.ReactNode;
 }
 
 /**
@@ -100,12 +100,12 @@ export function SoroformProvider(props: SoroformProviderProps) {
   const { network, rpcUrl, horizonUrl, networkPassphrase, queryClient, children } =
     props;
 
-  const config = useMemo(
+  const config = React.useMemo(
     () => resolveSoroformConfig({ network, rpcUrl, horizonUrl, networkPassphrase }),
     [network, rpcUrl, horizonUrl, networkPassphrase],
   );
 
-  const [ownedQueryClient] = useState(() => queryClient ?? createDefaultQueryClient());
+  const [ownedQueryClient] = React.useState(() => queryClient ?? createDefaultQueryClient());
   const client = queryClient ?? ownedQueryClient;
 
   return (

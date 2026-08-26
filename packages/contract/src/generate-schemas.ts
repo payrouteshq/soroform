@@ -25,7 +25,7 @@ const schemasBySpec = new WeakMap<Spec, ContractSchemas>();
  * Builds a Zod args schema (and notes the result type) for every method
  * in a contract's spec, by iterating `spec.funcs()`. The result is cached
  * per `Spec` instance (via a `WeakMap`), so calling this repeatedly for
- * the same spec, as `useContractRead`/`useContractWrite`/`useContractForm`
+ * the same spec, as `useContractCall`/`useContractSend`/`useSorobanForm`
  * do on every render, does not rebuild the schemas each time.
  *
  * @example

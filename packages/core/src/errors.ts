@@ -2,9 +2,14 @@ import { AssembledTransaction } from "@stellar/stellar-sdk/contract";
 
 /**
  * Every distinct kind of error Soroform can normalize an underlying error
- * into. `"unknown"` covers anything that is not one of the 16
- * `@stellar/stellar-sdk/contract` error classes, including plain network
- * failures and application errors thrown from consuming code.
+ * into. `"validation-failed"` is raised by `@soroform/contract` when a
+ * contract call's args fail their generated Zod schema, before any network
+ * call is made; its `cause` is the original `ZodError`, so `issues`,
+ * `flatten()`, and every other Zod API a caller already knows are still
+ * available, not just the normalized message. `"unknown"` covers anything
+ * else that is not one of the 16 `@stellar/stellar-sdk/contract` error
+ * classes, including plain network failures and application errors thrown
+ * from consuming code.
  */
 export type SoroformErrorKind =
   | "expired-state"
@@ -23,6 +28,7 @@ export type SoroformErrorKind =
   | "send-failed"
   | "send-result-only"
   | "transaction-still-pending"
+  | "validation-failed"
   | "unknown";
 
 /**

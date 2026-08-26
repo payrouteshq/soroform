@@ -1,15 +1,15 @@
 ---
-title: "useContractRead"
+title: "useContractCall"
 description: "Simulate a read-only contract method call and get its decoded result"
 ---
 
 Simulates a read-only contract method call and returns its decoded result as a TanStack Query result. Requires no connected wallet: reads are simulation-only.
 
 ```ts
-import { useContractRead } from "@soroform/contract";
+import { useContractCall } from "@soroform/contract";
 
-function useContractRead<TResult = unknown>(
-  options: UseContractReadOptions,
+function useContractCall<TResult = unknown>(
+  options: UseContractCallOptions,
 ): UseQueryResult<TResult>;
 ```
 
@@ -32,17 +32,17 @@ Everything TanStack Query's `useQuery` returns, typed to `TResult`. The fields y
 | `data` | `TResult \| undefined` | The decoded result, once loaded. |
 | `isLoading` | `boolean` | Whether the initial fetch is in flight. |
 | `error` | `SoroformError \| null` | A normalized error; see [Error handling](/concepts/error-handling). |
-| `refetch` | `() => void` | Manually re-runs the read. |
+| `refetch` | `() => void` | Manually re-runs the call. |
 
 ## Example
 
 ```tsx
-import { useContractRead } from "@soroform/contract";
+import { useContractCall } from "@soroform/contract";
 
 const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
 
 function Balance({ address }: { address: string }) {
-  const { data, isLoading, error } = useContractRead<bigint>({
+  const { data, isLoading, error } = useContractCall<bigint>({
     contractId: CONTRACT_ID,
     method: "balance",
     args: { id: address },
@@ -56,4 +56,4 @@ function Balance({ address }: { address: string }) {
 
 ## Caching
 
-The contract's spec and args schema are fetched and derived once, the first time any hook reads that `contractId`, then cached (see [How the spec-to-Zod pipeline works](/concepts/spec-to-zod)). The read itself is cached under `queryKeys.contractRead(networkPassphrase, contractId, method, args)`, so calling this hook again with the same contract, method, and args reuses the cached result per TanStack Query's usual `staleTime` rules. It is invalidated automatically by [`useContractWrite`](/hooks/use-contract-write) on a successful write to the same contract.
+The contract's spec and args schema are fetched and derived once, the first time any hook calls that `contractId`, then cached (see [How the spec-to-Zod pipeline works](/concepts/spec-to-zod)). The call itself is cached under `queryKeys.contractCall(networkPassphrase, contractId, method, args)`, so calling this hook again with the same contract, method, and args reuses the cached result per TanStack Query's usual `staleTime` rules. It is invalidated automatically by [`useContractSend`](/hooks/use-contract-send) on a successful send to the same contract.

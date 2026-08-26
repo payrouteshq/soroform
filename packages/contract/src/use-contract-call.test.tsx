@@ -1,10 +1,13 @@
+import * as React from "react";
 import { describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { xdr } from "@stellar/stellar-sdk";
 import { Spec } from "@stellar/stellar-sdk/contract";
 import { QueryClient } from "@tanstack/react-query";
+import { z } from "zod";
+import type { SoroformError } from "@soroform/core";
 import { SoroformProvider } from "@soroform/provider";
-import { useContractRead } from "./use-contract-read.js";
+import { useContractCall } from "./use-contract-call.js";
 
 const T = xdr.ScSpecTypeDef;
 
@@ -54,7 +57,7 @@ function renderWithProviders(children: React.ReactNode) {
 }
 
 function BalanceProbe(props: { args: Record<string, unknown> }) {
-  const { data, error, isLoading } = useContractRead<bigint>({
+  const { data, error, isLoading } = useContractCall<bigint>({
     contractId: CONTRACT_ID,
     method: "balance",
     args: props.args,
@@ -64,7 +67,23 @@ function BalanceProbe(props: { args: Record<string, unknown> }) {
   return <span data-testid="state">{String(data)}</span>;
 }
 
-describe("useContractRead", () => {
+function ErrorCapture(props: {
+  args: Record<string, unknown>;
+  onError: (error: SoroformError) => void;
+}) {
+  const { args, onError } = props;
+  const { error } = useContractCall<bigint>({
+    contractId: CONTRACT_ID,
+    method: "balance",
+    args,
+  });
+  React.useEffect(() => {
+    if (error) onError(error);
+  }, [error, onError]);
+  return null;
+}
+
+describe("useContractCall", () => {
   it("decodes a successful read via server.queryContract", async () => {
     mockClientFrom.mockResolvedValue({ spec: buildFixtureSpec() });
     mockQueryContract.mockResolvedValue({ result: 500n, isReadCall: true });
@@ -92,6 +111,21 @@ describe("useContractRead", () => {
       expect(screen.getByTestId("state")).toHaveTextContent("error:");
     });
     expect(mockQueryContract).not.toHaveBeenCalled();
+  });
+
+  it("normalizes invalid args into a validation-failed error with a Zod-prettified message and a raw ZodError cause", async () => {
+    mockClientFrom.mockResolvedValue({ spec: buildFixtureSpec() });
+    const onError = vi.fn();
+
+    renderWithProviders(<ErrorCapture args={{ id: "not-an-address" }} onError={onError} />);
+
+    await waitFor(() => expect(onError).toHaveBeenCalled());
+    const error = onError.mock.calls[0]![0] as SoroformError;
+
+    expect(error.kind).toBe("validation-failed");
+    expect(error.message).not.toContain('"code"');
+    expect(error.cause).toBeInstanceOf(z.ZodError);
+    expect((error.cause as z.ZodError).issues.length).toBeGreaterThan(0);
   });
 
   it("normalizes a network error into a SoroformError", async () => {

@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import * as React from "react";
 import { StellarWalletsKit, KitEventType } from "@creit.tech/stellar-wallets-kit";
 import type { ModuleInterface } from "@creit.tech/stellar-wallets-kit";
 import { useSoroformConfig } from "@soroform/provider";
@@ -49,7 +42,7 @@ export interface WalletState {
   ) => Promise<AuthEntrySignResult>;
 }
 
-const WalletContext = createContext<WalletState | undefined>(undefined);
+const WalletContext = React.createContext<WalletState | undefined>(undefined);
 
 /**
  * Reads the wallet connection state and signing functions supplied by the
@@ -71,7 +64,7 @@ const WalletContext = createContext<WalletState | undefined>(undefined);
  * ```
  */
 export function useWallet(): WalletState {
-  const state = useContext(WalletContext);
+  const state = React.useContext(WalletContext);
   if (!state) {
     throw new Error("useWallet must be called within a <WalletProvider>.");
   }
@@ -88,7 +81,7 @@ export interface WalletProviderProps {
   modules?: ModuleInterface[];
   /** The wallet ID to preselect, if any was previously connected. */
   selectedWalletId?: string;
-  children?: ReactNode;
+  children?: React.ReactNode;
 }
 
 /**
@@ -115,12 +108,12 @@ export function WalletProvider(props: WalletProviderProps) {
   const { modules, selectedWalletId, children } = props;
   const config = useSoroformConfig();
 
-  const [address, setAddress] = useState<string | undefined>(undefined);
-  const [network, setNetwork] = useState<string | undefined>(undefined);
+  const [address, setAddress] = React.useState<string | undefined>(undefined);
+  const [network, setNetwork] = React.useState<string | undefined>(undefined);
 
-  const resolvedModules = useMemo(() => modules ?? createDefaultModules(), [modules]);
+  const resolvedModules = React.useMemo(() => modules ?? createDefaultModules(), [modules]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!kitInitialized) {
       StellarWalletsKit.init({
         modules: resolvedModules,
@@ -152,7 +145,7 @@ export function WalletProvider(props: WalletProviderProps) {
     };
   }, [config.networkPassphrase, selectedWalletId, resolvedModules]);
 
-  const state = useMemo<WalletState>(
+  const state = React.useMemo<WalletState>(
     () => ({
       address,
       network,
