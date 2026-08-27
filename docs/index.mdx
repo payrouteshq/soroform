@@ -19,8 +19,8 @@ Soroform is a React and Next.js SDK layered on top of `@stellar/stellar-sdk`. It
   <Card title="Contract hooks" icon="file-code" href="/hooks/use-contract-call">
     `useContractCall`, `useContractSend`, and `useSorobanForm` turn any contract method into a typed, validated React hook or form, derived from the contract's spec at runtime.
   </Card>
-  <Card title="Wallet layer" icon="wallet" href="/components/wallet-provider">
-    `WalletProvider`, `useWallet`, and `ConnectWalletButton` handle signing across Freighter, xBull, Albedo, Lobstr, Hana, and Rabet out of the box.
+  <Card title="Wallet layer" icon="wallet" href="/components/soroform-provider#wallet-connectors">
+    Pass a connector to `SoroformProvider`'s `wallet` prop — `stellarWalletsKit()`, `blux()`, or `para()` — and `useWallet`/`ConnectWalletButton` handle signing across whichever wallets that SDK supports.
   </Card>
   <Card title="General hooks" icon="chart-line" href="/hooks/use-account">
     `useAccount`, `useBalance`, `useTransactionStatus`, and `useNetworkStatus` cover the account and network state most apps need beyond contract calls.

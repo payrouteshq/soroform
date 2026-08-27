@@ -9,5 +9,6 @@ export type {
   SignOptions,
   WalletAdapter,
   WalletAdapterState,
+  WalletConnector,
   WalletSignResult,
 } from "./types.js";

@@ -6,7 +6,7 @@ import {
   switchNetwork,
   BluxEvent,
 } from "@bluxcc/core";
-import type { WalletAdapter } from "../types.js";
+import type { WalletAdapter, WalletConnector } from "../types.js";
 
 /**
  * `createConfig`'s parameter type, extracted structurally from the
@@ -26,10 +26,10 @@ export interface BluxAdapterOptions extends Omit<BluxConfig, "networks" | "defau
 }
 
 /**
- * A `WalletAdapter` backed by `@bluxcc/core`, a wallet and authentication
+ * A `WalletConnector` backed by `@bluxcc/core`, a wallet and authentication
  * SDK supporting Freighter, Rabet, xBull, LOBSTR, Hana, Ledger, Trezor,
  * WalletConnect, and non-wallet login (email, passkey, social) through
- * one modal.
+ * one modal. Pass it as `SoroformProvider`'s `wallet` prop.
  *
  * Signing runs headlessly against the connected wallet
  * (`showWalletUIs: false`) unless overridden, matching
@@ -38,25 +38,25 @@ export interface BluxAdapterOptions extends Omit<BluxConfig, "networks" | "defau
  *
  * `@bluxcc/core` is a peer dependency: install it, along with the wallet
  * SDKs it integrates (see its own peer dependencies), alongside
- * `@soroform/wallet-adapter` to use this adapter. Requires an `appId` from the
+ * `@soroform/wallet-adapter` to use this connector. Requires an `appId` from the
  * [Blux dashboard](https://dashboard.blux.cc/).
  *
  * @example
  * ```tsx
- * import { WalletProvider } from "@soroform/wallet-adapter";
- * import { blux } from "@soroform/wallet-adapter/adapters/blux";
+ * import { SoroformProvider } from "@soroform/provider";
+ * import { blux } from "@soroform/wallet-adapter/blux";
  *
- * const adapter = blux({ appId: "...", appName: "My App" });
- *
- * <WalletProvider adapter={adapter}>{children}</WalletProvider>;
+ * <SoroformProvider network="testnet" wallet={blux({ appId: "...", appName: "My App" })}>
+ *   {children}
+ * </SoroformProvider>;
  * ```
  */
-export function blux(options: BluxAdapterOptions): WalletAdapter {
-  // Scoped to this adapter instance, not the module; see the identical
-  // comment in the stellarWalletsKit() adapter for why.
+export function blux(options: BluxAdapterOptions): WalletConnector {
+  // Scoped to this connector instance, not the module; see the identical
+  // comment in the stellarWalletsKit() connector for why.
   let bluxInitialized = false;
 
-  return {
+  const adapter: WalletAdapter = {
     init(networkPassphrase) {
       if (!bluxInitialized) {
         createConfig({
@@ -112,4 +112,6 @@ export function blux(options: BluxAdapterOptions): WalletAdapter {
       return events.on(BluxEvent.LoggedOut, () => listener());
     },
   };
+
+  return { useAdapter: () => adapter };
 }

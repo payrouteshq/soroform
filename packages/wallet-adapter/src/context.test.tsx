@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { SoroformProvider } from "@soroform/provider";
 import { WalletProvider, useWallet } from "./context.js";
 import type { WalletAdapter, WalletAdapterState } from "./types.js";
 
@@ -55,11 +54,9 @@ function Probe() {
 
 function renderWithProviders(adapter: WalletAdapter) {
   return render(
-    <SoroformProvider network="testnet">
-      <WalletProvider adapter={adapter}>
-        <Probe />
-      </WalletProvider>
-    </SoroformProvider>,
+    <WalletProvider adapter={adapter} networkPassphrase={TEST_PASSPHRASE}>
+      <Probe />
+    </WalletProvider>,
   );
 }
 
@@ -114,13 +111,9 @@ describe("useWallet", () => {
   it("throws when called outside a WalletProvider", () => {
     const originalError = console.error;
     console.error = () => {};
-    expect(() =>
-      render(
-        <SoroformProvider network="testnet">
-          <Probe />
-        </SoroformProvider>,
-      ),
-    ).toThrow(/useWallet must be called within a <WalletProvider>/);
+    expect(() => render(<Probe />)).toThrow(
+      /useWallet must be called within a <WalletProvider>/,
+    );
     console.error = originalError;
   });
 });

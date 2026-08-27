@@ -2,19 +2,14 @@
 
 import type { ReactNode } from "react";
 import { SoroformProvider } from "@soroform/provider";
-import { WalletProvider } from "@soroform/wallet-adapter";
-import { stellarWalletsKit } from "@soroform/wallet-adapter/adapters/stellar-wallets-kit";
-import { SoroformDevtools } from "@soroform/devtools";
+import { stellarWalletsKit } from "@soroform/wallet-adapter/stellar-wallets-kit";
 
-const adapter = stellarWalletsKit();
+const wallet = stellarWalletsKit();
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <SoroformProvider network="testnet">
-      <WalletProvider adapter={adapter}>
-        {children}
-        <SoroformDevtools />
-      </WalletProvider>
+    <SoroformProvider network="testnet" wallet={wallet} devtools>
+      {children}
     </SoroformProvider>
   );
 }

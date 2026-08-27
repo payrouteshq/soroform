@@ -18,7 +18,7 @@
         "default": "./dist/index.cjs"
       }
     },
-    "./adapters/stellar-wallets-kit": {
+    "./stellar-wallets-kit": {
       "import": {
         "types": "./dist/adapters/stellar-wallets-kit.d.ts",
         "default": "./dist/adapters/stellar-wallets-kit.js"
@@ -28,7 +28,7 @@
         "default": "./dist/adapters/stellar-wallets-kit.cjs"
       }
     },
-    "./adapters/blux": {
+    "./blux": {
       "import": {
         "types": "./dist/adapters/blux.d.ts",
         "default": "./dist/adapters/blux.js"
@@ -38,7 +38,7 @@
         "default": "./dist/adapters/blux.cjs"
       }
     },
-    "./adapters/para": {
+    "./para": {
       "import": {
         "types": "./dist/adapters/para.d.ts",
         "default": "./dist/adapters/para.js"
@@ -59,9 +59,6 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "clean": "rm -rf dist .turbo"
-  },
-  "dependencies": {
-    "@soroform/provider": "workspace:*"
   },
   "peerDependencies": {
     "@bluxcc/core": "^0.2.0",

@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useSoroformConfig } from "@soroform/provider";
 import type { AuthEntrySignResult, SignOptions, WalletAdapter, WalletSignResult } from "./types.js";
 
 /**
@@ -53,48 +52,40 @@ export function useWallet(): WalletState {
 
 export interface WalletProviderProps {
   /**
-   * The wallet connector to drive. Pass `stellarWalletsKit()` (from
-   * `@soroform/wallet-adapter/adapters/stellar-wallets-kit`) or `blux()` (from
-   * `@soroform/wallet-adapter/adapters/blux`), or your own {@link WalletAdapter}.
-   * Construct it once and pass the same reference; see the adapter's own
-   * docs for why.
+   * The wallet connector to drive. Pass your own {@link WalletAdapter} —
+   * most apps won't render this directly at all; pass `stellarWalletsKit()`,
+   * `blux()`, or `para()` as `SoroformProvider`'s `wallet` prop instead,
+   * which renders this underneath for you.
    */
   adapter: WalletAdapter;
+  /** The network passphrase to initialize (and re-initialize) the adapter with. */
+  networkPassphrase: string;
   children?: React.ReactNode;
 }
 
 /**
  * Wraps the app in a wallet connection context, driven by whichever
- * {@link WalletAdapter} is passed as `adapter`. Must be rendered inside a
- * `SoroformProvider`, which supplies the network this provider connects
- * wallets on.
+ * {@link WalletAdapter} is passed as `adapter`. This is the low-level
+ * primitive `SoroformProvider`'s `wallet` prop renders internally — most
+ * apps should use that instead of rendering `WalletProvider` directly.
  *
  * @example
  * ```tsx
- * import { SoroformProvider } from "@soroform/provider";
  * import { WalletProvider } from "@soroform/wallet-adapter";
- * import { stellarWalletsKit } from "@soroform/wallet-adapter/adapters/stellar-wallets-kit";
  *
- * const adapter = stellarWalletsKit();
- *
- * export function App({ children }: { children: React.ReactNode }) {
- *   return (
- *     <SoroformProvider network="testnet">
- *       <WalletProvider adapter={adapter}>{children}</WalletProvider>
- *     </SoroformProvider>
- *   );
- * }
+ * <WalletProvider adapter={myAdapter} networkPassphrase="Test SDF Network ; September 2015">
+ *   {children}
+ * </WalletProvider>;
  * ```
  */
 export function WalletProvider(props: WalletProviderProps) {
-  const { adapter, children } = props;
-  const config = useSoroformConfig();
+  const { adapter, networkPassphrase, children } = props;
 
   const [address, setAddress] = React.useState<string | undefined>(undefined);
   const [network, setNetwork] = React.useState<string | undefined>(undefined);
 
   React.useEffect(() => {
-    adapter.init(config.networkPassphrase);
+    adapter.init(networkPassphrase);
 
     const unsubscribeState = adapter.onStateChange((state) => {
       setAddress(state.address);
@@ -108,7 +99,7 @@ export function WalletProvider(props: WalletProviderProps) {
       unsubscribeState();
       unsubscribeDisconnect();
     };
-  }, [adapter, config.networkPassphrase]);
+  }, [adapter, networkPassphrase]);
 
   const state = React.useMemo<WalletState>(
     () => ({

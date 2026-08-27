@@ -31,7 +31,9 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "@soroform/core": "workspace:*"
+    "@soroform/core": "workspace:*",
+    "@soroform/devtools": "workspace:*",
+    "@soroform/wallet-adapter": "workspace:*"
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.0.0",
@@ -39,8 +41,10 @@
   },
   "devDependencies": {
     "@tanstack/react-query": "5.102.2",
+    "@tanstack/react-query-devtools": "5.102.2",
     "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "16.3.2",
+    "@types/node": "26.2.0",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.5",
     "@vitejs/plugin-react": "6.1.0",

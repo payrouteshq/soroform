@@ -10,7 +10,7 @@ import { HanaModule } from "@creit.tech/stellar-wallets-kit/modules/hana";
 import { LobstrModule } from "@creit.tech/stellar-wallets-kit/modules/lobstr";
 import { RabetModule } from "@creit.tech/stellar-wallets-kit/modules/rabet";
 import { xBullModule } from "@creit.tech/stellar-wallets-kit/modules/xbull";
-import type { WalletAdapter } from "../types.js";
+import type { WalletAdapter, WalletConnector } from "../types.js";
 
 export interface StellarWalletsKitAdapterOptions {
   /**
@@ -44,34 +44,35 @@ export function createDefaultModules(): ModuleInterface[] {
 }
 
 /**
- * A `WalletAdapter` backed by `@creit.tech/stellar-wallets-kit`, a
+ * A `WalletConnector` backed by `@creit.tech/stellar-wallets-kit`, a
  * multi-wallet connector supporting Freighter, xBull, Albedo, Lobstr,
- * Hana, Rabet, hardware wallets, and WalletConnect.
+ * Hana, Rabet, hardware wallets, and WalletConnect. Pass it as
+ * `SoroformProvider`'s `wallet` prop.
  *
  * `@creit.tech/stellar-wallets-kit` is a peer dependency: install it
- * alongside `@soroform/wallet-adapter` to use this adapter.
+ * alongside `@soroform/wallet-adapter` to use this connector.
  *
  * @example
  * ```tsx
- * import { WalletProvider } from "@soroform/wallet-adapter";
- * import { stellarWalletsKit } from "@soroform/wallet-adapter/adapters/stellar-wallets-kit";
+ * import { SoroformProvider } from "@soroform/provider";
+ * import { stellarWalletsKit } from "@soroform/wallet-adapter/stellar-wallets-kit";
  *
- * const adapter = stellarWalletsKit();
- *
- * <WalletProvider adapter={adapter}>{children}</WalletProvider>;
+ * <SoroformProvider network="testnet" wallet={stellarWalletsKit()}>
+ *   {children}
+ * </SoroformProvider>;
  * ```
  */
 export function stellarWalletsKit(
   options: StellarWalletsKitAdapterOptions = {},
-): WalletAdapter {
+): WalletConnector {
   const modules = options.modules ?? createDefaultModules();
-  // Scoped to this adapter instance, not the module: StellarWalletsKit.init()
-  // should run once per adapter (guards React StrictMode's double-invoked
+  // Scoped to this connector instance, not the module: StellarWalletsKit.init()
+  // should run once per connector (guards React StrictMode's double-invoked
   // effect calling init() twice on mount), but a second, independent
   // stellarWalletsKit() call must still be able to initialize the kit.
   let kitInitialized = false;
 
-  return {
+  const adapter: WalletAdapter = {
     init(networkPassphrase) {
       if (!kitInitialized) {
         StellarWalletsKit.init({
@@ -97,4 +98,6 @@ export function stellarWalletsKit(
       return StellarWalletsKit.on(KitEventType.DISCONNECT, () => listener());
     },
   };
+
+  return { useAdapter: () => adapter };
 }

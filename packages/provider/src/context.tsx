@@ -5,6 +5,9 @@ import {
   type SoroformConfig,
   type SoroformNetwork,
 } from "@soroform/core";
+import { WalletProvider } from "@soroform/wallet-adapter";
+import type { WalletConnector } from "@soroform/wallet-adapter";
+import { SoroformDevtools, type SoroformDevtoolsProps } from "@soroform/devtools";
 
 const SoroformConfigContext = React.createContext<SoroformConfig | undefined>(undefined);
 
@@ -69,15 +72,35 @@ export interface SoroformProviderProps {
    * share.
    */
   queryClient?: QueryClient;
+  /**
+   * The wallet connector to drive `useWallet()` with — `stellarWalletsKit()`,
+   * `blux()`, or `para()` from `@soroform/wallet-adapter`, or your own
+   * `WalletConnector`. Hot-swappable: pass a different connector and
+   * `SoroformProvider` remounts the wallet layer with it. Omit it if your
+   * app doesn't need wallet connection.
+   */
+  wallet?: WalletConnector;
+  /**
+   * Renders `SoroformDevtools` for you — pass `true` for the defaults, or
+   * an options object (e.g. `{ initialOpen: true }`). Omit it (or pass
+   * `false`) to not render devtools at all. `SoroformDevtools` itself only
+   * renders in development, regardless of this prop.
+   */
+  devtools?: boolean | SoroformDevtoolsProps;
   children?: React.ReactNode;
 }
 
 /**
- * The root provider for Soroform. Resolves a {@link SoroformConfig} from
- * the given network (and any overrides) and supplies it to the rest of the
- * tree via {@link useSoroformConfig}, while also wrapping children in a
- * TanStack Query `QueryClientProvider` so every Soroform hook has a query
- * client to use.
+ * The root provider for Soroform, and the single entry point for wiring an
+ * app into it: network config, wallet connection, and devtools all go
+ * through this one component instead of several nested providers.
+ *
+ * Resolves a {@link SoroformConfig} from the given network (and any
+ * overrides) and supplies it to the rest of the tree via
+ * {@link useSoroformConfig}, wraps children in a TanStack Query
+ * `QueryClientProvider` so every Soroform hook has a query client to use,
+ * and — when `wallet` is passed — mounts that connector so `useWallet()`
+ * works anywhere below.
  *
  * If your app already renders its own `QueryClientProvider`, pass that
  * client's instance as `queryClient` so Soroform shares it instead of
@@ -86,10 +109,11 @@ export interface SoroformProviderProps {
  * @example
  * ```tsx
  * import { SoroformProvider } from "@soroform/provider";
+ * import { stellarWalletsKit } from "@soroform/wallet-adapter/stellar-wallets-kit";
  *
  * export function App({ children }: { children: React.ReactNode }) {
  *   return (
- *     <SoroformProvider network="testnet">
+ *     <SoroformProvider network="testnet" wallet={stellarWalletsKit()} devtools>
  *       {children}
  *     </SoroformProvider>
  *   );
@@ -97,7 +121,7 @@ export interface SoroformProviderProps {
  * ```
  */
 export function SoroformProvider(props: SoroformProviderProps) {
-  const { network, rpcUrl, horizonUrl, networkPassphrase, queryClient, children } =
+  const { network, rpcUrl, horizonUrl, networkPassphrase, queryClient, wallet, devtools, children } =
     props;
 
   const config = React.useMemo(
@@ -108,9 +132,42 @@ export function SoroformProvider(props: SoroformProviderProps) {
   const [ownedQueryClient] = React.useState(() => queryClient ?? createDefaultQueryClient());
   const client = queryClient ?? ownedQueryClient;
 
-  return (
+  const devtoolsProps = devtools === true ? {} : devtools || undefined;
+
+  const body = (
     <SoroformConfigContext.Provider value={config}>
-      <QueryClientProvider client={client}>{children}</QueryClientProvider>
+      <QueryClientProvider client={client}>
+        {children}
+        {devtoolsProps && <SoroformDevtools {...devtoolsProps} />}
+      </QueryClientProvider>
     </SoroformConfigContext.Provider>
+  );
+
+  // `WalletMount` (calling `wallet.useAdapter()`) sits between `wallet.Provider`
+  // and Soroform's own `QueryClientProvider` deliberately: an SDK like Para
+  // that needs its own react-query client for its own hooks (via its own
+  // `Provider`) must resolve that client, not Soroform's, when `useAdapter()`
+  // runs — see `WalletConnector`'s docs.
+  const withWallet = wallet ? (
+    <WalletMount connector={wallet} networkPassphrase={config.networkPassphrase}>
+      {body}
+    </WalletMount>
+  ) : (
+    body
+  );
+
+  return wallet?.Provider ? <wallet.Provider>{withWallet}</wallet.Provider> : withWallet;
+}
+
+function WalletMount(props: {
+  connector: WalletConnector;
+  networkPassphrase: string;
+  children?: React.ReactNode;
+}) {
+  const adapter = props.connector.useAdapter(props.networkPassphrase);
+  return (
+    <WalletProvider adapter={adapter} networkPassphrase={props.networkPassphrase}>
+      {props.children}
+    </WalletProvider>
   );
 }

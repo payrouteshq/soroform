@@ -22,8 +22,8 @@ yet.
 ```
 packages/
   core/           @soroform/core            framework-agnostic config, query keys, error normalization
-  provider/       @soroform/provider        SoroformProvider, useSoroformConfig
-  wallet-adapter/ @soroform/wallet-adapter  WalletProvider, useWallet, ConnectWalletButton, plus the stellarWalletsKit()/blux() adapters
+  provider/       @soroform/provider        SoroformProvider — the entry point: network config, wallet, and devtools all wire in here
+  wallet-adapter/ @soroform/wallet-adapter  useWallet, ConnectWalletButton, plus the stellarWalletsKit()/blux()/para() connectors
   hooks/          @soroform/hooks           useAccount, useBalance, useTransactionStatus, useNetworkStatus, usePaymentStream, useEffectStream
   contract/       @soroform/contract        runtime spec-to-Zod pipeline, useContractCall, useContractSend, useSorobanForm
   devtools/       @soroform/devtools        SoroformDevtools panel

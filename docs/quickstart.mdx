@@ -27,26 +27,25 @@ pnpm add @soroform/core @soroform/provider @soroform/wallet-adapter @soroform/co
 
 </CodeGroup>
 
-`@tanstack/react-query`, `zod`, `react-hook-form`, and `@hookform/resolvers` are peer dependencies: install them alongside Soroform so your app controls their versions. `@creit.tech/stellar-wallets-kit` is the wallet connector this quickstart uses; see [`WalletProvider`](/components/wallet-provider) for the other adapter Soroform ships (`blux()`), or for writing your own.
+`@tanstack/react-query`, `zod`, `react-hook-form`, and `@hookform/resolvers` are peer dependencies: install them alongside Soroform so your app controls their versions. `@creit.tech/stellar-wallets-kit` is the wallet connector this quickstart uses; see [`SoroformProvider`](/components/soroform-provider#wallet-connectors) for the other connectors Soroform ships (`blux()`, `para()`), or for writing your own.
 
-## Wrap your app in the providers
+## Wrap your app in SoroformProvider
 
-`SoroformProvider` resolves your network configuration and supplies a TanStack Query client to every hook. `WalletProvider` must be nested inside it, since it reads the network from `SoroformProvider`'s context, and takes a wallet adapter to drive — `stellarWalletsKit()` here.
+`SoroformProvider` is the single entry point: it resolves your network configuration, supplies a TanStack Query client to every hook, and — via `wallet` — mounts wallet connection, all in one component. No separate `WalletProvider` to nest.
 
 ```tsx app/providers.tsx
 "use client";
 
 import type { ReactNode } from "react";
 import { SoroformProvider } from "@soroform/provider";
-import { WalletProvider } from "@soroform/wallet-adapter";
-import { stellarWalletsKit } from "@soroform/wallet-adapter/adapters/stellar-wallets-kit";
+import { stellarWalletsKit } from "@soroform/wallet-adapter/stellar-wallets-kit";
 
-const adapter = stellarWalletsKit();
+const wallet = stellarWalletsKit();
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <SoroformProvider network="testnet">
-      <WalletProvider adapter={adapter}>{children}</WalletProvider>
+    <SoroformProvider network="testnet" wallet={wallet}>
+      {children}
     </SoroformProvider>
   );
 }

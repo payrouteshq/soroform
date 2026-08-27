@@ -1,26 +1,31 @@
 # @soroform/wallet-adapter
 
-Adapter-agnostic wallet connection and signing layer for Soroform.
-Provides `WalletProvider`, `useWallet`, and a minimally styled
-`ConnectWalletButton`, driven by whichever `WalletAdapter` you pass in.
+Adapter-agnostic wallet connection and signing layer for Soroform. You
+don't render anything from this package directly in most apps — pass one
+of its connectors as `SoroformProvider`'s `wallet` prop instead
+(`@soroform/provider`), and `useWallet()`/`ConnectWalletButton` work
+anywhere below it.
 
-Two adapters ship as separate entry points, each with its own peer
+Three connectors ship as separate entry points, each with its own peer
 dependency so you only install what you use:
 
-- `@soroform/wallet-adapter/adapters/stellar-wallets-kit` — `stellarWalletsKit()`, backed by `@creit.tech/stellar-wallets-kit`
-- `@soroform/wallet-adapter/adapters/blux` — `blux()`, backed by `@bluxcc/core`
+- `@soroform/wallet-adapter/stellar-wallets-kit` — `stellarWalletsKit()`, backed by `@creit.tech/stellar-wallets-kit`
+- `@soroform/wallet-adapter/blux` — `blux()`, backed by `@bluxcc/core`
+- `@soroform/wallet-adapter/para` — `para()`, backed by `@getpara/react-sdk`
 
 ```tsx
-import { WalletProvider } from "@soroform/wallet-adapter";
-import { stellarWalletsKit } from "@soroform/wallet-adapter/adapters/stellar-wallets-kit";
+import { SoroformProvider } from "@soroform/provider";
+import { stellarWalletsKit } from "@soroform/wallet-adapter/stellar-wallets-kit";
 
-const adapter = stellarWalletsKit();
-
-<WalletProvider adapter={adapter}>{children}</WalletProvider>;
+<SoroformProvider network="testnet" wallet={stellarWalletsKit()}>
+  {children}
+</SoroformProvider>;
 ```
 
-Write your own adapter by implementing the `WalletAdapter` interface
-exported from the package root if neither ships one for your wallet SDK.
+Write your own connector if none of these fit your wallet SDK — implement
+the `WalletAdapter` interface exported from the package root, then wrap it
+as `{ useAdapter: () => myAdapter }`, which already satisfies
+`WalletConnector`.
 
 Full documentation: https://docs.soroform.dev (see the repository root
 README for the current status of the docs site).

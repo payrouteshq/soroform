@@ -3,7 +3,7 @@ title: "useWallet"
 description: "Read wallet connection state and signing functions"
 ---
 
-Reads the wallet connection state and signing functions supplied by the nearest `WalletProvider` ancestor. Exported from `@soroform/wallet-adapter`, not `@soroform/hooks`.
+Reads the wallet connection state and signing functions for whichever connector was passed to [`SoroformProvider`](/components/soroform-provider)'s `wallet` prop. Exported from `@soroform/wallet-adapter`, not `@soroform/hooks`.
 
 ```ts
 import { useWallet } from "@soroform/wallet-adapter";
@@ -12,7 +12,7 @@ function useWallet(): WalletState;
 ```
 
 <Warning>
-  Throws if called outside a `WalletProvider`.
+  Throws if called outside a `SoroformProvider` that was given a `wallet` prop.
 </Warning>
 
 ## Return value

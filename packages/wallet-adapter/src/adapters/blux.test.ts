@@ -56,7 +56,7 @@ describe("blux adapter", () => {
   });
 
   it("initializes with showWalletUIs: false by default, and the current network as the only one", () => {
-    const adapter = blux({ appId: "app-1", appName: "Test App" });
+    const adapter = blux({ appId: "app-1", appName: "Test App" }).useAdapter(TEST_PASSPHRASE);
     adapter.init(TEST_PASSPHRASE);
     expect(mockCreateConfig).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -70,7 +70,7 @@ describe("blux adapter", () => {
   });
 
   it("lets an explicit showWalletUIs override the default", () => {
-    const adapter = blux({ appId: "app-1", appName: "Test App", showWalletUIs: true });
+    const adapter = blux({ appId: "app-1", appName: "Test App", showWalletUIs: true }).useAdapter(TEST_PASSPHRASE);
     adapter.init(TEST_PASSPHRASE);
     expect(mockCreateConfig).toHaveBeenCalledWith(
       expect.objectContaining({ showWalletUIs: true }),
@@ -78,7 +78,7 @@ describe("blux adapter", () => {
   });
 
   it("calls switchNetwork instead of createConfig once already initialized", () => {
-    const adapter = blux({ appId: "app-1", appName: "Test App" });
+    const adapter = blux({ appId: "app-1", appName: "Test App" }).useAdapter(TEST_PASSPHRASE);
     adapter.init(TEST_PASSPHRASE);
     adapter.init("Public Global Stellar Network ; September 2015");
     expect(mockCreateConfig).toHaveBeenCalledTimes(1);
@@ -88,19 +88,19 @@ describe("blux adapter", () => {
   });
 
   it("connect() logs in and resolves the address", async () => {
-    const adapter = blux({ appId: "app-1", appName: "Test App" });
+    const adapter = blux({ appId: "app-1", appName: "Test App" }).useAdapter(TEST_PASSPHRASE);
     await expect(adapter.connect()).resolves.toEqual({ address: TEST_ADDRESS });
   });
 
   it("disconnect() logs out", async () => {
-    const adapter = blux({ appId: "app-1", appName: "Test App" });
+    const adapter = blux({ appId: "app-1", appName: "Test App" }).useAdapter(TEST_PASSPHRASE);
     await adapter.disconnect();
     expect(mockBluxClient.logout).toHaveBeenCalled();
   });
 
   it("signTransaction and signAuthEntry return the signed value with the current signer address", async () => {
     mockBluxClient.user = { address: TEST_ADDRESS };
-    const adapter = blux({ appId: "app-1", appName: "Test App" });
+    const adapter = blux({ appId: "app-1", appName: "Test App" }).useAdapter(TEST_PASSPHRASE);
 
     await expect(adapter.signTransaction("xdr")).resolves.toEqual({
       signedTxXdr: "xdr-signed",
@@ -113,7 +113,7 @@ describe("blux adapter", () => {
   });
 
   it("onStateChange() maps LoggedIn and NetworkChanged events to WalletAdapterState", () => {
-    const adapter = blux({ appId: "app-1", appName: "Test App" });
+    const adapter = blux({ appId: "app-1", appName: "Test App" }).useAdapter(TEST_PASSPHRASE);
     const listener = vi.fn();
     adapter.onStateChange(listener);
 
@@ -128,7 +128,7 @@ describe("blux adapter", () => {
   });
 
   it("onDisconnect() fires on a LoggedOut event", () => {
-    const adapter = blux({ appId: "app-1", appName: "Test App" });
+    const adapter = blux({ appId: "app-1", appName: "Test App" }).useAdapter(TEST_PASSPHRASE);
     const listener = vi.fn();
     adapter.onDisconnect(listener);
     emit("blux:logged_out", undefined);

@@ -1,10 +1,11 @@
 import * as React from "react";
 import { describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { SoroformProvider } from "@soroform/provider";
-import { useWallet } from "../context.js";
+import { WalletProvider, useWallet } from "../context.js";
+import type { WalletConnector } from "../types.js";
 
 const TEST_ADDRESS = "GABCDEFGHIJKLMNOPQRSTUVWXYZ234567ABCDEFGHIJKLMNOPQRSTUV";
+const TEST_PASSPHRASE = "Test SDF Network ; September 2015";
 
 interface MockAccount {
   isConnected: boolean;
@@ -66,7 +67,7 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
   return actual;
 });
 
-const { ParaWalletProvider } = await import("./para.js");
+const { para } = await import("./para.js");
 
 function connectedAccount() {
   return {
@@ -90,14 +91,28 @@ function Probe() {
   );
 }
 
-function renderWithProviders() {
-  return render(
-    <SoroformProvider network="testnet">
-      <ParaWalletProvider apiKey="test-key">
-        <Probe />
-      </ParaWalletProvider>
-    </SoroformProvider>,
+/**
+ * Mirrors what `SoroformProvider`'s `wallet` prop mounts internally: the
+ * connector's own `Provider` (if any), wrapping a component that calls
+ * `useAdapter()` and hands the result to the low-level `WalletProvider`.
+ */
+function Harness(props: { connector: WalletConnector; children?: React.ReactNode }) {
+  const adapter = props.connector.useAdapter(TEST_PASSPHRASE);
+  return (
+    <WalletProvider adapter={adapter} networkPassphrase={TEST_PASSPHRASE}>
+      {props.children}
+    </WalletProvider>
   );
+}
+
+function renderConnector(connector: WalletConnector, children: React.ReactNode) {
+  const tree = <Harness connector={connector}>{children}</Harness>;
+  return connector.Provider ? <connector.Provider>{tree}</connector.Provider> : tree;
+}
+
+function renderWithProviders() {
+  const connector = para({ apiKey: "test-key" });
+  return { connector, ...render(renderConnector(connector, <Probe />)) };
 }
 
 describe("ParaWalletProvider", () => {
@@ -122,19 +137,13 @@ describe("ParaWalletProvider", () => {
       connectionType: undefined,
       isLoading: false,
     });
-    const { rerender } = renderWithProviders();
+    const { connector, rerender } = renderWithProviders();
 
     screen.getByText("connect").click();
     expect(mockOpenModal).toHaveBeenCalled();
 
     mockUseAccount.mockReturnValue(connectedAccount());
-    rerender(
-      <SoroformProvider network="testnet">
-        <ParaWalletProvider apiKey="test-key">
-          <Probe />
-        </ParaWalletProvider>
-      </SoroformProvider>,
-    );
+    rerender(renderConnector(connector, <Probe />));
 
     await waitFor(() => {
       expect(screen.getByTestId("connected")).toHaveTextContent("true");
@@ -175,13 +184,7 @@ describe("ParaWalletProvider", () => {
         </div>
       );
     }
-    render(
-      <SoroformProvider network="testnet">
-        <ParaWalletProvider apiKey="test-key">
-          <SignProbe />
-        </ParaWalletProvider>
-      </SoroformProvider>,
-    );
+    render(renderConnector(para({ apiKey: "test-key" }), <SignProbe />));
 
     screen.getByText("sign").click();
 

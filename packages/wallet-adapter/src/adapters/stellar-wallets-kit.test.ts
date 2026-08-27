@@ -66,7 +66,7 @@ describe("stellarWalletsKit", () => {
   });
 
   it("initializes the underlying kit with the default modules on the first init() call", () => {
-    const adapter = stellarWalletsKit();
+    const adapter = stellarWalletsKit().useAdapter(TEST_PASSPHRASE);
     adapter.init(TEST_PASSPHRASE);
     expect(mockKit.init).toHaveBeenCalledWith(
       expect.objectContaining({ network: TEST_PASSPHRASE }),
@@ -75,7 +75,7 @@ describe("stellarWalletsKit", () => {
   });
 
   it("calls setNetwork instead of init() once already initialized", () => {
-    const adapter = stellarWalletsKit();
+    const adapter = stellarWalletsKit().useAdapter(TEST_PASSPHRASE);
     adapter.init(TEST_PASSPHRASE);
     adapter.init("Public Global Stellar Network ; September 2015");
     expect(mockKit.init).toHaveBeenCalledTimes(1);
@@ -85,12 +85,12 @@ describe("stellarWalletsKit", () => {
   });
 
   it("connect() opens the auth modal and resolves the address", async () => {
-    const adapter = stellarWalletsKit();
+    const adapter = stellarWalletsKit().useAdapter(TEST_PASSPHRASE);
     await expect(adapter.connect()).resolves.toEqual({ address: TEST_ADDRESS });
   });
 
   it("onStateChange() maps STATE_UPDATED events to WalletAdapterState", () => {
-    const adapter = stellarWalletsKit();
+    const adapter = stellarWalletsKit().useAdapter(TEST_PASSPHRASE);
     const listener = vi.fn();
     adapter.onStateChange(listener);
     stateListeners.forEach((callback) =>
@@ -103,7 +103,7 @@ describe("stellarWalletsKit", () => {
   });
 
   it("onDisconnect() fires on a DISCONNECT event", () => {
-    const adapter = stellarWalletsKit();
+    const adapter = stellarWalletsKit().useAdapter(TEST_PASSPHRASE);
     const listener = vi.fn();
     adapter.onDisconnect(listener);
     disconnectListeners.forEach((callback) => callback({ eventType: "DISCONNECT", payload: {} }));
@@ -111,7 +111,7 @@ describe("stellarWalletsKit", () => {
   });
 
   it("signTransaction and signAuthEntry pass through to the kit", async () => {
-    const adapter = stellarWalletsKit();
+    const adapter = stellarWalletsKit().useAdapter(TEST_PASSPHRASE);
     await expect(adapter.signTransaction("xdr")).resolves.toEqual({
       signedTxXdr: "xdr-signed",
     });

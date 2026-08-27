@@ -1,7 +1,45 @@
-import { describe, expect, it } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import { useWallet } from "@soroform/wallet-adapter";
+import type { WalletAdapter, WalletConnector } from "@soroform/wallet-adapter";
 import { SoroformProvider, useSoroformConfig } from "./context.js";
+
+const TEST_ADDRESS = "GABCDEFGHIJKLMNOPQRSTUVWXYZ234567ABCDEFGHIJKLMNOPQRSTUV";
+
+function createFakeConnector(): WalletConnector {
+  let stateListener: ((state: { address: string | undefined; network: string | undefined }) => void) | undefined;
+
+  const adapter: WalletAdapter = {
+    init: vi.fn(),
+    connect: vi.fn(async () => {
+      stateListener?.({ address: TEST_ADDRESS, network: "Test SDF Network ; September 2015" });
+      return { address: TEST_ADDRESS };
+    }),
+    disconnect: vi.fn(async () => {}),
+    signTransaction: vi.fn(async (xdr: string) => ({ signedTxXdr: xdr })),
+    signAuthEntry: vi.fn(async (authEntry: string) => ({ signedAuthEntry: authEntry })),
+    onStateChange: vi.fn((listener) => {
+      stateListener = listener;
+      return () => {
+        stateListener = undefined;
+      };
+    }),
+    onDisconnect: vi.fn(() => () => {}),
+  };
+
+  return { useAdapter: () => adapter };
+}
+
+function WalletProbe() {
+  const wallet = useWallet();
+  return (
+    <div>
+      <span data-testid="address">{wallet.address ?? "none"}</span>
+      <button onClick={() => wallet.connect()}>connect</button>
+    </div>
+  );
+}
 
 function ConfigProbe() {
   const config = useSoroformConfig();
@@ -79,5 +117,87 @@ describe("useSoroformConfig", () => {
       /useSoroformConfig must be called within a <SoroformProvider>/,
     );
     console.error = originalError;
+  });
+});
+
+describe("SoroformProvider wallet prop", () => {
+  it("mounts the connector so useWallet() works, without a separate WalletProvider", async () => {
+    render(
+      <SoroformProvider network="testnet" wallet={createFakeConnector()}>
+        <WalletProbe />
+      </SoroformProvider>,
+    );
+    expect(screen.getByTestId("address")).toHaveTextContent("none");
+
+    screen.getByText("connect").click();
+    await waitFor(() => {
+      expect(screen.getByTestId("address")).toHaveTextContent(TEST_ADDRESS);
+    });
+  });
+
+  it("mounts the connector's own Provider, if it has one, above everything else", () => {
+    const connector: WalletConnector = {
+      ...createFakeConnector(),
+      Provider: ({ children }) => <div data-testid="connector-provider">{children}</div>,
+    };
+    render(
+      <SoroformProvider network="testnet" wallet={connector}>
+        <WalletProbe />
+      </SoroformProvider>,
+    );
+    expect(screen.getByTestId("connector-provider")).toContainElement(
+      screen.getByTestId("address"),
+    );
+  });
+
+  it("useWallet() throws without a wallet prop, same as an unmounted WalletProvider", () => {
+    const originalError = console.error;
+    console.error = () => {};
+    expect(() =>
+      render(
+        <SoroformProvider network="testnet">
+          <WalletProbe />
+        </SoroformProvider>,
+      ),
+    ).toThrow(/useWallet must be called within a <WalletProvider>/);
+    console.error = originalError;
+  });
+});
+
+describe("SoroformProvider devtools prop", () => {
+  const originalEnv = process.env.NODE_ENV;
+
+  afterEach(() => {
+    process.env.NODE_ENV = originalEnv;
+  });
+
+  it("does not render devtools when the prop is omitted", () => {
+    process.env.NODE_ENV = "development";
+    render(
+      <SoroformProvider network="testnet">
+        <span>hello</span>
+      </SoroformProvider>,
+    );
+    expect(screen.queryByRole("button", { name: "Soroform" })).not.toBeInTheDocument();
+  });
+
+  it("renders devtools with defaults when passed true", () => {
+    process.env.NODE_ENV = "development";
+    render(
+      <SoroformProvider network="testnet" devtools>
+        <span>hello</span>
+      </SoroformProvider>,
+    );
+    expect(screen.getByRole("button", { name: "Soroform" })).toBeInTheDocument();
+  });
+
+  it("forwards an options object to SoroformDevtools", () => {
+    process.env.NODE_ENV = "development";
+    render(
+      <SoroformProvider network="testnet" devtools={{ initialOpen: true }}>
+        <span>hello</span>
+      </SoroformProvider>,
+    );
+    expect(screen.getByRole("tab", { name: "Sends" })).toBeInTheDocument();
   });
 });
