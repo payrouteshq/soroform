@@ -13,7 +13,7 @@ import {
   type SoroformNetwork,
 } from "@soroform/core";
 import { useSoroformConfig } from "@soroform/provider";
-import { useWallet } from "@soroform/wallet";
+import { useWallet } from "@soroform/wallet-adapter";
 import { fetchContractSpec } from "./spec-cache.js";
 import { generateContractSchemas } from "./generate-schemas.js";
 import { toValidationError } from "./validation-error.js";
@@ -53,7 +53,7 @@ function isDevelopment(): boolean {
  * "submitting" | "success" | "error"`) rather than a single boolean, so a
  * consuming app can render distinct UI per phase.
  *
- * Requires a connected wallet (see `useWallet` from `@soroform/wallet`).
+ * Requires a connected wallet (see `useWallet` from `@soroform/wallet-adapter`).
  * On success, invalidates every `useContractCall` query for this contract,
  * so calls reflect the new state automatically. On error, the thrown
  * error is normalized via `@soroform/core`'s `normalizeError` before being

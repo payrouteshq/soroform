@@ -1,4 +1,4 @@
-import { ConnectWalletButton } from "@soroform/wallet";
+import { ConnectWalletButton } from "@soroform/wallet-adapter";
 import { NetworkStatus } from "./network-status";
 import { ContractMetadata } from "./contract-metadata";
 import { BalanceCard } from "./balance-card";

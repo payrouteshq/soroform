@@ -1,0 +1,104 @@
+{
+  "name": "@soroform/wallet-adapter",
+  "version": "0.0.0",
+  "description": "Adapter-agnostic wallet connection and signing layer for Soroform. Bring your own connector via a WalletAdapter, or use the stellar-wallets-kit or blux adapters Soroform ships.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./adapters/stellar-wallets-kit": {
+      "import": {
+        "types": "./dist/adapters/stellar-wallets-kit.d.ts",
+        "default": "./dist/adapters/stellar-wallets-kit.js"
+      },
+      "require": {
+        "types": "./dist/adapters/stellar-wallets-kit.d.cts",
+        "default": "./dist/adapters/stellar-wallets-kit.cjs"
+      }
+    },
+    "./adapters/blux": {
+      "import": {
+        "types": "./dist/adapters/blux.d.ts",
+        "default": "./dist/adapters/blux.js"
+      },
+      "require": {
+        "types": "./dist/adapters/blux.d.cts",
+        "default": "./dist/adapters/blux.cjs"
+      }
+    },
+    "./adapters/para": {
+      "import": {
+        "types": "./dist/adapters/para.d.ts",
+        "default": "./dist/adapters/para.js"
+      },
+      "require": {
+        "types": "./dist/adapters/para.d.cts",
+        "default": "./dist/adapters/para.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": ["dist"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@soroform/provider": "workspace:*"
+  },
+  "peerDependencies": {
+    "@bluxcc/core": "^0.2.0",
+    "@creit.tech/stellar-wallets-kit": "^2.0.0",
+    "@getpara/react-sdk": "^3.0.0",
+    "@tanstack/react-query": "^5.0.0",
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@bluxcc/core": {
+      "optional": true
+    },
+    "@creit.tech/stellar-wallets-kit": {
+      "optional": true
+    },
+    "@getpara/react-sdk": {
+      "optional": true
+    },
+    "@tanstack/react-query": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@bluxcc/core": "0.2.18",
+    "@creit.tech/stellar-wallets-kit": "2.5.0",
+    "@getpara/react-sdk": "3.15.0",
+    "@tanstack/react-query": "5.102.2",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.2",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "@vitejs/plugin-react": "6.1.0",
+    "jsdom": "30.0.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "tsup": "8.5.1",
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
+  }
+}

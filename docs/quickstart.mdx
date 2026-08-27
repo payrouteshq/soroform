@@ -16,34 +16,37 @@ This walks through going from a fresh React or Next.js app to a working contract
 <CodeGroup>
 
 ```bash npm
-npm install @soroform/core @soroform/provider @soroform/wallet @soroform/contract \
-  @stellar/stellar-sdk @tanstack/react-query zod react-hook-form @hookform/resolvers
+npm install @soroform/core @soroform/provider @soroform/wallet-adapter @soroform/contract \
+  @creit.tech/stellar-wallets-kit @stellar/stellar-sdk @tanstack/react-query zod react-hook-form @hookform/resolvers
 ```
 
 ```bash pnpm
-pnpm add @soroform/core @soroform/provider @soroform/wallet @soroform/contract \
-  @stellar/stellar-sdk @tanstack/react-query zod react-hook-form @hookform/resolvers
+pnpm add @soroform/core @soroform/provider @soroform/wallet-adapter @soroform/contract \
+  @creit.tech/stellar-wallets-kit @stellar/stellar-sdk @tanstack/react-query zod react-hook-form @hookform/resolvers
 ```
 
 </CodeGroup>
 
-`@tanstack/react-query`, `zod`, `react-hook-form`, and `@hookform/resolvers` are peer dependencies: install them alongside Soroform so your app controls their versions.
+`@tanstack/react-query`, `zod`, `react-hook-form`, and `@hookform/resolvers` are peer dependencies: install them alongside Soroform so your app controls their versions. `@creit.tech/stellar-wallets-kit` is the wallet connector this quickstart uses; see [`WalletProvider`](/components/wallet-provider) for the other adapter Soroform ships (`blux()`), or for writing your own.
 
 ## Wrap your app in the providers
 
-`SoroformProvider` resolves your network configuration and supplies a TanStack Query client to every hook. `WalletProvider` must be nested inside it, since it reads the network from `SoroformProvider`'s context.
+`SoroformProvider` resolves your network configuration and supplies a TanStack Query client to every hook. `WalletProvider` must be nested inside it, since it reads the network from `SoroformProvider`'s context, and takes a wallet adapter to drive — `stellarWalletsKit()` here.
 
 ```tsx app/providers.tsx
 "use client";
 
 import type { ReactNode } from "react";
 import { SoroformProvider } from "@soroform/provider";
-import { WalletProvider } from "@soroform/wallet";
+import { WalletProvider } from "@soroform/wallet-adapter";
+import { stellarWalletsKit } from "@soroform/wallet-adapter/adapters/stellar-wallets-kit";
+
+const adapter = stellarWalletsKit();
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <SoroformProvider network="testnet">
-      <WalletProvider>{children}</WalletProvider>
+      <WalletProvider adapter={adapter}>{children}</WalletProvider>
     </SoroformProvider>
   );
 }
@@ -95,7 +98,7 @@ export function Balance({ address }: { address: string }) {
 ```tsx app/transfer.tsx
 "use client";
 
-import { ConnectWalletButton } from "@soroform/wallet";
+import { ConnectWalletButton } from "@soroform/wallet-adapter";
 import { useContractSend } from "@soroform/contract";
 
 const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";

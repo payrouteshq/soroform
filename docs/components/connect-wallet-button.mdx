@@ -6,7 +6,7 @@ description: "A minimally styled button that opens the wallet picker and shows t
 A minimally styled button that opens the wallet picker modal when no wallet is connected, and shows the connected address (disconnecting on click) once one is. Styled entirely through CSS custom properties, so you can restyle it without overriding classes.
 
 ```tsx
-import { ConnectWalletButton } from "@soroform/wallet";
+import { ConnectWalletButton } from "@soroform/wallet-adapter";
 ```
 
 <Note>
@@ -23,7 +23,7 @@ import { ConnectWalletButton } from "@soroform/wallet";
 ## Example
 
 ```tsx
-import { ConnectWalletButton } from "@soroform/wallet";
+import { ConnectWalletButton } from "@soroform/wallet-adapter";
 
 function Header() {
   return <ConnectWalletButton connectLabel="Sign in" />;

@@ -33,7 +33,7 @@
   "dependencies": {
     "@soroform/core": "workspace:*",
     "@soroform/provider": "workspace:*",
-    "@soroform/wallet": "workspace:*",
+    "@soroform/wallet-adapter": "workspace:*",
     "@stellar/stellar-sdk": "17.0.0"
   },
   "peerDependencies": {

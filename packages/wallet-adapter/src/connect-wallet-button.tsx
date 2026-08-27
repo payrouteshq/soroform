@@ -34,7 +34,7 @@ export interface ConnectWalletButtonProps {
  *
  * @example
  * ```tsx
- * import { ConnectWalletButton } from "@soroform/wallet";
+ * import { ConnectWalletButton } from "@soroform/wallet-adapter";
  *
  * function Header() {
  *   return <ConnectWalletButton />;

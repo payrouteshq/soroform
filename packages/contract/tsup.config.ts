@@ -16,7 +16,7 @@ export default defineConfig({
     "@stellar/stellar-sdk",
     "@soroform/core",
     "@soroform/provider",
-    "@soroform/wallet",
+    "@soroform/wallet-adapter",
   ],
   banner: { js: '"use client";' },
 });

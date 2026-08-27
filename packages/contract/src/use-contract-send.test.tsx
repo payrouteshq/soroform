@@ -40,7 +40,7 @@ vi.mock("@stellar/stellar-sdk/contract", async (importOriginal) => {
   };
 });
 
-vi.mock("@soroform/wallet", () => ({
+vi.mock("@soroform/wallet-adapter", () => ({
   useWallet: () => ({
     address: "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ",
     network: undefined,

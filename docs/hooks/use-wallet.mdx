@@ -3,10 +3,10 @@ title: "useWallet"
 description: "Read wallet connection state and signing functions"
 ---
 
-Reads the wallet connection state and signing functions supplied by the nearest `WalletProvider` ancestor. Exported from `@soroform/wallet`, not `@soroform/hooks`.
+Reads the wallet connection state and signing functions supplied by the nearest `WalletProvider` ancestor. Exported from `@soroform/wallet-adapter`, not `@soroform/hooks`.
 
 ```ts
-import { useWallet } from "@soroform/wallet";
+import { useWallet } from "@soroform/wallet-adapter";
 
 function useWallet(): WalletState;
 ```
@@ -30,7 +30,7 @@ function useWallet(): WalletState;
 ## Example
 
 ```tsx
-import { useWallet } from "@soroform/wallet";
+import { useWallet } from "@soroform/wallet-adapter";
 
 function AccountBadge() {
   const { address, isConnected, connect, disconnect } = useWallet();

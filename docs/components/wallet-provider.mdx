@@ -1,53 +1,131 @@
 ---
 title: "WalletProvider"
-description: "Wallet connection context, backed by a multi-wallet Stellar connector"
+description: "Wallet connection context, driven by whichever wallet adapter you pass it"
 ---
 
-Wraps the app in a wallet connection context, backed by `@creit.tech/stellar-wallets-kit`. Must be rendered inside a [`SoroformProvider`](/components/soroform-provider), which supplies the network this provider connects wallets on.
+Wraps the app in a wallet connection context, driven by whichever `WalletAdapter` is passed as `adapter`. Must be rendered inside a [`SoroformProvider`](/components/soroform-provider), which supplies the network this provider connects wallets on.
 
 ```tsx
-import { WalletProvider } from "@soroform/wallet";
+import { WalletProvider } from "@soroform/wallet-adapter";
+```
+
+Soroform is not tied to one wallet connector. Pick an adapter, construct it once, and pass it in:
+
+```tsx
+import { stellarWalletsKit } from "@soroform/wallet-adapter/adapters/stellar-wallets-kit";
+
+const adapter = stellarWalletsKit();
+
+<WalletProvider adapter={adapter}>{children}</WalletProvider>;
 ```
 
 ## Props
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `modules` | `ModuleInterface[]` | No | Wallet modules to offer in the connection picker. Defaults to Freighter, xBull, Albedo, Lobstr, Hana, and Rabet. |
-| `selectedWalletId` | `string` | No | The wallet ID to preselect, if any was previously connected. |
+| `adapter` | `WalletAdapter` | Yes | The wallet connector to drive. See below. |
+
+<Warning>
+  Construct the adapter once — at module scope, or in a `useMemo` with an empty dependency array — and pass the same reference every render. A fresh adapter object each render makes `WalletProvider` tear down and resubscribe its listeners on every render.
+</Warning>
+
+## Adapters Soroform ships
+
+### `stellarWalletsKit()`
+
+From `@soroform/wallet-adapter/adapters/stellar-wallets-kit`. Backed by [`@creit.tech/stellar-wallets-kit`](https://github.com/Creit-Tech/Stellar-Wallets-Kit), a multi-wallet connector supporting Freighter, xBull, Albedo, Lobstr, Hana, Rabet, hardware wallets, and WalletConnect. `@creit.tech/stellar-wallets-kit` is a peer dependency: install it alongside `@soroform/wallet-adapter` to use this adapter.
+
+```tsx
+import { stellarWalletsKit } from "@soroform/wallet-adapter/adapters/stellar-wallets-kit";
+
+const adapter = stellarWalletsKit({
+  // modules?: ModuleInterface[] — defaults to Freighter, xBull, Albedo, Lobstr, Hana, Rabet
+  // selectedWalletId?: string — the wallet ID to preselect
+});
+```
 
 <Note>
   The default module list only includes wallets with a no-argument constructor, so no extra setup (API keys, project IDs) is required out of the box. Hardware wallets and WalletConnect-based modules need such setup; pass them explicitly via `modules` if you need them.
 </Note>
 
-## Example
-
-```tsx
-import { SoroformProvider } from "@soroform/provider";
-import { WalletProvider } from "@soroform/wallet";
-
-export function App({ children }: { children: React.ReactNode }) {
-  return (
-    <SoroformProvider network="testnet">
-      <WalletProvider>{children}</WalletProvider>
-    </SoroformProvider>
-  );
-}
-```
-
 Adding a hardware wallet module:
 
 ```tsx
-import { WalletProvider, createDefaultModules } from "@soroform/wallet";
+import { stellarWalletsKit, createDefaultModules } from "@soroform/wallet-adapter/adapters/stellar-wallets-kit";
 import { LedgerModule } from "@creit.tech/stellar-wallets-kit/modules/ledger";
 
-<WalletProvider modules={[...createDefaultModules(), new LedgerModule()]}>
-  {children}
-</WalletProvider>;
+const adapter = stellarWalletsKit({
+  modules: [...createDefaultModules(), new LedgerModule()],
+});
 ```
 
 <Warning>
   `LedgerModule` requires a `Buffer` polyfill in your app; without one, it breaks the rest of your app rather than failing gracefully. Most Next.js and Vite setups need to add this explicitly.
 </Warning>
+
+### `blux()`
+
+From `@soroform/wallet-adapter/adapters/blux`. Backed by [`@bluxcc/core`](https://blux.cc), a wallet and authentication SDK supporting Freighter, Rabet, xBull, LOBSTR, Hana, Ledger, Trezor, WalletConnect, and non-wallet login (email, passkey, social) through one modal. `@bluxcc/core` is a peer dependency, along with the wallet SDKs it integrates (see its own peer dependencies).
+
+Requires an `appId` from the [Blux dashboard](https://dashboard.blux.cc/):
+
+```tsx
+import { blux } from "@soroform/wallet-adapter/adapters/blux";
+
+const adapter = blux({
+  appId: "...",
+  appName: "My App",
+  // any other Blux createConfig option, e.g. loginMethods, appearance
+});
+```
+
+Signing runs headlessly against the connected wallet (`showWalletUIs: false`) by default, matching `stellarWalletsKit()`'s behavior: only `connect()` opens a Blux UI, never `signTransaction`/`signAuthEntry`. Pass `showWalletUIs: true` to opt back into Blux's own per-transaction approval modal.
+
+### `ParaWalletProvider`
+
+From `@soroform/wallet-adapter/adapters/para`. Backed by [`@getpara/react-sdk`](https://docs.getpara.com), an embedded-wallet SDK (email, passkey, social, and external wallet login) with native Stellar support. `@getpara/react-sdk` and `@tanstack/react-query` are peer dependencies.
+
+Unlike the other two, this is a **component**, not a factory function: Para's connect UI only exists as a React component tied to Para's own context, so there is no plain object to construct outside of React. Render it in place of `WalletProvider` directly — it renders `WalletProvider` internally, so `useWallet()` still works the same way everywhere else in your app.
+
+Requires an `apiKey` from the [Para developer portal](https://developer.getpara.com/):
+
+```tsx
+import { SoroformProvider } from "@soroform/provider";
+import { ParaWalletProvider } from "@soroform/wallet-adapter/adapters/para";
+
+export function App({ children }: { children: React.ReactNode }) {
+  return (
+    <SoroformProvider network="testnet">
+      <ParaWalletProvider apiKey="...">{children}</ParaWalletProvider>
+    </SoroformProvider>
+  );
+}
+```
+
+<Note>
+  Built against Para's documented, type-checked API (`@getpara/react-sdk`'s real published types), not exercised against a live Para account — Para requires a dashboard `apiKey` to test at all. If Para's runtime behavior ever drifts from this, the fix belongs in `ParaWalletProvider`'s small hooks-to-`WalletAdapter` bridge, not in `WalletProvider` itself.
+</Note>
+
+## Writing your own adapter
+
+A `WalletAdapter` is a plain object:
+
+```ts
+interface WalletAdapter {
+  init(networkPassphrase: string): void;
+  connect(): Promise<{ address: string }>;
+  disconnect(): Promise<void>;
+  signTransaction(xdr: string, opts?: SignOptions): Promise<WalletSignResult>;
+  signAuthEntry(authEntry: string, opts?: SignOptions): Promise<AuthEntrySignResult>;
+  onStateChange(listener: (state: WalletAdapterState) => void): () => void;
+  onDisconnect(listener: () => void): () => void;
+}
+```
+
+`init` is called once on mount and again whenever the network passphrase changes. `onStateChange`/`onDisconnect` return unsubscribe functions; `WalletProvider` calls them on unmount. Import the type from `@soroform/wallet-adapter`:
+
+```ts
+import type { WalletAdapter } from "@soroform/wallet-adapter";
+```
 
 See [`useWallet`](/hooks/use-wallet) for reading connection state, and [`ConnectWalletButton`](/components/connect-wallet-button) for a ready-made connect button.

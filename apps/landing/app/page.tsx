@@ -2,7 +2,6 @@
 
 import { motion, type Variants } from "framer-motion";
 import { Activity, ShieldCheck, Wallet } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CodeBlock } from "@/components/code-block";
 import { CodeToUiPreview } from "@/components/code-to-ui-preview";
@@ -67,15 +66,9 @@ export default function Home() {
             animate="show"
             className="mx-auto flex w-full max-w-5xl flex-col items-center px-6 pt-20 pb-24 text-center sm:pt-28"
           >
-            <motion.div variants={item}>
-              <Badge variant="secondary" className="font-mono">
-                every transaction is a form
-              </Badge>
-            </motion.div>
-
             <motion.h1
               variants={item}
-              className="mt-6 font-[family-name:var(--font-display)] text-4xl font-bold tracking-tight text-balance sm:text-6xl"
+              className="font-[family-name:var(--font-display)] text-4xl font-bold tracking-tight text-balance sm:text-6xl"
             >
               Build Stellar apps at 100x speed.
             </motion.h1>

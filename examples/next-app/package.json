@@ -12,13 +12,14 @@
     "clean": "rm -rf .next .turbo"
   },
   "dependencies": {
+    "@creit.tech/stellar-wallets-kit": "2.5.0",
     "@hookform/resolvers": "5.9.1",
     "@soroform/contract": "workspace:*",
     "@soroform/core": "workspace:*",
     "@soroform/devtools": "workspace:*",
     "@soroform/hooks": "workspace:*",
     "@soroform/provider": "workspace:*",
-    "@soroform/wallet": "workspace:*",
+    "@soroform/wallet-adapter": "workspace:*",
     "@stellar/stellar-sdk": "17.0.0",
     "@tailwindcss/postcss": "4.3.3",
     "@tanstack/react-query": "5.102.2",
