@@ -15,6 +15,17 @@ export default tseslint.config(
       "**/.next/**",
       "**/*.generated.ts",
       "**/*.generated.css",
+      // tsup (via bundle-require) writes a transient
+      // `<config>.bundled_<random>.{mjs,cjs}` next to config files like
+      // tsup.config.ts while it runs, then deletes it. `lint` and `build`
+      // aren't ordered against each other for the same package (turbo's
+      // `lint`/`typecheck`/`test` only depend on `^build`, upstream
+      // packages' builds), so ESLint's own file glob can catch this file
+      // mid-existence and then fail with ENOENT once `build` deletes it
+      // out from under the read. Excluding the pattern avoids the race
+      // entirely, rather than relying on task ordering or retries.
+      "**/*.bundled_*.mjs",
+      "**/*.bundled_*.cjs",
     ],
   },
   eslint.configs.recommended,
