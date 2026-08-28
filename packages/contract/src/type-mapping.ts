@@ -57,30 +57,31 @@ export function sorobanTypeToZod(type: xdr.ScSpecTypeDef, spec: Spec): z.ZodType
 
     case "scSpecTypeBytesN": {
       const length = type.bytesN.n;
-      return z
-        .instanceof(Uint8Array)
-        .refine((value) => value.length === length, {
-          message: `Expected exactly ${length} bytes`,
-        });
+      return z.instanceof(Uint8Array).refine((value) => value.length === length, {
+        message: `Expected exactly ${length} bytes`,
+      });
     }
 
     case "scSpecTypeAddress":
-      return z.string().refine(
-        (value) => StrKey.isValidEd25519PublicKey(value) || StrKey.isValidContract(value),
-        { message: "Expected a valid Stellar account (G...) or contract (C...) address" },
-      );
+      return z
+        .string()
+        .refine((value) => StrKey.isValidEd25519PublicKey(value) || StrKey.isValidContract(value), {
+          message: "Expected a valid Stellar account (G...) or contract (C...) address",
+        });
 
     case "scSpecTypeMuxedAddress":
-      return z.string().refine(
-        (value) =>
-          StrKey.isValidEd25519PublicKey(value) ||
-          StrKey.isValidContract(value) ||
-          StrKey.isValidMed25519PublicKey(value),
-        {
-          message:
-            "Expected a valid Stellar account (G...), contract (C...), or muxed account (M...) address",
-        },
-      );
+      return z
+        .string()
+        .refine(
+          (value) =>
+            StrKey.isValidEd25519PublicKey(value) ||
+            StrKey.isValidContract(value) ||
+            StrKey.isValidMed25519PublicKey(value),
+          {
+            message:
+              "Expected a valid Stellar account (G...), contract (C...), or muxed account (M...) address",
+          },
+        );
 
     case "scSpecTypeVec":
       return z.array(sorobanTypeToZod(type.vec.elementType, spec));
@@ -170,9 +171,7 @@ function udtToZod(name: string, spec: Spec): z.ZodTypeAny {
         const tupleCase = udtCase.tupleCase;
         // The SDK always represents a tuple case's payload as an array
         // under `values`, even when the case carries exactly one value.
-        const valueTypes = tupleCase.type.map((valueType) =>
-          sorobanTypeToZod(valueType, spec),
-        );
+        const valueTypes = tupleCase.type.map((valueType) => sorobanTypeToZod(valueType, spec));
         return z.object({
           tag: z.literal(tupleCase.name.toString()),
           values:

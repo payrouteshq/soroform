@@ -6,7 +6,7 @@ import { Spec } from "@stellar/stellar-sdk/contract";
 import { QueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { SoroformProvider } from "@soroform/provider";
-import { devtoolsSendLog, type SoroformError } from "@soroform/core";
+import { devtoolsSendLog, pendingTransactions, type SoroformError } from "@soroform/core";
 import { useContractSend } from "./use-contract-send.js";
 
 const T = xdr.ScSpecTypeDef;
@@ -24,12 +24,23 @@ function buildFixtureSpec(): Spec {
   return new Spec([xdr.ScSpecEntry.scSpecEntryFunctionV0(transfer)]);
 }
 
-const { mockClientFrom, mockBuild, mockSign, mockSend } = vi.hoisted(() => ({
-  mockClientFrom: vi.fn(),
-  mockBuild: vi.fn(),
-  mockSign: vi.fn(),
-  mockSend: vi.fn(),
-}));
+const { mockClientFrom, mockBuild, mockSign, mockSend, enqueued, sequencedServer } = vi.hoisted(
+  () => ({
+    mockClientFrom: vi.fn(),
+    mockBuild: vi.fn(),
+    mockSign: vi.fn(),
+    mockSend: vi.fn(),
+    /** Addresses the hook queued a send for, in order. */
+    enqueued: [] as string[],
+    sequencedServer: { marker: "sequenced-server" },
+  }),
+);
+
+interface EnqueueArgs {
+  address: string;
+  onStart?: () => void;
+  task: (context: { server: unknown; markSubmitted: () => void }) => Promise<unknown>;
+}
 
 vi.mock("@stellar/stellar-sdk/contract", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@stellar/stellar-sdk/contract")>();
@@ -37,6 +48,38 @@ vi.mock("@stellar/stellar-sdk/contract", async (importOriginal) => {
     ...actual,
     Client: { ...actual.Client, from: mockClientFrom },
     AssembledTransaction: { ...actual.AssembledTransaction, build: mockBuild },
+  };
+});
+
+/**
+ * The real sequencer resolves the account's sequence number over RPC, which
+ * these tests have no network for. This stand-in keeps the part the hook
+ * depends on — one send at a time per account, released the moment the
+ * network accepts a transaction — and hands out a server the mocked
+ * `AssembledTransaction.build` never actually calls. Sequence-number
+ * projection itself is covered by `@soroform/core`'s own tests.
+ */
+vi.mock("@soroform/core", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@soroform/core")>();
+  let tail: Promise<void> = Promise.resolve();
+  return {
+    ...actual,
+    transactionSequencer: {
+      async enqueue({ address, onStart, task }: EnqueueArgs) {
+        const previous = tail;
+        let release!: () => void;
+        tail = previous.then(() => new Promise<void>((resolve) => (release = resolve)));
+        await previous;
+
+        enqueued.push(address);
+        onStart?.();
+        try {
+          return await task({ server: sequencedServer, markSubmitted: () => release() });
+        } finally {
+          release();
+        }
+      },
+    },
   };
 });
 
@@ -52,23 +95,27 @@ vi.mock("@soroform/wallet-adapter", () => ({
   }),
 }));
 
+const WALLET_ADDRESS = "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ";
 const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
 const TO_ADDRESS = "GDY7BN2SFRNLSMNNZI7CQL52OUITGPPJY3GF6TV22UVHEX6BD54YB3OL";
 
 function renderWithProviders(children: React.ReactNode) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return { queryClient, ...render(
-    <SoroformProvider network="testnet" queryClient={queryClient}>
-      {children}
-    </SoroformProvider>,
-  ) };
+  return {
+    queryClient,
+    ...render(
+      <SoroformProvider network="testnet" queryClient={queryClient}>
+        {children}
+      </SoroformProvider>,
+    ),
+  };
 }
 
 function TransferProbe(props: {
   args?: Record<string, unknown>;
   onError?: (error: SoroformError) => void;
 }) {
-  const { status, data, error, sendAsync } = useContractSend<boolean>({
+  const { status, data, error, hash, sendAsync } = useContractSend<boolean>({
     contractId: CONTRACT_ID,
     method: "transfer",
   });
@@ -83,6 +130,7 @@ function TransferProbe(props: {
       <span data-testid="data">{String(data)}</span>
       <span data-testid="error">{error?.message ?? "none"}</span>
       <span data-testid="kind">{error?.kind ?? "none"}</span>
+      <span data-testid="hash">{hash ?? "none"}</span>
       <button
         onClick={() => {
           void sendAsync(args).catch(() => {});
@@ -98,6 +146,8 @@ describe("useContractSend", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     devtoolsSendLog.clear();
+    pendingTransactions.clear();
+    enqueued.length = 0;
   });
 
   it("moves through simulating -> needsSignature -> submitting -> success", async () => {
@@ -203,5 +253,76 @@ describe("useContractSend", () => {
     expect(entries.at(-1)?.contractId).toBe(CONTRACT_ID);
 
     process.env.NODE_ENV = originalEnv;
+  });
+
+  it("builds against the sequencer's server rather than resolving the account itself", async () => {
+    mockClientFrom.mockResolvedValue({ spec: buildFixtureSpec() });
+    mockSign.mockResolvedValue(undefined);
+    mockSend.mockResolvedValue({ result: true });
+    mockBuild.mockResolvedValue({ sign: mockSign, send: mockSend });
+
+    renderWithProviders(<TransferProbe />);
+    screen.getByText("write").click();
+
+    await waitFor(() => {
+      expect(screen.getByTestId("status")).toHaveTextContent("success");
+    });
+    expect(mockBuild).toHaveBeenCalledWith(
+      expect.objectContaining({ server: sequencedServer, publicKey: WALLET_ADDRESS }),
+    );
+    expect(enqueued).toEqual([WALLET_ADDRESS]);
+  });
+
+  it("queues a second send behind the first instead of racing it onto the same sequence number", async () => {
+    mockClientFrom.mockResolvedValue({ spec: buildFixtureSpec() });
+    mockSign.mockResolvedValue(undefined);
+    mockBuild.mockResolvedValue({ sign: mockSign, send: mockSend });
+
+    let releaseFirst!: () => void;
+    mockSend
+      .mockImplementationOnce(
+        () => new Promise((resolve) => (releaseFirst = () => resolve({ result: true }))),
+      )
+      .mockResolvedValue({ result: true });
+
+    renderWithProviders(<TransferProbe />);
+    const write = screen.getByText("write");
+    write.click();
+    write.click();
+
+    await waitFor(() => expect(mockBuild).toHaveBeenCalledTimes(1));
+    expect(enqueued).toHaveLength(1);
+
+    releaseFirst();
+    await waitFor(() => expect(mockBuild).toHaveBeenCalledTimes(2));
+    expect(enqueued).toEqual([WALLET_ADDRESS, WALLET_ADDRESS]);
+  });
+
+  it("persists the transaction from the moment the network accepts it until it settles", async () => {
+    mockClientFrom.mockResolvedValue({ spec: buildFixtureSpec() });
+    mockSign.mockResolvedValue(undefined);
+    mockBuild.mockResolvedValue({ sign: mockSign, send: mockSend });
+
+    let settle!: () => void;
+    mockSend.mockImplementation((watcher: { onSubmitted: (r: unknown) => void }) => {
+      watcher.onSubmitted({ hash: "d34db33f" });
+      return new Promise((resolve) => (settle = () => resolve({ result: true })));
+    });
+
+    renderWithProviders(<TransferProbe />);
+    screen.getByText("write").click();
+
+    await waitFor(() => {
+      expect(screen.getByTestId("hash")).toHaveTextContent("d34db33f");
+    });
+    expect(pendingTransactions.getAll()).toEqual([
+      expect.objectContaining({ hash: "d34db33f", contractId: CONTRACT_ID, method: "transfer" }),
+    ]);
+
+    settle();
+    await waitFor(() => {
+      expect(screen.getByTestId("status")).toHaveTextContent("success");
+    });
+    expect(pendingTransactions.getAll()).toEqual([]);
   });
 });

@@ -88,21 +88,13 @@ const KIND_BY_ERROR_CLASS: ReadonlyArray<
     "no-signer",
     "No signing function was provided, so this transaction cannot be signed.",
   ],
-  [
-    Errors.NotYetSimulated,
-    "not-yet-simulated",
-    "This transaction has not been simulated yet.",
-  ],
+  [Errors.NotYetSimulated, "not-yet-simulated", "This transaction has not been simulated yet."],
   [
     Errors.FakeAccount,
     "fake-account",
     "The source account used to simulate this call does not exist on the network.",
   ],
-  [
-    Errors.SimulationFailed,
-    "simulation-failed",
-    "Simulating this contract call failed.",
-  ],
+  [Errors.SimulationFailed, "simulation-failed", "Simulating this contract call failed."],
   [
     Errors.InternalWalletError,
     "internal-wallet-error",
@@ -118,21 +110,11 @@ const KIND_BY_ERROR_CLASS: ReadonlyArray<
     "invalid-client-request",
     "The request sent to the wallet was invalid.",
   ],
-  [
-    Errors.UserRejected,
-    "user-rejected",
-    "The request was rejected in the connected wallet.",
-  ],
+  [Errors.UserRejected, "user-rejected", "The request was rejected in the connected wallet."],
 ];
 
-const KIND_BY_ERROR_NAME: ReadonlyArray<
-  readonly [string, SoroformErrorKind, string]
-> = [
-  [
-    "SendFailedError",
-    "send-failed",
-    "Sending this transaction to the network failed.",
-  ],
+const KIND_BY_ERROR_NAME: ReadonlyArray<readonly [string, SoroformErrorKind, string]> = [
+  ["SendFailedError", "send-failed", "Sending this transaction to the network failed."],
   [
     "SendResultOnlyError",
     "send-result-only",

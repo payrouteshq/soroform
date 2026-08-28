@@ -49,11 +49,7 @@
       },
       {
         "group": "Guides",
-        "pages": [
-          "guides/token-transfer-form",
-          "guides/multi-auth",
-          "guides/nextjs-server-actions"
-        ]
+        "pages": ["guides/token-transfer-form", "guides/multi-auth", "guides/nextjs-server-actions"]
       },
       {
         "group": "Reference",

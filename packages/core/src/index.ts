@@ -1,8 +1,4 @@
-export type {
-  SoroformNetwork,
-  SoroformConfigInput,
-  SoroformConfig,
-} from "./config.js";
+export type { SoroformNetwork, SoroformConfigInput, SoroformConfig } from "./config.js";
 export { resolveSoroformConfig } from "./config.js";
 
 export { queryKeys } from "./query-keys.js";
@@ -12,6 +8,13 @@ export { normalizeError } from "./errors.js";
 
 export type { RpcServer } from "./rpc.js";
 export { createRpcServer, createHorizonServer, Horizon } from "./rpc.js";
+
+export { transactionSequencer } from "./sequencer.js";
+
+export type { PendingTransaction } from "./pending-transactions.js";
+export { pendingTransactions } from "./pending-transactions.js";
+
+export { resumePendingTransactions } from "./resume-pending-transactions.js";
 
 export type {
   ContractSendStatus,

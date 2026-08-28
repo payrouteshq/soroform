@@ -4,9 +4,7 @@ import { normalizeError, type SoroformErrorKind } from "./errors.js";
 
 const { Errors } = AssembledTransaction;
 
-const INSTANCEOF_CASES: ReadonlyArray<
-  readonly [new () => Error, SoroformErrorKind]
-> = [
+const INSTANCEOF_CASES: ReadonlyArray<readonly [new () => Error, SoroformErrorKind]> = [
   [Errors.ExpiredState, "expired-state"],
   [Errors.RestorationFailure, "restore-failure"],
   [Errors.NeedsMoreSignatures, "needs-more-signatures"],
@@ -29,21 +27,10 @@ const INSTANCEOF_CASES: ReadonlyArray<
  * locally-defined stand-ins, named identically to the real SDK classes,
  * exercise that same name-matching path.
  */
-const NAME_MATCH_CASES: ReadonlyArray<
-  readonly [new () => Error, SoroformErrorKind]
-> = [
-  [
-    class SendFailedError extends Error {},
-    "send-failed",
-  ],
-  [
-    class SendResultOnlyError extends Error {},
-    "send-result-only",
-  ],
-  [
-    class TransactionStillPendingError extends Error {},
-    "transaction-still-pending",
-  ],
+const NAME_MATCH_CASES: ReadonlyArray<readonly [new () => Error, SoroformErrorKind]> = [
+  [class SendFailedError extends Error {}, "send-failed"],
+  [class SendResultOnlyError extends Error {}, "send-result-only"],
+  [class TransactionStillPendingError extends Error {}, "transaction-still-pending"],
 ];
 
 describe("normalizeError", () => {

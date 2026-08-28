@@ -11,9 +11,9 @@ import { SoroformDevtools } from "@soroform/devtools";
 
 ## Props
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `initialOpen` | `boolean` | No | Renders the panel open by default instead of collapsed. |
+| Name          | Type      | Required | Description                                             |
+| ------------- | --------- | -------- | ------------------------------------------------------- |
+| `initialOpen` | `boolean` | No       | Renders the panel open by default instead of collapsed. |
 
 ## Example
 
@@ -42,5 +42,7 @@ A floating toggle opens a panel with two tabs:
 - Query cache: the app's TanStack Query cache, via an embedded `@tanstack/react-query-devtools` panel. Soroform's own hooks namespace every query key under `"soroform"`, so they're easy to pick out from your app's own queries in the same view.
 
 <Tip>
-  The send log is powered by `@soroform/core`'s `devtoolsSendLog` store, which `useContractSend` writes to regardless of whether `@soroform/devtools` is installed. Installing this package only adds the panel that reads from it; it never needs to be a dependency of `@soroform/contract`.
+  The send log is powered by `@soroform/core`'s `devtoolsSendLog` store, which `useContractSend`
+  writes to regardless of whether `@soroform/devtools` is installed. Installing this package only
+  adds the panel that reads from it; it never needs to be a dependency of `@soroform/contract`.
 </Tip>

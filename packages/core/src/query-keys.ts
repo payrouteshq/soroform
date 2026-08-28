@@ -49,8 +49,7 @@ export const queryKeys = {
   account: (address: string) => ["soroform", "account", address] as const,
 
   /** An address's balance of a given asset (native, classic, or contract). */
-  balance: (address: string, assetId: string) =>
-    ["soroform", "balance", address, assetId] as const,
+  balance: (address: string, assetId: string) => ["soroform", "balance", address, assetId] as const,
 
   /**
    * The prefix shared by every `balance` query for a given address, across
@@ -62,8 +61,7 @@ export const queryKeys = {
   balancesByAddress: (address: string) => ["soroform", "balance", address] as const,
 
   /** The status of a submitted transaction, by hash. */
-  transactionStatus: (hash: string) =>
-    ["soroform", "transactionStatus", hash] as const,
+  transactionStatus: (hash: string) => ["soroform", "transactionStatus", hash] as const,
 
   /** RPC node health and latest ledger info. */
   networkStatus: () => ["soroform", "networkStatus"] as const,
@@ -86,12 +84,7 @@ export const queryKeys = {
     ["soroform", "contractCall", networkPassphrase, contractId] as const,
 
   /** The decoded result of simulating a specific contract call. */
-  contractCall: (
-    networkPassphrase: string,
-    contractId: string,
-    method: string,
-    args: unknown,
-  ) =>
+  contractCall: (networkPassphrase: string, contractId: string, method: string, args: unknown) =>
     [
       "soroform",
       "contractCall",

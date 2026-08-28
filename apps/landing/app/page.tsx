@@ -81,7 +81,11 @@ export default function Home() {
               validation, and integrated TanStack Query. Stop writing XDR, start writing products.
             </motion.p>
 
-            <motion.div variants={item} id="registry" className="mt-10 w-full max-w-lg scroll-mt-24">
+            <motion.div
+              variants={item}
+              id="registry"
+              className="mt-10 w-full max-w-lg scroll-mt-24"
+            >
               <CodeBlock language="bash" filename="terminal" theme="dark">
                 {REGISTRY_COMMAND}
               </CodeBlock>
@@ -108,8 +112,8 @@ export default function Home() {
               Zero-context debugging.
             </motion.h2>
             <motion.p variants={item} className="mt-3 text-balance text-muted-foreground">
-              Integrated devtools that visualize your simulations, resource usage, and auth
-              entries in real time. Never open the Laboratory again.
+              Integrated devtools that visualize your simulations, resource usage, and auth entries
+              in real time. Never open the Laboratory again.
             </motion.p>
             <motion.div variants={item} className="mt-10">
               <DevtoolsPreview />

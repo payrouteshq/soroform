@@ -69,8 +69,6 @@ describe("devtoolsSendLog", () => {
         },
       }),
     );
-    expect(devtoolsSendLog.getAll()[0]?.transaction?.operationType).toBe(
-      "invokeHostFunction",
-    );
+    expect(devtoolsSendLog.getAll()[0]?.transaction?.operationType).toBe("invokeHostFunction");
   });
 });

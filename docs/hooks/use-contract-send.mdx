@@ -15,21 +15,22 @@ function useContractSend<TResult = unknown>(
 
 ## Parameters
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `contractId` | `string` | Yes | The deployed contract's address (`C...`). |
-| `method` | `string` | Yes | The state-changing method to call. |
-| `network` | `SoroformNetwork` | No | Overrides the network from the nearest `SoroformProvider`. |
+| Name         | Type              | Required | Description                                                |
+| ------------ | ----------------- | -------- | ---------------------------------------------------------- |
+| `contractId` | `string`          | Yes      | The deployed contract's address (`C...`).                  |
+| `method`     | `string`          | Yes      | The state-changing method to call.                         |
+| `network`    | `SoroformNetwork` | No       | Overrides the network from the nearest `SoroformProvider`. |
 
 ## Return value
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `status` | `"idle" \| "simulating" \| "needsSignature" \| "submitting" \| "success" \| "error"` | The current phase. |
-| `data` | `TResult \| undefined` | The decoded result, once `status` is `"success"`. |
-| `error` | `SoroformError \| undefined` | A normalized error, once `status` is `"error"`. |
-| `sendAsync` | `(args?: Record<string, unknown>) => Promise<TResult>` | Validates args, simulates, signs, and sends. |
-| `reset` | `() => void` | Resets `status`, `data`, and `error` back to their initial values. |
+| Field       | Type                                                                                             | Description                                                                |
+| ----------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
+| `status`    | `"idle" \| "queued" \| "simulating" \| "needsSignature" \| "submitting" \| "success" \| "error"` | The current phase.                                                         |
+| `data`      | `TResult \| undefined`                                                                           | The decoded result, once `status` is `"success"`.                          |
+| `error`     | `SoroformError \| undefined`                                                                     | A normalized error, once `status` is `"error"`.                            |
+| `hash`      | `string \| undefined`                                                                            | The transaction hash, from the moment the network accepts it.              |
+| `sendAsync` | `(args?: Record<string, unknown>) => Promise<TResult>`                                           | Validates args, simulates, signs, and sends.                               |
+| `reset`     | `() => void`                                                                                     | Resets `status`, `data`, `error`, and `hash` back to their initial values. |
 
 ## Example
 
@@ -55,6 +56,18 @@ function TransferButton({ contractId, to }: { contractId: string; to: string }) 
   );
 }
 ```
+
+## Sequence numbers and concurrent sends
+
+A Stellar transaction carries a sequence number that must be exactly one past the account's current one. Two sends assembled at the same time — a double-clicked button, or two components each firing one — would otherwise both read the same account state, claim the same number, and the second to land would fail with `tx_bad_seq`.
+
+Every send is queued through a global sequencer keyed by the connected wallet address, so this is handled for you with no configuration. Sends from one account are assembled one at a time, and the sequence number is projected forward as each transaction is accepted rather than re-read from a ledger that has not closed yet — so a burst of sends goes out back to back instead of one per ~5 second ledger close. A send waiting its turn reports `status: "queued"`.
+
+The one thing this trades away: a queued send is simulated against a ledger that does not yet contain the send ahead of it. That is fine for repeated independent calls, and wrong only when a call's storage footprint or authorization depends on what the previous call wrote — in that case, `await` the first `sendAsync` before starting the second.
+
+## Surviving a page reload
+
+Once the network accepts a transaction it is recorded in a queue mirrored into `localStorage`. If the page is reloaded while a send is `"submitting"`, [`SoroformProvider`](/components/soroform-provider) picks the transaction back up on mount, polls for its outcome, and invalidates the contract's cached reads once it lands. Nothing needs to be wired up for this; entries that never land age out of the queue on their own.
 
 ## Caching and invalidation
 

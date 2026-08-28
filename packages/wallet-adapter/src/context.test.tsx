@@ -111,9 +111,7 @@ describe("useWallet", () => {
   it("throws when called outside a WalletProvider", () => {
     const originalError = console.error;
     console.error = () => {};
-    expect(() => render(<Probe />)).toThrow(
-      /useWallet must be called within a <WalletProvider>/,
-    );
+    expect(() => render(<Probe />)).toThrow(/useWallet must be called within a <WalletProvider>/);
     console.error = originalError;
   });
 });

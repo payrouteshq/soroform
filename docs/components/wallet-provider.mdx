@@ -11,13 +11,14 @@ import { WalletProvider } from "@soroform/wallet-adapter";
 
 ## Props
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `adapter` | `WalletAdapter` | Yes | The wallet adapter to drive. |
-| `networkPassphrase` | `string` | Yes | The network passphrase to initialize (and re-initialize) the adapter with. |
+| Name                | Type            | Required | Description                                                                |
+| ------------------- | --------------- | -------- | -------------------------------------------------------------------------- |
+| `adapter`           | `WalletAdapter` | Yes      | The wallet adapter to drive.                                               |
+| `networkPassphrase` | `string`        | Yes      | The network passphrase to initialize (and re-initialize) the adapter with. |
 
 <Warning>
-  Construct the adapter once and pass the same reference every render, same as `SoroformProvider`'s `wallet` prop — see its docs for why.
+  Construct the adapter once and pass the same reference every render, same as `SoroformProvider`'s
+  `wallet` prop — see its docs for why.
 </Warning>
 
 ## When to reach for this directly

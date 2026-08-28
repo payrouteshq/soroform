@@ -8,24 +8,22 @@ Fetches RPC node health and the latest ledger. Refetches every 30 seconds, makin
 ```ts
 import { useNetworkStatus } from "@soroform/hooks";
 
-function useNetworkStatus(
-  options?: UseNetworkStatusOptions,
-): UseQueryResult<NetworkStatus>;
+function useNetworkStatus(options?: UseNetworkStatusOptions): UseQueryResult<NetworkStatus>;
 ```
 
 ## Parameters
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `options.enabled` | `boolean` | No | Whether the query should run. Defaults to `true`. |
+| Name              | Type      | Required | Description                                       |
+| ----------------- | --------- | -------- | ------------------------------------------------- |
+| `options.enabled` | `boolean` | No       | Whether the query should run. Defaults to `true`. |
 
 ## Return value
 
 `data` resolves to a `NetworkStatus`:
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `health` | `Api.GetHealthResponse` | RPC node health, including `status: "healthy"`. |
+| Field          | Type                          | Description                                               |
+| -------------- | ----------------------------- | --------------------------------------------------------- |
+| `health`       | `Api.GetHealthResponse`       | RPC node health, including `status: "healthy"`.           |
 | `latestLedger` | `Api.GetLatestLedgerResponse` | The latest ledger's sequence, hash, and protocol version. |
 
 ## Example

@@ -28,9 +28,7 @@ function toClassicAsset(assetId: string): Asset {
   if (assetId === "native") return Asset.native();
   const [code, issuer] = assetId.split(":");
   if (!code || !issuer) {
-    throw new Error(
-      `Soroform: invalid classic asset id "${assetId}", expected "CODE:ISSUER".`,
-    );
+    throw new Error(`Soroform: invalid classic asset id "${assetId}", expected "CODE:ISSUER".`);
   }
   return new Asset(code, issuer);
 }
@@ -75,11 +73,7 @@ export function useBalance(
       try {
         if (isClassicAssetId(assetId)) {
           const asset = toClassicAsset(assetId);
-          const response = await server.getAssetBalance(
-            address,
-            asset,
-            config.networkPassphrase,
-          );
+          const response = await server.getAssetBalance(address, asset, config.networkPassphrase);
           const raw = response.balanceEntry ? BigInt(response.balanceEntry.amount) : 0n;
           return {
             raw,

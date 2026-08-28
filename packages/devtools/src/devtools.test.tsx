@@ -6,9 +6,7 @@ import { SoroformDevtools } from "./devtools.js";
 
 function renderWithQueryClient(children: React.ReactNode) {
   const queryClient = new QueryClient();
-  return render(
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>,
-  );
+  return render(<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>);
 }
 
 describe("SoroformDevtools", () => {
@@ -52,9 +50,6 @@ describe("SoroformDevtools", () => {
       "aria-selected",
       "true",
     );
-    expect(screen.getByRole("tab", { name: "Sends" })).toHaveAttribute(
-      "aria-selected",
-      "false",
-    );
+    expect(screen.getByRole("tab", { name: "Sends" })).toHaveAttribute("aria-selected", "false");
   });
 });

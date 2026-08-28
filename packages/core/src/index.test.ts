@@ -7,7 +7,11 @@ describe("@soroform/core public exports", () => {
     expect(typeof core.normalizeError).toBe("function");
     expect(typeof core.createRpcServer).toBe("function");
     expect(typeof core.createHorizonServer).toBe("function");
+    expect(typeof core.resumePendingTransactions).toBe("function");
     expect(core.queryKeys).toBeDefined();
     expect(core.Horizon).toBeDefined();
+    expect(core.transactionSequencer).toBeDefined();
+    expect(core.pendingTransactions).toBeDefined();
+    expect(core.devtoolsSendLog).toBeDefined();
   });
 });

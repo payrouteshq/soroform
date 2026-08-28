@@ -67,9 +67,9 @@ export function useSorobanForm<TFieldValues extends FieldValues = FieldValues>(
       // the contract's spec), so it cannot be threaded through
       // zodResolver's generics; this narrow cast is the boundary where
       // that dynamic-ness is acknowledged, not a blanket escape hatch.
-      const zodValidate = zodResolver(schema.argsSchema as never) as unknown as Resolver<
-        TFieldValues
-      >;
+      const zodValidate = zodResolver(
+        schema.argsSchema as never,
+      ) as unknown as Resolver<TFieldValues>;
       return zodValidate(values, context, resolverOptions);
     },
     [contractId, method, config.networkPassphrase, config.rpcUrl, queryClient],

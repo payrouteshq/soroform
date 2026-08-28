@@ -5,8 +5,8 @@ interface MockKitEvent {
   payload: Record<string, unknown>;
 }
 
-const { mockKit, stateListeners, disconnectListeners, TEST_PASSPHRASE, TEST_ADDRESS } =
-  vi.hoisted(() => {
+const { mockKit, stateListeners, disconnectListeners, TEST_PASSPHRASE, TEST_ADDRESS } = vi.hoisted(
+  () => {
     const stateListeners: Array<(event: MockKitEvent) => void> = [];
     const disconnectListeners: Array<(event: MockKitEvent) => void> = [];
     const TEST_PASSPHRASE = "Test SDF Network ; September 2015";
@@ -45,7 +45,8 @@ const { mockKit, stateListeners, disconnectListeners, TEST_PASSPHRASE, TEST_ADDR
     };
 
     return { mockKit, stateListeners, disconnectListeners, TEST_PASSPHRASE, TEST_ADDRESS };
-  });
+  },
+);
 
 vi.mock("@creit.tech/stellar-wallets-kit", () => ({
   StellarWalletsKit: mockKit,

@@ -29,9 +29,7 @@ describe("resolveSoroformConfig", () => {
   });
 
   it("requires an explicit rpcUrl for mainnet", () => {
-    expect(() => resolveSoroformConfig({ network: "mainnet" })).toThrow(
-      /mainnet/,
-    );
+    expect(() => resolveSoroformConfig({ network: "mainnet" })).toThrow(/mainnet/);
   });
 
   it("resolves mainnet when rpcUrl is provided", () => {

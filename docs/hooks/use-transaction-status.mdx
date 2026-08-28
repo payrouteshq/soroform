@@ -16,10 +16,10 @@ function useTransactionStatus(
 
 ## Parameters
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `hash` | `string` | Yes | The transaction hash to poll for. |
-| `options.enabled` | `boolean` | No | Whether the query should run. Defaults to `true`. |
+| Name              | Type      | Required | Description                                       |
+| ----------------- | --------- | -------- | ------------------------------------------------- |
+| `hash`            | `string`  | Yes      | The transaction hash to poll for.                 |
+| `options.enabled` | `boolean` | No       | Whether the query should run. Defaults to `true`. |
 
 ## Return value
 
@@ -39,5 +39,7 @@ function TxStatus({ hash }: { hash: string }) {
 ```
 
 <Tip>
-  If you got the transaction from `useContractSend`, you already have its decoded result via `sendAsync`'s return value; reach for `useTransactionStatus` when you have a hash from elsewhere (a webhook, a link, a multi-auth workflow) and need to check on it independently.
+  If you got the transaction from `useContractSend`, you already have its decoded result via
+  `sendAsync`'s return value; reach for `useTransactionStatus` when you have a hash from elsewhere
+  (a webhook, a link, a multi-auth workflow) and need to check on it independently.
 </Tip>

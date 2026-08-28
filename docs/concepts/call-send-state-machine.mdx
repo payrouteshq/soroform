@@ -17,38 +17,42 @@ const { data, isLoading, error } = useContractCall<bigint>({
 });
 ```
 
-## Sends: a five-phase state machine
+## Sends: a six-phase state machine
 
-A send has to build a transaction, simulate it, get it signed, and send it, each of which can fail independently and each of which a UI usually wants to render differently (disable a button while simulating, show a wallet prompt while waiting on a signature, show a spinner while submitting). A single boolean cannot express that, so `useContractSend` exposes a literal `status` field instead:
+A send has to wait its turn behind other sends from the same account, build a transaction, simulate it, get it signed, and send it — each of which can fail independently and each of which a UI usually wants to render differently (disable a button while simulating, show a wallet prompt while waiting on a signature, show a spinner while submitting). A single boolean cannot express that, so `useContractSend` exposes a literal `status` field instead:
 
 ```ts
 type ContractSendStatus =
-  | "idle"
-  | "simulating"
-  | "needsSignature"
-  | "submitting"
-  | "success"
-  | "error";
+  "idle" | "queued" | "simulating" | "needsSignature" | "submitting" | "success" | "error";
 ```
 
 <Steps>
-  <Step title="idle">
-    Before `sendAsync` has been called, or after `reset()`.
+  <Step title="idle">Before `sendAsync` has been called, or after `reset()`.</Step>
+  <Step title="queued">
+    Another send from the same wallet is still claiming its sequence number. Soroform queues sends
+    per account so two of them cannot build a transaction with the same one; see
+    [`useContractSend`](/hooks/use-contract-send#sequence-numbers-and-concurrent-sends). Usually
+    passed through in a single tick.
   </Step>
   <Step title="simulating">
-    The contract's spec is fetched (or read from cache), args are validated, and the transaction is built and simulated via `AssembledTransaction.build`.
+    The contract's spec is fetched (or read from cache), args are validated, and the transaction is
+    built and simulated via `AssembledTransaction.build`.
   </Step>
   <Step title="needsSignature">
-    The transaction has been simulated and is ready to sign. This is when a wallet extension's approval popup typically appears.
+    The transaction has been simulated and is ready to sign. This is when a wallet extension's
+    approval popup typically appears.
   </Step>
   <Step title="submitting">
-    The signed transaction has been sent to the network and Soroform is waiting for a result.
+    The signed transaction has been sent to the network and Soroform is waiting for a result. `hash`
+    is populated as soon as the network accepts it, and the transaction is persisted so a page
+    reload can pick the wait back up.
   </Step>
   <Step title="success">
     The transaction succeeded. `data` holds the decoded return value, via `spec.funcResToNative`.
   </Step>
   <Step title="error">
-    Any of the above steps threw. `error` holds a normalized `SoroformError` (see [Error handling](/concepts/error-handling)).
+    Any of the above steps threw. `error` holds a normalized `SoroformError` (see [Error
+    handling](/concepts/error-handling)).
   </Step>
 </Steps>
 

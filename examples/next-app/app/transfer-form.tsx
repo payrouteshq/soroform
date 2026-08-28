@@ -55,9 +55,7 @@ export function TransferForm() {
             <Label htmlFor="to">Recipient address</Label>
             <Input id="to" placeholder="G..." {...register("to")} />
             {formState.errors.to && (
-              <p className="text-sm text-destructive">
-                {String(formState.errors.to.message)}
-              </p>
+              <p className="text-sm text-destructive">{String(formState.errors.to.message)}</p>
             )}
           </div>
           <div className="space-y-1.5">
@@ -73,9 +71,7 @@ export function TransferForm() {
               })}
             />
             {formState.errors.amount && (
-              <p className="text-sm text-destructive">
-                {String(formState.errors.amount.message)}
-              </p>
+              <p className="text-sm text-destructive">{String(formState.errors.amount.message)}</p>
             )}
           </div>
           <Button type="submit" disabled={isBusy}>

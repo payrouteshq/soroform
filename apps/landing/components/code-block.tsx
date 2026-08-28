@@ -113,9 +113,7 @@ export function CodeBlock({
             )}
           >
             <div className="flex items-center gap-2">
-              {logo && (
-                <img src={logo} alt="" width={14} height={14} className="object-contain" />
-              )}
+              {logo && <img src={logo} alt="" width={14} height={14} className="object-contain" />}
               {filename && (
                 <span
                   className={cn(

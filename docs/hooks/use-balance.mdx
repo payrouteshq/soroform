@@ -17,21 +17,21 @@ function useBalance(
 
 ## Parameters
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `address` | `string` | Yes | The account or contract address whose balance to fetch. |
-| `assetId` | `string` | Yes | `"native"` for XLM, a classic asset as `"CODE:ISSUER"`, or a Soroban token contract address (`C...`). |
-| `options.enabled` | `boolean` | No | Whether the query should run. Defaults to `true`. |
+| Name              | Type      | Required | Description                                                                                           |
+| ----------------- | --------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| `address`         | `string`  | Yes      | The account or contract address whose balance to fetch.                                               |
+| `assetId`         | `string`  | Yes      | `"native"` for XLM, a classic asset as `"CODE:ISSUER"`, or a Soroban token contract address (`C...`). |
+| `options.enabled` | `boolean` | No       | Whether the query should run. Defaults to `true`.                                                     |
 
 ## Return value
 
 `data` resolves to a `BalanceState`:
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `raw` | `bigint` | The raw integer amount, in the asset's smallest unit. |
+| Field       | Type     | Description                                           |
+| ----------- | -------- | ----------------------------------------------------- |
+| `raw`       | `bigint` | The raw integer amount, in the asset's smallest unit. |
 | `formatted` | `string` | `raw` formatted as a decimal string using `decimals`. |
-| `decimals` | `number` | The asset's decimal places. |
+| `decimals`  | `number` | The asset's decimal places.                           |
 
 ## Example
 

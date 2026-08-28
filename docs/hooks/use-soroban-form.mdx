@@ -14,16 +14,17 @@ function useSorobanForm<TFieldValues extends FieldValues = FieldValues>(
 ```
 
 <Note>
-  `react-hook-form` and `@hookform/resolvers` are peer dependencies. This package does not bundle its own copy, so your app controls their versions.
+  `react-hook-form` and `@hookform/resolvers` are peer dependencies. This package does not bundle
+  its own copy, so your app controls their versions.
 </Note>
 
 ## Parameters
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `contractId` | `string` | Yes | The deployed contract's address (`C...`). |
-| `method` | `string` | Yes | The method whose args schema this form should validate against. |
-| `network` | `SoroformNetwork` | No | Overrides the network from the nearest `SoroformProvider`. |
+| Name         | Type              | Required | Description                                                     |
+| ------------ | ----------------- | -------- | --------------------------------------------------------------- |
+| `contractId` | `string`          | Yes      | The deployed contract's address (`C...`).                       |
+| `method`     | `string`          | Yes      | The method whose args schema this form should validate against. |
+| `network`    | `SoroformNetwork` | No       | Overrides the network from the nearest `SoroformProvider`.      |
 
 ## Return value
 
@@ -56,5 +57,7 @@ function TransferForm({ contractId }: { contractId: string }) {
 ```
 
 <Tip>
-  Fields typed `bigint` (any `u64`/`u128`/`u256` argument) need the string from a text input converted to a real `bigint` before validation sees it. See [Building a token transfer form end to end](/guides/token-transfer-form) for the full pattern using `setValueAs`.
+  Fields typed `bigint` (any `u64`/`u128`/`u256` argument) need the string from a text input
+  converted to a real `bigint` before validation sees it. See [Building a token transfer form end to
+  end](/guides/token-transfer-form) for the full pattern using `setValueAs`.
 </Tip>

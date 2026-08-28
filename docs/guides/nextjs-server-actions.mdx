@@ -94,7 +94,10 @@ export function TransferButton({ to }: { to: string }) {
 ```
 
 <Note>
-  `fetchContractSpec` is called on both sides. Each call hits the same cache key (`queryKeys.contractSpec`), so on the client this resolves instantly if a hook elsewhere in the tree already fetched the same contract's spec; on the server, each request gets its own short-lived `QueryClient` since server code has no persistent client-side cache to share.
+  `fetchContractSpec` is called on both sides. Each call hits the same cache key
+  (`queryKeys.contractSpec`), so on the client this resolves instantly if a hook elsewhere in the
+  tree already fetched the same contract's spec; on the server, each request gets its own
+  short-lived `QueryClient` since server code has no persistent client-side cache to share.
 </Note>
 
 ## When to reach for this

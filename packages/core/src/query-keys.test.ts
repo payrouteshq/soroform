@@ -8,9 +8,7 @@ describe("queryKeys", () => {
     expect(queryKeys.transactionStatus("abc")[0]).toBe("soroform");
     expect(queryKeys.networkStatus()[0]).toBe("soroform");
     expect(queryKeys.contractSpec("passphrase", "C123")[0]).toBe("soroform");
-    expect(queryKeys.contractCall("passphrase", "C123", "method", {})[0]).toBe(
-      "soroform",
-    );
+    expect(queryKeys.contractCall("passphrase", "C123", "method", {})[0]).toBe("soroform");
   });
 
   it("makes contractCall keys extend the contractCallsByContract prefix", () => {

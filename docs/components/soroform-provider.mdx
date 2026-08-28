@@ -11,18 +11,20 @@ import { SoroformProvider } from "@soroform/provider";
 
 ## Props
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `network` | `"testnet" \| "mainnet" \| "futurenet" \| "custom"` | Yes | The Stellar network to target. |
-| `rpcUrl` | `string` | No | Overrides the network's default Soroban RPC URL. Required for `"mainnet"` and `"custom"`. |
-| `horizonUrl` | `string` | No | Overrides the network's default Horizon URL. Required for `"custom"`. |
-| `networkPassphrase` | `string` | No | Overrides the network's default passphrase. Required for `"custom"`. |
-| `queryClient` | `QueryClient` | No | A pre-constructed TanStack Query client to share instead of creating a new one. |
-| `wallet` | `WalletConnector` | No | The wallet connector to drive `useWallet()` with. See [Wallet connectors](#wallet-connectors) below. |
-| `devtools` | `boolean \| SoroformDevtoolsProps` | No | Renders `SoroformDevtools` for you. Pass `true` for the defaults, or an options object (e.g. `{ initialOpen: true }`). |
+| Name                | Type                                                | Required | Description                                                                                                            |
+| ------------------- | --------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `network`           | `"testnet" \| "mainnet" \| "futurenet" \| "custom"` | Yes      | The Stellar network to target.                                                                                         |
+| `rpcUrl`            | `string`                                            | No       | Overrides the network's default Soroban RPC URL. Required for `"mainnet"` and `"custom"`.                              |
+| `horizonUrl`        | `string`                                            | No       | Overrides the network's default Horizon URL. Required for `"custom"`.                                                  |
+| `networkPassphrase` | `string`                                            | No       | Overrides the network's default passphrase. Required for `"custom"`.                                                   |
+| `queryClient`       | `QueryClient`                                       | No       | A pre-constructed TanStack Query client to share instead of creating a new one.                                        |
+| `wallet`            | `WalletConnector`                                   | No       | The wallet connector to drive `useWallet()` with. See [Wallet connectors](#wallet-connectors) below.                   |
+| `devtools`          | `boolean \| SoroformDevtoolsProps`                  | No       | Renders `SoroformDevtools` for you. Pass `true` for the defaults, or an options object (e.g. `{ initialOpen: true }`). |
 
 <Note>
-  `"testnet"` and `"futurenet"` have well-known defaults for every field. `"mainnet"` has no default `rpcUrl`, since there is no single free public RPC endpoint for the public network; pass one explicitly. `"custom"` requires all three of `rpcUrl`, `horizonUrl`, and `networkPassphrase`.
+  `"testnet"` and `"futurenet"` have well-known defaults for every field. `"mainnet"` has no default
+  `rpcUrl`, since there is no single free public RPC endpoint for the public network; pass one
+  explicitly. `"custom"` requires all three of `rpcUrl`, `horizonUrl`, and `networkPassphrase`.
 </Note>
 
 ## Example
@@ -43,7 +45,9 @@ export function App({ children }: { children: React.ReactNode }) {
 ```
 
 <Warning>
-  Construct the connector once — at module scope, or in a `useMemo` with an empty dependency array — and pass the same reference every render. A fresh connector object each render makes `SoroformProvider` tear down and resubscribe the wallet layer's listeners on every render.
+  Construct the connector once — at module scope, or in a `useMemo` with an empty dependency array —
+  and pass the same reference every render. A fresh connector object each render makes
+  `SoroformProvider` tear down and resubscribe the wallet layer's listeners on every render.
 </Warning>
 
 Sharing an existing `QueryClient`:
@@ -98,13 +102,18 @@ const wallet = stellarWalletsKit({
 ```
 
 <Note>
-  The default module list only includes wallets with a no-argument constructor, so no extra setup (API keys, project IDs) is required out of the box. Hardware wallets and WalletConnect-based modules need such setup; pass them explicitly via `modules` if you need them.
+  The default module list only includes wallets with a no-argument constructor, so no extra setup
+  (API keys, project IDs) is required out of the box. Hardware wallets and WalletConnect-based
+  modules need such setup; pass them explicitly via `modules` if you need them.
 </Note>
 
 Adding a hardware wallet module:
 
 ```tsx
-import { stellarWalletsKit, createDefaultModules } from "@soroform/wallet-adapter/stellar-wallets-kit";
+import {
+  stellarWalletsKit,
+  createDefaultModules,
+} from "@soroform/wallet-adapter/stellar-wallets-kit";
 import { LedgerModule } from "@creit.tech/stellar-wallets-kit/modules/ledger";
 
 const wallet = stellarWalletsKit({
@@ -113,7 +122,8 @@ const wallet = stellarWalletsKit({
 ```
 
 <Warning>
-  `LedgerModule` requires a `Buffer` polyfill in your app; without one, it breaks the rest of your app rather than failing gracefully. Most Next.js and Vite setups need to add this explicitly.
+  `LedgerModule` requires a `Buffer` polyfill in your app; without one, it breaks the rest of your
+  app rather than failing gracefully. Most Next.js and Vite setups need to add this explicitly.
 </Warning>
 
 ### `blux()`
@@ -156,7 +166,10 @@ export function App({ children }: { children: React.ReactNode }) {
 ```
 
 <Note>
-  Built against Para's documented, type-checked API (`@getpara/react-sdk`'s real published types), not exercised against a live Para account — Para requires a dashboard `apiKey` to test at all. If Para's runtime behavior ever drifts from this, the fix belongs in `para()`'s small `useAdapter` hook, not in `SoroformProvider` itself.
+  Built against Para's documented, type-checked API (`@getpara/react-sdk`'s real published types),
+  not exercised against a live Para account — Para requires a dashboard `apiKey` to test at all. If
+  Para's runtime behavior ever drifts from this, the fix belongs in `para()`'s small `useAdapter`
+  hook, not in `SoroformProvider` itself.
 </Note>
 
 ### Writing your own connector
@@ -167,9 +180,7 @@ A `WalletConnector` is `{ Provider?, useAdapter }`. Most SDKs only need `useAdap
 import type { WalletAdapter, WalletConnector } from "@soroform/wallet-adapter";
 
 function myWallet(): WalletConnector {
-  const adapter: WalletAdapter = {
-    /* ... */
-  };
+  const adapter: WalletAdapter = {/* ... */};
   return { useAdapter: () => adapter };
 }
 ```

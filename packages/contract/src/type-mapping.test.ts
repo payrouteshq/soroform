@@ -124,10 +124,7 @@ describe("sorobanTypeToZod: scalars", () => {
   });
 
   it("maps bytesN to Uint8Array with an exact length constraint", () => {
-    const schema = sorobanTypeToZod(
-      T.scSpecTypeBytesN(new xdr.ScSpecTypeBytesN({ n: 32 })),
-      spec,
-    );
+    const schema = sorobanTypeToZod(T.scSpecTypeBytesN(new xdr.ScSpecTypeBytesN({ n: 32 })), spec);
     expect(schema.safeParse(new Uint8Array(32)).success).toBe(true);
     expect(schema.safeParse(new Uint8Array(31)).success).toBe(false);
     expect(schema.safeParse(new Uint8Array(33)).success).toBe(false);
@@ -240,10 +237,7 @@ describe("sorobanTypeToZod: user-defined types", () => {
   });
 
   it("maps a tuple struct (numeric field names) to a positional array", () => {
-    const schema = sorobanTypeToZod(
-      T.scSpecTypeUdt(new xdr.ScSpecTypeUdt({ name: "Pair" })),
-      spec,
-    );
+    const schema = sorobanTypeToZod(T.scSpecTypeUdt(new xdr.ScSpecTypeUdt({ name: "Pair" })), spec);
     expect(schema.parse([1, "a"])).toEqual([1, "a"]);
     expect(schema.safeParse({ 0: 1, 1: "a" }).success).toBe(false);
   });

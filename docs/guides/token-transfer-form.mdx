@@ -79,5 +79,6 @@ export function TransferForm() {
 `useSorobanForm` and `useContractSend` are both called with the same `contractId` and `method` on purpose. `useSorobanForm` owns field-level validation and error messages as the user types; `useContractSend` owns the build, simulate, sign, and send lifecycle once the form is actually submitted. Both derive from the same cached spec and schema (see [Query key and cache invalidation model](/concepts/query-keys-and-caching)), so there is no duplicated network cost in using both.
 
 <Tip>
-  If your app already knows a token's real decimal count (from [`useBalance`](/hooks/use-balance)'s `decimals` field, for example), use that instead of the hardcoded `10_000_000` above.
+  If your app already knows a token's real decimal count (from [`useBalance`](/hooks/use-balance)'s
+  `decimals` field, for example), use that instead of the hardcoded `10_000_000` above.
 </Tip>

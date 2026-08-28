@@ -62,9 +62,7 @@ export function createDefaultModules(): ModuleInterface[] {
  * </SoroformProvider>;
  * ```
  */
-export function stellarWalletsKit(
-  options: StellarWalletsKitAdapterOptions = {},
-): WalletConnector {
+export function stellarWalletsKit(options: StellarWalletsKitAdapterOptions = {}): WalletConnector {
   const modules = options.modules ?? createDefaultModules();
   // Scoped to this connector instance, not the module: StellarWalletsKit.init()
   // should run once per connector (guards React StrictMode's double-invoked

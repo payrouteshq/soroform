@@ -47,9 +47,7 @@ function Probe(props: { onPayment?: (record: unknown) => void }) {
     onPayment: props.onPayment,
   });
   return (
-    <span data-testid="state">
-      {JSON.stringify({ count: events.length, latest, isStreaming })}
-    </span>
+    <span data-testid="state">{JSON.stringify({ count: events.length, latest, isStreaming })}</span>
   );
 }
 

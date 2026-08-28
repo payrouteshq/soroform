@@ -79,7 +79,9 @@ export function LiveStatusPreview() {
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="flex h-full items-center gap-3 px-4"
           >
-            <step.icon className={`size-4 shrink-0 ${step.color} ${step.spin ? "animate-spin" : ""}`} />
+            <step.icon
+              className={`size-4 shrink-0 ${step.color} ${step.spin ? "animate-spin" : ""}`}
+            />
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-white">{step.label}</p>
               <p className="truncate text-xs text-white/40">{step.detail}</p>

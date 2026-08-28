@@ -30,9 +30,7 @@ const REFETCH_INTERVAL_MS = 30_000;
  * }
  * ```
  */
-export function useNetworkStatus(
-  options?: UseNetworkStatusOptions,
-): UseQueryResult<NetworkStatus> {
+export function useNetworkStatus(options?: UseNetworkStatusOptions): UseQueryResult<NetworkStatus> {
   const config = useSoroformConfig();
 
   return useQuery<NetworkStatus>({

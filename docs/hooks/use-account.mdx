@@ -8,26 +8,23 @@ Fetches a Stellar account's existence and sequence number.
 ```ts
 import { useAccount } from "@soroform/hooks";
 
-function useAccount(
-  address: string,
-  options?: UseAccountOptions,
-): UseQueryResult<AccountState>;
+function useAccount(address: string, options?: UseAccountOptions): UseQueryResult<AccountState>;
 ```
 
 ## Parameters
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `address` | `string` | Yes | The account address (`G...`) to look up. |
-| `options.enabled` | `boolean` | No | Whether the query should run. Defaults to `true`. |
+| Name              | Type      | Required | Description                                       |
+| ----------------- | --------- | -------- | ------------------------------------------------- |
+| `address`         | `string`  | Yes      | The account address (`G...`) to look up.          |
+| `options.enabled` | `boolean` | No       | Whether the query should run. Defaults to `true`. |
 
 ## Return value
 
 `data` resolves to an `AccountState`:
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `exists` | `boolean` | Whether the account exists on-chain. |
+| Field      | Type                  | Description                                          |
+| ---------- | --------------------- | ---------------------------------------------------- |
+| `exists`   | `boolean`             | Whether the account exists on-chain.                 |
 | `sequence` | `string \| undefined` | The account's current sequence number, if it exists. |
 
 ## Example

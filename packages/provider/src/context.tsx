@@ -1,7 +1,9 @@
 import * as React from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import {
+  queryKeys,
   resolveSoroformConfig,
+  resumePendingTransactions,
   type SoroformConfig,
   type SoroformNetwork,
 } from "@soroform/core";
@@ -30,9 +32,7 @@ const SoroformConfigContext = React.createContext<SoroformConfig | undefined>(un
 export function useSoroformConfig(): SoroformConfig {
   const config = React.useContext(SoroformConfigContext);
   if (!config) {
-    throw new Error(
-      "useSoroformConfig must be called within a <SoroformProvider>.",
-    );
+    throw new Error("useSoroformConfig must be called within a <SoroformProvider>.");
   }
   return config;
 }
@@ -121,8 +121,16 @@ export interface SoroformProviderProps {
  * ```
  */
 export function SoroformProvider(props: SoroformProviderProps) {
-  const { network, rpcUrl, horizonUrl, networkPassphrase, queryClient, wallet, devtools, children } =
-    props;
+  const {
+    network,
+    rpcUrl,
+    horizonUrl,
+    networkPassphrase,
+    queryClient,
+    wallet,
+    devtools,
+    children,
+  } = props;
 
   const config = React.useMemo(
     () => resolveSoroformConfig({ network, rpcUrl, horizonUrl, networkPassphrase }),
@@ -137,6 +145,7 @@ export function SoroformProvider(props: SoroformProviderProps) {
   const body = (
     <SoroformConfigContext.Provider value={config}>
       <QueryClientProvider client={client}>
+        <PendingTransactionResumer config={config} />
         {children}
         {devtoolsProps && <SoroformDevtools {...devtoolsProps} />}
       </QueryClientProvider>
@@ -170,4 +179,30 @@ function WalletMount(props: {
       {props.children}
     </WalletProvider>
   );
+}
+
+/**
+ * Resumes transactions that were in flight when the page was last
+ * unloaded. Rendered inside `QueryClientProvider` rather than run from
+ * `SoroformProvider`'s own body so it can reach the query client and
+ * invalidate the reads each resumed transaction affected.
+ */
+function PendingTransactionResumer(props: { config: SoroformConfig }) {
+  const { config } = props;
+  const queryClient = useQueryClient();
+
+  React.useEffect(() => {
+    const controller = new AbortController();
+    void resumePendingTransactions(config, {
+      signal: controller.signal,
+      onSettled: (entry) => {
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.contractCallsByContract(entry.networkPassphrase, entry.contractId),
+        });
+      },
+    });
+    return () => controller.abort();
+  }, [config, queryClient]);
+
+  return null;
 }

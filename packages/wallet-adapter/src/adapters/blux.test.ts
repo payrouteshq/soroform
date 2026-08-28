@@ -70,11 +70,11 @@ describe("blux adapter", () => {
   });
 
   it("lets an explicit showWalletUIs override the default", () => {
-    const adapter = blux({ appId: "app-1", appName: "Test App", showWalletUIs: true }).useAdapter(TEST_PASSPHRASE);
-    adapter.init(TEST_PASSPHRASE);
-    expect(mockCreateConfig).toHaveBeenCalledWith(
-      expect.objectContaining({ showWalletUIs: true }),
+    const adapter = blux({ appId: "app-1", appName: "Test App", showWalletUIs: true }).useAdapter(
+      TEST_PASSPHRASE,
     );
+    adapter.init(TEST_PASSPHRASE);
+    expect(mockCreateConfig).toHaveBeenCalledWith(expect.objectContaining({ showWalletUIs: true }));
   });
 
   it("calls switchNetwork instead of createConfig once already initialized", () => {

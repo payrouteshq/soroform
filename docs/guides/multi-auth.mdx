@@ -94,9 +94,12 @@ const sentTx = await final.signAndSend({ signTransaction: alice.signTransaction 
 ```
 
 <Note>
-  `signAuthEntries` and `signAndSend` both accept `signAuthEntry` / `signTransaction` directly, matching `useWallet()`'s `signTransaction` and `signAuthEntry` fields, so they can be passed straight through the same way `useContractSend` does internally.
+  `signAuthEntries` and `signAndSend` both accept `signAuthEntry` / `signTransaction` directly,
+  matching `useWallet()`'s `signTransaction` and `signAuthEntry` fields, so they can be passed
+  straight through the same way `useContractSend` does internally.
 </Note>
 
 <Warning>
-  Sending to all of `needsNonInvokerSigningBy`'s owners in parallel is not supported; hand the transaction off to one signer at a time.
+  Sending to all of `needsNonInvokerSigningBy`'s owners in parallel is not supported; hand the
+  transaction off to one signer at a time.
 </Warning>

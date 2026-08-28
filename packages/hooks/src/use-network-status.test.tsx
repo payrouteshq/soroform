@@ -39,7 +39,12 @@ function Probe() {
 
 describe("useNetworkStatus", () => {
   it("combines getHealth and getLatestLedger into one result", async () => {
-    mockGetHealth.mockResolvedValue({ status: "healthy", latestLedger: 100, oldestLedger: 1, ledgerRetentionWindow: 100 });
+    mockGetHealth.mockResolvedValue({
+      status: "healthy",
+      latestLedger: 100,
+      oldestLedger: 1,
+      ledgerRetentionWindow: 100,
+    });
     mockGetLatestLedger.mockResolvedValue({ id: "abc", sequence: 100, protocolVersion: "21" });
 
     renderWithProvider(<Probe />);

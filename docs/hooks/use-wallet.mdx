@@ -11,21 +11,19 @@ import { useWallet } from "@soroform/wallet-adapter";
 function useWallet(): WalletState;
 ```
 
-<Warning>
-  Throws if called outside a `SoroformProvider` that was given a `wallet` prop.
-</Warning>
+<Warning>Throws if called outside a `SoroformProvider` that was given a `wallet` prop.</Warning>
 
 ## Return value
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `address` | `string \| undefined` | The connected account's public key, or `undefined` if not connected. |
-| `network` | `string \| undefined` | The network passphrase the wallet last reported, if known. |
-| `isConnected` | `boolean` | Whether a wallet is currently connected. |
-| `connect` | `() => Promise<{ address: string }>` | Opens the wallet picker modal and connects the selected wallet. |
-| `disconnect` | `() => Promise<void>` | Disconnects the current wallet. |
-| `signTransaction` | `(xdr, opts?) => Promise<{ signedTxXdr, signerAddress? }>` | Matches `ClientOptions.signTransaction` from `@stellar/stellar-sdk/contract`. |
-| `signAuthEntry` | `(authEntry, opts?) => Promise<{ signedAuthEntry, signerAddress? }>` | Matches `ClientOptions.signAuthEntry`. |
+| Field             | Type                                                                 | Description                                                                   |
+| ----------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `address`         | `string \| undefined`                                                | The connected account's public key, or `undefined` if not connected.          |
+| `network`         | `string \| undefined`                                                | The network passphrase the wallet last reported, if known.                    |
+| `isConnected`     | `boolean`                                                            | Whether a wallet is currently connected.                                      |
+| `connect`         | `() => Promise<{ address: string }>`                                 | Opens the wallet picker modal and connects the selected wallet.               |
+| `disconnect`      | `() => Promise<void>`                                                | Disconnects the current wallet.                                               |
+| `signTransaction` | `(xdr, opts?) => Promise<{ signedTxXdr, signerAddress? }>`           | Matches `ClientOptions.signTransaction` from `@stellar/stellar-sdk/contract`. |
+| `signAuthEntry`   | `(authEntry, opts?) => Promise<{ signedAuthEntry, signerAddress? }>` | Matches `ClientOptions.signAuthEntry`.                                        |
 
 ## Example
 
@@ -43,7 +41,9 @@ function AccountBadge() {
 ```
 
 <Tip>
-  For a ready-made connect/disconnect button, use [`ConnectWalletButton`](/components/connect-wallet-button) instead of building your own from `useWallet`.
+  For a ready-made connect/disconnect button, use
+  [`ConnectWalletButton`](/components/connect-wallet-button) instead of building your own from
+  `useWallet`.
 </Tip>
 
 ## Wiring into contract.Client directly

@@ -8,7 +8,8 @@ import { SoroformProvider, useSoroformConfig } from "./context.js";
 const TEST_ADDRESS = "GABCDEFGHIJKLMNOPQRSTUVWXYZ234567ABCDEFGHIJKLMNOPQRSTUV";
 
 function createFakeConnector(): WalletConnector {
-  let stateListener: ((state: { address: string | undefined; network: string | undefined }) => void) | undefined;
+  let stateListener:
+    ((state: { address: string | undefined; network: string | undefined }) => void) | undefined;
 
   const adapter: WalletAdapter = {
     init: vi.fn(),

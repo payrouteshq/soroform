@@ -33,7 +33,11 @@ function renderWithProvider(children: React.ReactNode) {
 function Probe(props: { assetId: string }) {
   const { data, isLoading } = useBalance(ADDRESS, props.assetId);
   if (isLoading) return <span data-testid="state">loading</span>;
-  return <span data-testid="state">{JSON.stringify(data, (_k, v) => (typeof v === "bigint" ? v.toString() : v))}</span>;
+  return (
+    <span data-testid="state">
+      {JSON.stringify(data, (_k, v) => (typeof v === "bigint" ? v.toString() : v))}
+    </span>
+  );
 }
 
 describe("useBalance", () => {

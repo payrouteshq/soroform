@@ -4,14 +4,14 @@ import type { SoroformError } from "./errors.js";
  * The literal states a `useContractSend` call moves through, exposed
  * directly (rather than a boolean `isLoading`) so a consuming app can
  * render distinct UI per phase.
+ *
+ * `"queued"` is the phase before any network call: the send is waiting
+ * behind another send from the same account, because a Stellar sequence
+ * number can only be claimed by one transaction at a time. See
+ * `transactionSequencer`.
  */
 export type ContractSendStatus =
-  | "idle"
-  | "simulating"
-  | "needsSignature"
-  | "submitting"
-  | "success"
-  | "error";
+  "idle" | "queued" | "simulating" | "needsSignature" | "submitting" | "success" | "error";
 
 /**
  * A readable summary of a built transaction's operation and Soroban
@@ -44,6 +44,8 @@ export interface ContractSendLogEntry {
   result?: unknown;
   error?: SoroformError;
   transaction?: ContractSendTransactionSummary;
+  /** The submitted transaction's hash, once the network has accepted it. */
+  hash?: string;
   updatedAt: number;
 }
 

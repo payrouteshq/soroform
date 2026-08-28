@@ -62,12 +62,7 @@ export function useContractCall<TResult = unknown>(
   const queryClient = useQueryClient();
 
   return useQuery<TResult, SoroformError>({
-    queryKey: queryKeys.contractCall(
-      config.networkPassphrase,
-      contractId,
-      method,
-      args ?? {},
-    ),
+    queryKey: queryKeys.contractCall(config.networkPassphrase, contractId, method, args ?? {}),
     enabled: (enabled ?? true) && Boolean(contractId) && Boolean(method),
     queryFn: async () => {
       try {

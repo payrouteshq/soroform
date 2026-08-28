@@ -4,3 +4,12 @@ node_modules/
 coverage/
 pnpm-lock.yaml
 docs/.mintlify/
+.next/
+
+# tsup (via bundle-require) writes a transient
+# `<config>.bundled_<random>.{mjs,cjs}` next to config files while it runs,
+# then deletes it. Formatting isn't ordered against builds, so a check can
+# catch the file mid-existence and fail with ENOENT. Same reason the ESLint
+# config ignores this pattern.
+*.bundled_*.mjs
+*.bundled_*.cjs

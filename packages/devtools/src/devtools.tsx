@@ -45,9 +45,7 @@ export function SoroformDevtools(props: SoroformDevtoolsProps) {
               <SendLogPanel />
             </TabsContent>
             <TabsContent value="cache" className="min-h-0 flex-1">
-              <ReactQueryDevtoolsPanel
-                style={{ height: "100%", position: "relative" }}
-              />
+              <ReactQueryDevtoolsPanel style={{ height: "100%", position: "relative" }} />
             </TabsContent>
           </Tabs>
         </div>

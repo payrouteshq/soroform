@@ -46,9 +46,7 @@ describe("useAccount", () => {
     mockGetAccount.mockRejectedValue(new Error(`Account not found: ${ADDRESS}`));
     renderWithProvider(<Probe />);
     await waitFor(() => {
-      expect(screen.getByTestId("state")).toHaveTextContent(
-        '{"exists":false}',
-      );
+      expect(screen.getByTestId("state")).toHaveTextContent('{"exists":false}');
     });
   });
 });

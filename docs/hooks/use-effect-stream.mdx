@@ -16,21 +16,21 @@ function useEffectStream(
 
 ## Parameters
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `address` | `string` | Yes | The account address (`G...`) to watch. |
-| `options.enabled` | `boolean` | No | Whether the stream should be open. Defaults to `true`. |
-| `options.onEffect` | `(record) => void` | No | Called for every effect received. |
-| `options.cursor` | `string` | No | The Horizon cursor to start from. Defaults to `"now"`, so only effects that arrive after mounting are received. |
-| `options.maxEvents` | `number` | No | How many recent effects to keep in `events`. Defaults to 50. |
+| Name                | Type               | Required | Description                                                                                                     |
+| ------------------- | ------------------ | -------- | --------------------------------------------------------------------------------------------------------------- |
+| `address`           | `string`           | Yes      | The account address (`G...`) to watch.                                                                          |
+| `options.enabled`   | `boolean`          | No       | Whether the stream should be open. Defaults to `true`.                                                          |
+| `options.onEffect`  | `(record) => void` | No       | Called for every effect received.                                                                               |
+| `options.cursor`    | `string`           | No       | The Horizon cursor to start from. Defaults to `"now"`, so only effects that arrive after mounting are received. |
+| `options.maxEvents` | `number`           | No       | How many recent effects to keep in `events`. Defaults to 50.                                                    |
 
 ## Return value
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `events` | `EffectStreamRecord[]` | Effects received this session, newest first. |
-| `latest` | `EffectStreamRecord \| undefined` | The most recently received effect, if any. |
-| `isStreaming` | `boolean` | Whether the stream connection is currently open. |
+| Field         | Type                              | Description                                      |
+| ------------- | --------------------------------- | ------------------------------------------------ |
+| `events`      | `EffectStreamRecord[]`            | Effects received this session, newest first.     |
+| `latest`      | `EffectStreamRecord \| undefined` | The most recently received effect, if any.       |
+| `isStreaming` | `boolean`                         | Whether the stream connection is currently open. |
 
 ## Example
 
@@ -50,5 +50,6 @@ function ActivityFeed({ address }: { address: string }) {
 ```
 
 <Tip>
-  Reach for [`usePaymentStream`](/hooks/use-payment-stream) instead if you only care about payments; it covers the common "show a live balance" case with a narrower, more specific event type.
+  Reach for [`usePaymentStream`](/hooks/use-payment-stream) instead if you only care about payments;
+  it covers the common "show a live balance" case with a narrower, more specific event type.
 </Tip>

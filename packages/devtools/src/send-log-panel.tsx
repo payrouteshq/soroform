@@ -11,6 +11,7 @@ const STATUS_VARIANT: Record<
   "default" | "secondary" | "destructive" | "outline"
 > = {
   idle: "secondary",
+  queued: "secondary",
   simulating: "outline",
   needsSignature: "outline",
   submitting: "outline",

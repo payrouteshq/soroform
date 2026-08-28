@@ -15,24 +15,24 @@ function useContractCall<TResult = unknown>(
 
 ## Parameters
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `contractId` | `string` | Yes | The deployed contract's address (`C...`). |
-| `method` | `string` | Yes | The read-only method to call. |
-| `args` | `Record<string, unknown>` | No | Named arguments for the method, keyed by parameter name. |
-| `network` | `SoroformNetwork` | No | Overrides the network from the nearest `SoroformProvider`. |
-| `enabled` | `boolean` | No | Whether the query should run. Defaults to `true`. |
+| Name         | Type                      | Required | Description                                                |
+| ------------ | ------------------------- | -------- | ---------------------------------------------------------- |
+| `contractId` | `string`                  | Yes      | The deployed contract's address (`C...`).                  |
+| `method`     | `string`                  | Yes      | The read-only method to call.                              |
+| `args`       | `Record<string, unknown>` | No       | Named arguments for the method, keyed by parameter name.   |
+| `network`    | `SoroformNetwork`         | No       | Overrides the network from the nearest `SoroformProvider`. |
+| `enabled`    | `boolean`                 | No       | Whether the query should run. Defaults to `true`.          |
 
 ## Return value
 
 Everything TanStack Query's `useQuery` returns, typed to `TResult`. The fields you'll use most:
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `data` | `TResult \| undefined` | The decoded result, once loaded. |
-| `isLoading` | `boolean` | Whether the initial fetch is in flight. |
-| `error` | `SoroformError \| null` | A normalized error; see [Error handling](/concepts/error-handling). |
-| `refetch` | `() => void` | Manually re-runs the call. |
+| Field       | Type                    | Description                                                         |
+| ----------- | ----------------------- | ------------------------------------------------------------------- |
+| `data`      | `TResult \| undefined`  | The decoded result, once loaded.                                    |
+| `isLoading` | `boolean`               | Whether the initial fetch is in flight.                             |
+| `error`     | `SoroformError \| null` | A normalized error; see [Error handling](/concepts/error-handling). |
+| `refetch`   | `() => void`            | Manually re-runs the call.                                          |
 
 ## Example
 

@@ -7,8 +7,7 @@ export function NetworkStatus() {
 
   return (
     <p className="text-sm text-muted-foreground">
-      Testnet: {data?.health.status ?? "checking..."} (ledger{" "}
-      {data?.latestLedger.sequence ?? "?"})
+      Testnet: {data?.health.status ?? "checking..."} (ledger {data?.latestLedger.sequence ?? "?"})
     </p>
   );
 }

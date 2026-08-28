@@ -23,31 +23,35 @@ Soroform has no code generation step. Every contract-facing hook derives its val
 
 `sorobanTypeToZod` maps every one of the 26 variants `xdr.ScSpecTypeDef` can be to a Zod schema whose shape matches exactly what `Spec.nativeToScVal` expects, verified against the SDK's actual encode and decode implementation rather than assumed from its type declarations. Coverage is total, not best-effort: there is no Soroban type a contract's spec can declare that falls through to an unvalidated passthrough.
 
-| Soroban type | Zod schema | Notes |
-| --- | --- | --- |
-| `u32`, `i32` | `z.number()` | |
-| `u64`, `i64`, `u128`, `i128`, `u256`, `i256` | `z.bigint()` | JS numbers lose precision above 2^53; Soroban amounts routinely exceed it. |
-| `timepoint`, `duration` | `z.bigint()` | Both are u64-valued. |
-| `bool` | `z.boolean()` | |
-| `void` | `z.void()` | |
-| `symbol`, `string` | `z.string()` | |
-| `bytes` | `z.instanceof(Uint8Array)` | |
-| `bytesN` | `z.instanceof(Uint8Array)` with a length refinement | |
-| `address` | `z.string()` with a StrKey refinement | Validated with `StrKey.isValidEd25519PublicKey` / `StrKey.isValidContract`, not a hand-rolled regex. |
-| `muxedAddress` | `z.string()` with a StrKey refinement | Also accepts `StrKey.isValidMed25519PublicKey` (`M...`), on top of the plain `address` checks. |
-| `vec<T>` | `z.array(sorobanTypeToZod(T))` | |
-| `map<K, V>` | `z.map(sorobanTypeToZod(K), sorobanTypeToZod(V))` | A JS `Map`, not `z.record()`: Soroban map keys are not restricted to strings the way `z.record()`'s keys are. |
-| `option<T>` | `sorobanTypeToZod(T).optional().nullable()` | The SDK's encoder treats both `null` and `undefined` as absent. |
-| `result<Ok, Err>` | `z.union([z.object({ ok: ... }), z.object({ error: ... })])` | |
-| `tuple<T1, T2, ...>` | `z.tuple([...])` | |
-| `struct` (named fields) | `z.object({...})` | |
-| `struct` (tuple struct) | `z.tuple([...])` | Detected when every field is named `"0"`, `"1"`, `"2"`, ... |
-| `union` (data-carrying enum) | `z.discriminatedUnion("tag", [...])` | Shape is `{ tag: string, values: [...] }`; `values` is always an array, even for a single-value case. |
-| `enum` (unit-variant enum) | a union of `z.literal(value)` | See below. |
-| `val`, `error` | `z.unknown()` | Generic placeholder markers in the spec format itself (an unresolved type parameter, or "any contract error"), not concrete Soroban value types; there is nothing more specific to validate. |
+| Soroban type                                 | Zod schema                                                   | Notes                                                                                                                                                                                        |
+| -------------------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `u32`, `i32`                                 | `z.number()`                                                 |                                                                                                                                                                                              |
+| `u64`, `i64`, `u128`, `i128`, `u256`, `i256` | `z.bigint()`                                                 | JS numbers lose precision above 2^53; Soroban amounts routinely exceed it.                                                                                                                   |
+| `timepoint`, `duration`                      | `z.bigint()`                                                 | Both are u64-valued.                                                                                                                                                                         |
+| `bool`                                       | `z.boolean()`                                                |                                                                                                                                                                                              |
+| `void`                                       | `z.void()`                                                   |                                                                                                                                                                                              |
+| `symbol`, `string`                           | `z.string()`                                                 |                                                                                                                                                                                              |
+| `bytes`                                      | `z.instanceof(Uint8Array)`                                   |                                                                                                                                                                                              |
+| `bytesN`                                     | `z.instanceof(Uint8Array)` with a length refinement          |                                                                                                                                                                                              |
+| `address`                                    | `z.string()` with a StrKey refinement                        | Validated with `StrKey.isValidEd25519PublicKey` / `StrKey.isValidContract`, not a hand-rolled regex.                                                                                         |
+| `muxedAddress`                               | `z.string()` with a StrKey refinement                        | Also accepts `StrKey.isValidMed25519PublicKey` (`M...`), on top of the plain `address` checks.                                                                                               |
+| `vec<T>`                                     | `z.array(sorobanTypeToZod(T))`                               |                                                                                                                                                                                              |
+| `map<K, V>`                                  | `z.map(sorobanTypeToZod(K), sorobanTypeToZod(V))`            | A JS `Map`, not `z.record()`: Soroban map keys are not restricted to strings the way `z.record()`'s keys are.                                                                                |
+| `option<T>`                                  | `sorobanTypeToZod(T).optional().nullable()`                  | The SDK's encoder treats both `null` and `undefined` as absent.                                                                                                                              |
+| `result<Ok, Err>`                            | `z.union([z.object({ ok: ... }), z.object({ error: ... })])` |                                                                                                                                                                                              |
+| `tuple<T1, T2, ...>`                         | `z.tuple([...])`                                             |                                                                                                                                                                                              |
+| `struct` (named fields)                      | `z.object({...})`                                            |                                                                                                                                                                                              |
+| `struct` (tuple struct)                      | `z.tuple([...])`                                             | Detected when every field is named `"0"`, `"1"`, `"2"`, ...                                                                                                                                  |
+| `union` (data-carrying enum)                 | `z.discriminatedUnion("tag", [...])`                         | Shape is `{ tag: string, values: [...] }`; `values` is always an array, even for a single-value case.                                                                                        |
+| `enum` (unit-variant enum)                   | a union of `z.literal(value)`                                | See below.                                                                                                                                                                                   |
+| `val`, `error`                               | `z.unknown()`                                                | Generic placeholder markers in the spec format itself (an unresolved type parameter, or "any contract error"), not concrete Soroban value types; there is nothing more specific to validate. |
 
 <Warning>
-  A plain (unit-variant) Soroban enum's native JS value is its raw numeric case value, not its case name. `Spec.nativeToEnum` and `Spec.enumToNative` in the SDK both operate purely on the numeric discriminant. `sorobanTypeToZod` matches this: a case named `Active` with value `0` validates against `0`, not `"Active"`. The case names are folded into the schema's `.describe()` for editor tooltips only.
+  A plain (unit-variant) Soroban enum's native JS value is its raw numeric case value, not its case
+  name. `Spec.nativeToEnum` and `Spec.enumToNative` in the SDK both operate purely on the numeric
+  discriminant. `sorobanTypeToZod` matches this: a case named `Active` with value `0` validates
+  against `0`, not `"Active"`. The case names are folded into the schema's `.describe()` for editor
+  tooltips only.
 </Warning>
 
 ## Validation errors
