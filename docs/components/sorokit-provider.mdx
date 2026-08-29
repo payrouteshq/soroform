@@ -11,15 +11,15 @@ import { SorokitProvider } from "@sorokit/provider";
 
 ## Props
 
-| Name                | Type                                                | Required | Description                                                                                                            |
-| ------------------- | --------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `network`           | `"testnet" \| "mainnet" \| "futurenet" \| "custom"` | Yes      | The Stellar network to target.                                                                                         |
-| `rpcUrl`            | `string`                                            | No       | Overrides the network's default Soroban RPC URL. Required for `"mainnet"` and `"custom"`.                              |
-| `horizonUrl`        | `string`                                            | No       | Overrides the network's default Horizon URL. Required for `"custom"`.                                                  |
-| `networkPassphrase` | `string`                                            | No       | Overrides the network's default passphrase. Required for `"custom"`.                                                   |
-| `queryClient`       | `QueryClient`                                       | No       | A pre-constructed TanStack Query client to share instead of creating a new one.                                        |
-| `wallet`            | `WalletConnector`                                   | No       | The wallet connector to drive `useWallet()` with. See [Wallet connectors](#wallet-connectors) below.                   |
-| `devtools`          | `boolean \| SorokitDevtoolsProps`                  | No       | Renders `SorokitDevtools` for you. Pass `true` for the defaults, or an options object (e.g. `{ initialOpen: true }`). |
+| Name                | Type                                                | Required | Description                                                                                                           |
+| ------------------- | --------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
+| `network`           | `"testnet" \| "mainnet" \| "futurenet" \| "custom"` | Yes      | The Stellar network to target.                                                                                        |
+| `rpcUrl`            | `string`                                            | No       | Overrides the network's default Soroban RPC URL. Required for `"mainnet"` and `"custom"`.                             |
+| `horizonUrl`        | `string`                                            | No       | Overrides the network's default Horizon URL. Required for `"custom"`.                                                 |
+| `networkPassphrase` | `string`                                            | No       | Overrides the network's default passphrase. Required for `"custom"`.                                                  |
+| `queryClient`       | `QueryClient`                                       | No       | A pre-constructed TanStack Query client to share instead of creating a new one.                                       |
+| `wallet`            | `WalletConnector`                                   | No       | The wallet connector to drive `useWallet()` with. See [Wallet connectors](#wallet-connectors) below.                  |
+| `devtools`          | `boolean \| SorokitDevtoolsProps`                   | No       | Renders `SorokitDevtools` for you. Pass `true` for the defaults, or an options object (e.g. `{ initialOpen: true }`). |
 
 <Note>
   `"testnet"` and `"futurenet"` have well-known defaults for every field. `"mainnet"` has no default
