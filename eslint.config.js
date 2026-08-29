@@ -57,4 +57,18 @@ export default tseslint.config(
       "@typescript-eslint/consistent-type-imports": "off",
     },
   },
+  {
+    // Vendored shadcn/Magic UI components under components/ui/: installed
+    // and updated via the shadcn CLI, not hand-authored, so they're not
+    // held to our own hook-strictness rules — editing them to satisfy a
+    // rule they weren't written against just creates drift the next time
+    // the CLI regenerates the file.
+    files: ["**/components/ui/**/*.{ts,tsx}"],
+    rules: {
+      ...Object.fromEntries(
+        Object.keys(reactHooks.configs.recommended.rules).map((rule) => [rule, "off"]),
+      ),
+      "no-useless-assignment": "off",
+    },
+  },
 );

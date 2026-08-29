@@ -11,7 +11,7 @@ const STEPS = [
     detail: "checking balances & auth",
     icon: LoaderCircle,
     spin: true,
-    color: "text-cyan-400",
+    color: "text-primary",
   },
   {
     key: "needsSignature",
@@ -27,7 +27,7 @@ const STEPS = [
     detail: "broadcasting to network",
     icon: LoaderCircle,
     spin: true,
-    color: "text-cyan-400",
+    color: "text-primary",
   },
   {
     key: "success",
@@ -62,7 +62,7 @@ export function LiveStatusPreview() {
             <span
               key={s.key}
               className={`h-1 rounded-full transition-all duration-300 ${
-                i === index ? "w-4 bg-cyan-400" : "w-1.5 bg-white/15"
+                i === index ? "w-4 bg-primary" : "w-1.5 bg-white/15"
               }`}
             />
           ))}

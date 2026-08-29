@@ -1,13 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { BookOpen, Package } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { GithubIcon } from "@/components/github-icon";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const NAV_LINKS = [
-  { label: "GitHub", href: "https://github.com/payrouteshq/sorokit", icon: GithubIcon },
   { label: "Docs", href: "https://docs.sorokit.dev", icon: BookOpen },
-  { label: "Registry", href: "#registry", icon: Package },
+  { label: "GitHub", href: "https://github.com/payrouteshq/sorokit", icon: GithubIcon },
 ];
 
 export function SiteHeader() {
