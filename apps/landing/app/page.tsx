@@ -1,17 +1,16 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import { Layers, ShieldCheck, Sparkles, Wallet, Wrench } from "lucide-react";
+import { Braces, Layers, ShieldCheck, Wallet, Wrench } from "lucide-react";
 import Link from "next/link";
 import { BentoCard, BentoGrid } from "@/components/ui/bento-grid";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { Button } from "@/components/ui/button";
 import { DotPattern } from "@/components/ui/dot-pattern";
 import { Marquee } from "@/components/ui/marquee";
-import { AnimatedSpan, Terminal, TypingAnimation } from "@/components/ui/terminal";
 import { TextAnimate } from "@/components/ui/text-animate";
-import { CodeToUiPreview } from "@/components/code-to-ui-preview";
 import { DevtoolsPreview } from "@/components/devtools-preview";
+import { OnboardingTabs } from "@/components/onboarding-tabs";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { cn } from "@/lib/utils";
@@ -24,7 +23,7 @@ const FEATURES = [
     name: "No code generation",
     description:
       "Every hook fetches a contract's spec at runtime from its contractId and derives a Zod schema automatically. Point at a different contract — nothing to regenerate, nothing to republish.",
-    Icon: Sparkles,
+    Icon: Braces,
     className: "col-span-3 lg:col-span-2",
   },
   {
@@ -132,23 +131,6 @@ export default function Home() {
                 <Link href="https://github.com/payrouteshq/sorokit">View on GitHub</Link>
               </Button>
             </motion.div>
-
-            <motion.div variants={item} className="mt-14 w-full">
-              <Terminal className="mx-auto max-w-lg text-left">
-                <TypingAnimation>
-                  $ pnpm add @sorokit/provider @sorokit/wallet-adapter
-                </TypingAnimation>
-                <AnimatedSpan className="text-primary">
-                  ✔ Installed 2 packages in 890ms
-                </AnimatedSpan>
-                <TypingAnimation className="mt-2">
-                  {'$ import { SorokitProvider } from "@sorokit/provider"'}
-                </TypingAnimation>
-                <AnimatedSpan className="text-muted-foreground">
-                  → network, wallet, and devtools. Wired.
-                </AnimatedSpan>
-              </Terminal>
-            </motion.div>
           </motion.div>
         </section>
 
@@ -182,14 +164,13 @@ export default function Home() {
               variants={item}
               className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight sm:text-3xl"
             >
-              Four lines. A full send lifecycle.
+              From install to your first hook.
             </motion.h2>
             <motion.p variants={item} className="mt-3 text-balance text-muted-foreground">
-              useContractSend simulates, waits for a signature, submits, and decodes the result —
-              status, data, and error, fully typed.
+              Three steps, no detours: install the packages, wire up a wallet, call a contract.
             </motion.p>
-            <motion.div variants={item} className="mt-10">
-              <CodeToUiPreview />
+            <motion.div variants={item} className="mt-10 flex justify-center">
+              <OnboardingTabs />
             </motion.div>
           </motion.div>
         </section>
