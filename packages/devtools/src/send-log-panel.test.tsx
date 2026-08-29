@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { devtoolsSendLog } from "@soroform/core";
+import { devtoolsSendLog } from "@sorokit/core";
 import { SendLogPanel } from "./send-log-panel.js";
 
 describe("SendLogPanel", () => {

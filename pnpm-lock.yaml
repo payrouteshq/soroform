@@ -108,22 +108,22 @@ importers:
       '@hookform/resolvers':
         specifier: 5.9.1
         version: 5.9.1(@sinclair/typebox@0.34.52)(@standard-schema/spec@1.1.0)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(fp-ts@2.16.9)(io-ts@2.0.1(fp-ts@2.16.9))(react-hook-form@7.86.0(react@19.2.8))(superstruct@2.0.2)(valibot@1.4.2(typescript@5.9.3))(zod@4.4.3)
-      '@soroform/contract':
+      '@sorokit/contract':
         specifier: workspace:*
         version: link:../../packages/contract
-      '@soroform/core':
+      '@sorokit/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@soroform/devtools':
+      '@sorokit/devtools':
         specifier: workspace:*
         version: link:../../packages/devtools
-      '@soroform/hooks':
+      '@sorokit/hooks':
         specifier: workspace:*
         version: link:../../packages/hooks
-      '@soroform/provider':
+      '@sorokit/provider':
         specifier: workspace:*
         version: link:../../packages/provider
-      '@soroform/wallet-adapter':
+      '@sorokit/wallet-adapter':
         specifier: workspace:*
         version: link:../../packages/wallet-adapter
       '@stellar/stellar-sdk':
@@ -202,22 +202,22 @@ importers:
       '@hookform/resolvers':
         specifier: 5.9.1
         version: 5.9.1(@sinclair/typebox@0.34.52)(@standard-schema/spec@1.1.0)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(fp-ts@2.16.9)(io-ts@2.0.1(fp-ts@2.16.9))(react-hook-form@7.86.0(react@19.2.8))(superstruct@2.0.2)(valibot@1.4.2(typescript@5.9.3))(zod@4.4.3)
-      '@soroform/contract':
+      '@sorokit/contract':
         specifier: workspace:*
         version: link:../../packages/contract
-      '@soroform/core':
+      '@sorokit/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@soroform/devtools':
+      '@sorokit/devtools':
         specifier: workspace:*
         version: link:../../packages/devtools
-      '@soroform/hooks':
+      '@sorokit/hooks':
         specifier: workspace:*
         version: link:../../packages/hooks
-      '@soroform/provider':
+      '@sorokit/provider':
         specifier: workspace:*
         version: link:../../packages/provider
-      '@soroform/wallet-adapter':
+      '@sorokit/wallet-adapter':
         specifier: workspace:*
         version: link:../../packages/wallet-adapter
       '@stellar/stellar-sdk':
@@ -287,13 +287,13 @@ importers:
 
   packages/contract:
     dependencies:
-      '@soroform/core':
+      '@sorokit/core':
         specifier: workspace:*
         version: link:../core
-      '@soroform/provider':
+      '@sorokit/provider':
         specifier: workspace:*
         version: link:../provider
-      '@soroform/wallet-adapter':
+      '@sorokit/wallet-adapter':
         specifier: workspace:*
         version: link:../wallet-adapter
       '@stellar/stellar-sdk':
@@ -367,7 +367,7 @@ importers:
 
   packages/devtools:
     dependencies:
-      '@soroform/core':
+      '@sorokit/core':
         specifier: workspace:*
         version: link:../core
       class-variance-authority:
@@ -440,10 +440,10 @@ importers:
 
   packages/hooks:
     dependencies:
-      '@soroform/core':
+      '@sorokit/core':
         specifier: workspace:*
         version: link:../core
-      '@soroform/provider':
+      '@sorokit/provider':
         specifier: workspace:*
         version: link:../provider
       '@stellar/stellar-sdk':
@@ -489,13 +489,13 @@ importers:
 
   packages/provider:
     dependencies:
-      '@soroform/core':
+      '@sorokit/core':
         specifier: workspace:*
         version: link:../core
-      '@soroform/devtools':
+      '@sorokit/devtools':
         specifier: workspace:*
         version: link:../devtools
-      '@soroform/wallet-adapter':
+      '@sorokit/wallet-adapter':
         specifier: workspace:*
         version: link:../wallet-adapter
     devDependencies:

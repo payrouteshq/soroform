@@ -1,9 +1,9 @@
-# @soroform/hooks
+# @sorokit/hooks
 
-General-purpose React hooks for Soroform: `useAccount`, `useBalance`,
+General-purpose React hooks for Sorokit: `useAccount`, `useBalance`,
 `useTransactionStatus`, `useNetworkStatus`, `usePaymentStream`, and
 `useEffectStream`. All are TanStack Query wrappers or Horizon SSE stream
-subscriptions around `@soroform/core`'s SDK passthroughs.
+subscriptions around `@sorokit/core`'s SDK passthroughs.
 
-Full documentation: https://docs.soroform.dev (see the repository root
+Full documentation: https://docs.sorokit.dev (see the repository root
 README for the current status of the docs site).

@@ -1,6 +1,6 @@
 ---
 title: "Quickstart"
-description: "Install Soroform, wrap your app in its providers, and call your first hook"
+description: "Install Sorokit, wrap your app in its providers, and call your first hook"
 ---
 
 This walks through going from a fresh React or Next.js app to a working contract call and send. There is no code generation step: every hook below works from just a `contractId`.
@@ -16,37 +16,37 @@ This walks through going from a fresh React or Next.js app to a working contract
 <CodeGroup>
 
 ```bash npm
-npm install @soroform/core @soroform/provider @soroform/wallet-adapter @soroform/contract \
+npm install @sorokit/core @sorokit/provider @sorokit/wallet-adapter @sorokit/contract \
   @creit.tech/stellar-wallets-kit @stellar/stellar-sdk @tanstack/react-query zod react-hook-form @hookform/resolvers
 ```
 
 ```bash pnpm
-pnpm add @soroform/core @soroform/provider @soroform/wallet-adapter @soroform/contract \
+pnpm add @sorokit/core @sorokit/provider @sorokit/wallet-adapter @sorokit/contract \
   @creit.tech/stellar-wallets-kit @stellar/stellar-sdk @tanstack/react-query zod react-hook-form @hookform/resolvers
 ```
 
 </CodeGroup>
 
-`@tanstack/react-query`, `zod`, `react-hook-form`, and `@hookform/resolvers` are peer dependencies: install them alongside Soroform so your app controls their versions. `@creit.tech/stellar-wallets-kit` is the wallet connector this quickstart uses; see [`SoroformProvider`](/components/soroform-provider#wallet-connectors) for the other connectors Soroform ships (`blux()`, `para()`), or for writing your own.
+`@tanstack/react-query`, `zod`, `react-hook-form`, and `@hookform/resolvers` are peer dependencies: install them alongside Sorokit so your app controls their versions. `@creit.tech/stellar-wallets-kit` is the wallet connector this quickstart uses; see [`SorokitProvider`](/components/sorokit-provider#wallet-connectors) for the other connectors Sorokit ships (`blux()`, `para()`), or for writing your own.
 
-## Wrap your app in SoroformProvider
+## Wrap your app in SorokitProvider
 
-`SoroformProvider` is the single entry point: it resolves your network configuration, supplies a TanStack Query client to every hook, and — via `wallet` — mounts wallet connection, all in one component. No separate `WalletProvider` to nest.
+`SorokitProvider` is the single entry point: it resolves your network configuration, supplies a TanStack Query client to every hook, and — via `wallet` — mounts wallet connection, all in one component. No separate `WalletProvider` to nest.
 
 ```tsx app/providers.tsx
 "use client";
 
 import type { ReactNode } from "react";
-import { SoroformProvider } from "@soroform/provider";
-import { stellarWalletsKit } from "@soroform/wallet-adapter/stellar-wallets-kit";
+import { SorokitProvider } from "@sorokit/provider";
+import { stellarWalletsKit } from "@sorokit/wallet-adapter/stellar-wallets-kit";
 
 const wallet = stellarWalletsKit();
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <SoroformProvider network="testnet" wallet={wallet}>
+    <SorokitProvider network="testnet" wallet={wallet}>
       {children}
-    </SoroformProvider>
+    </SorokitProvider>
   );
 }
 ```
@@ -73,7 +73,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 ```tsx app/balance.tsx
 "use client";
 
-import { useContractCall } from "@soroform/contract";
+import { useContractCall } from "@sorokit/contract";
 
 const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
 
@@ -97,8 +97,8 @@ export function Balance({ address }: { address: string }) {
 ```tsx app/transfer.tsx
 "use client";
 
-import { ConnectWalletButton } from "@soroform/wallet-adapter";
-import { useContractSend } from "@soroform/contract";
+import { ConnectWalletButton } from "@sorokit/wallet-adapter";
+import { useContractSend } from "@sorokit/contract";
 
 const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
 

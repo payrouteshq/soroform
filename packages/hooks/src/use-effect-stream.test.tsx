@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { QueryClient } from "@tanstack/react-query";
-import { SoroformProvider } from "@soroform/provider";
+import { SorokitProvider } from "@sorokit/provider";
 import { useEffectStream } from "./use-effect-stream.js";
 
 const { mockStream, mockCursor, mockForAccount } = vi.hoisted(() => {
@@ -36,9 +36,9 @@ const ADDRESS = "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ";
 function renderWithProvider(children: React.ReactNode) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <SoroformProvider network="testnet" queryClient={queryClient}>
+    <SorokitProvider network="testnet" queryClient={queryClient}>
       {children}
-    </SoroformProvider>,
+    </SorokitProvider>,
   );
 }
 

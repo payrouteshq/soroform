@@ -2,8 +2,8 @@ import * as React from "react";
 import { useForm, type FieldValues, type Resolver, type UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { resolveSoroformConfig, type SoroformNetwork } from "@soroform/core";
-import { useSoroformConfig } from "@soroform/provider";
+import { resolveSorokitConfig, type SorokitNetwork } from "@sorokit/core";
+import { useSorokitConfig } from "@sorokit/provider";
 import { fetchContractSpec } from "./spec-cache.js";
 import { generateContractSchemas } from "./generate-schemas.js";
 
@@ -12,8 +12,8 @@ export interface UseSorobanFormOptions {
   contractId: string;
   /** The method whose args schema this form should validate against. */
   method: string;
-  /** Overrides the network from the nearest `SoroformProvider`. */
-  network?: SoroformNetwork;
+  /** Overrides the network from the nearest `SorokitProvider`. */
+  network?: SorokitNetwork;
 }
 
 /**
@@ -31,7 +31,7 @@ export interface UseSorobanFormOptions {
  *
  * @example
  * ```tsx
- * import { useSorobanForm } from "@soroform/contract";
+ * import { useSorobanForm } from "@sorokit/contract";
  *
  * function TransferForm({ contractId }: { contractId: string }) {
  *   const { register, handleSubmit, formState } = useSorobanForm({
@@ -52,8 +52,8 @@ export function useSorobanForm<TFieldValues extends FieldValues = FieldValues>(
   options: UseSorobanFormOptions,
 ): UseFormReturn<TFieldValues> {
   const { contractId, method, network } = options;
-  const contextConfig = useSoroformConfig();
-  const config = network ? resolveSoroformConfig({ network }) : contextConfig;
+  const contextConfig = useSorokitConfig();
+  const config = network ? resolveSorokitConfig({ network }) : contextConfig;
   const queryClient = useQueryClient();
 
   const resolver = React.useMemo<Resolver<TFieldValues>>(
@@ -61,7 +61,7 @@ export function useSorobanForm<TFieldValues extends FieldValues = FieldValues>(
       const spec = await fetchContractSpec(contractId, config, queryClient);
       const schema = generateContractSchemas(spec)[method];
       if (!schema) {
-        throw new Error(`Soroform: contract has no method named "${method}".`);
+        throw new Error(`Sorokit: contract has no method named "${method}".`);
       }
       // The schema's shape is only known at runtime (it is derived from
       // the contract's spec), so it cannot be threaded through

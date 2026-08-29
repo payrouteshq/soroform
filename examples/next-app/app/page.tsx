@@ -1,4 +1,4 @@
-import { ConnectWalletButton } from "@soroform/wallet-adapter";
+import { ConnectWalletButton } from "@sorokit/wallet-adapter";
 import { NetworkStatus } from "./network-status";
 import { ContractMetadata } from "./contract-metadata";
 import { BalanceCard } from "./balance-card";
@@ -9,7 +9,7 @@ export default function Home() {
     <main className="mx-auto flex max-w-lg flex-col gap-6 px-6 py-8">
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold">Soroform example</h1>
+          <h1 className="text-xl font-semibold">Sorokit example</h1>
           <NetworkStatus />
         </div>
         <ConnectWalletButton />

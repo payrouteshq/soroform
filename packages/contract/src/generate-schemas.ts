@@ -30,7 +30,7 @@ const schemasBySpec = new WeakMap<Spec, ContractSchemas>();
  *
  * @example
  * ```ts
- * import { generateContractSchemas } from "@soroform/contract";
+ * import { generateContractSchemas } from "@sorokit/contract";
  *
  * const schemas = generateContractSchemas(spec);
  * const { argsSchema } = schemas.transfer;

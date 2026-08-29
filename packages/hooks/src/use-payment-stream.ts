@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { createHorizonServer, queryKeys, type Horizon } from "@soroform/core";
-import { useSoroformConfig } from "@soroform/provider";
+import { createHorizonServer, queryKeys, type Horizon } from "@sorokit/core";
+import { useSorokitConfig } from "@sorokit/provider";
 import { useHorizonStream, type UseHorizonStreamResult } from "./stream-core.js";
 
 /** A payment-shaped operation received from `usePaymentStream`. */
@@ -30,7 +30,7 @@ export interface UsePaymentStreamOptions {
  *
  * @example
  * ```tsx
- * import { usePaymentStream, useBalance } from "@soroform/hooks";
+ * import { usePaymentStream, useBalance } from "@sorokit/hooks";
  *
  * function LiveBalance({ address }: { address: string }) {
  *   const { data: balance } = useBalance(address, "native");
@@ -46,7 +46,7 @@ export function usePaymentStream(
   options: UsePaymentStreamOptions = {},
 ): UseHorizonStreamResult<PaymentStreamRecord> {
   const { enabled = true, onPayment, cursor = "now", maxEvents } = options;
-  const config = useSoroformConfig();
+  const config = useSorokitConfig();
   const queryClient = useQueryClient();
 
   return useHorizonStream<PaymentStreamRecord>(

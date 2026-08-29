@@ -3,7 +3,7 @@ title: "The useContractCall / useContractSend state machine"
 description: "Why a send exposes a status field instead of a boolean isLoading"
 ---
 
-Contract calls and sends have fundamentally different lifecycles. Soroform's two hooks reflect that instead of flattening both into the same shape.
+Contract calls and sends have fundamentally different lifecycles. Sorokit's two hooks reflect that instead of flattening both into the same shape.
 
 ## Calls: simulation only
 
@@ -29,7 +29,7 @@ type ContractSendStatus =
 <Steps>
   <Step title="idle">Before `sendAsync` has been called, or after `reset()`.</Step>
   <Step title="queued">
-    Another send from the same wallet is still claiming its sequence number. Soroform queues sends
+    Another send from the same wallet is still claiming its sequence number. Sorokit queues sends
     per account so two of them cannot build a transaction with the same one; see
     [`useContractSend`](/hooks/use-contract-send#sequence-numbers-and-concurrent-sends). Usually
     passed through in a single tick.
@@ -43,7 +43,7 @@ type ContractSendStatus =
     approval popup typically appears.
   </Step>
   <Step title="submitting">
-    The signed transaction has been sent to the network and Soroform is waiting for a result. `hash`
+    The signed transaction has been sent to the network and Sorokit is waiting for a result. `hash`
     is populated as soon as the network accepts it, and the transaction is persisted so a page
     reload can pick the wait back up.
   </Step>
@@ -51,7 +51,7 @@ type ContractSendStatus =
     The transaction succeeded. `data` holds the decoded return value, via `spec.funcResToNative`.
   </Step>
   <Step title="error">
-    Any of the above steps threw. `error` holds a normalized `SoroformError` (see [Error
+    Any of the above steps threw. `error` holds a normalized `SorokitError` (see [Error
     handling](/concepts/error-handling)).
   </Step>
 </Steps>
@@ -78,7 +78,7 @@ return (
 
 ## What happens on success
 
-On a successful send, Soroform invalidates every `useContractCall` query for that contract (`queryClient.invalidateQueries` against the `queryKeys.contractCallsByContract` prefix), so any call hooks watching that contract refetch automatically. You do not need to manually refetch a balance after a transfer.
+On a successful send, Sorokit invalidates every `useContractCall` query for that contract (`queryClient.invalidateQueries` against the `queryKeys.contractCallsByContract` prefix), so any call hooks watching that contract refetch automatically. You do not need to manually refetch a balance after a transfer.
 
 ## Requires a connected wallet
 

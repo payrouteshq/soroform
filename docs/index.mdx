@@ -3,15 +3,15 @@ title: "Introduction"
 description: "A React SDK that turns a deployed Soroban contract into typed, validated hooks and forms"
 ---
 
-Soroform is a React and Next.js SDK layered on top of `@stellar/stellar-sdk`. It closes a gap that no existing tool closes: turning a deployed Soroban contract's spec directly into typed, validated React hooks and forms, without touching XDR, ScVal, or manual argument encoding by hand. There is no code generation step. Every hook fetches a contract's spec at runtime from its `contractId`, derives a Zod schema for each method automatically, and caches the result, so swapping which contract a hook points at never requires rerunning a command.
+Sorokit is a React and Next.js SDK layered on top of `@stellar/stellar-sdk`. It closes a gap that no existing tool closes: turning a deployed Soroban contract's spec directly into typed, validated React hooks and forms, without touching XDR, ScVal, or manual argument encoding by hand. There is no code generation step. Every hook fetches a contract's spec at runtime from its `contractId`, derives a Zod schema for each method automatically, and caches the result, so swapping which contract a hook points at never requires rerunning a command.
 
 <Tip>
-  Soroform is not a reimplementation of `@stellar/stellar-sdk`. It is a thin, opinionated layer on
+  Sorokit is not a reimplementation of `@stellar/stellar-sdk`. It is a thin, opinionated layer on
   top of it: every hook is a readable wrapper around a small number of real SDK calls.
 </Tip>
 
 <Card title="Quickstart" icon="rocket" href="/quickstart">
-  Install Soroform, wrap your app in its providers, and call your first generated hook.
+  Install Sorokit, wrap your app in its providers, and call your first generated hook.
 </Card>
 
 ## What's in the box
@@ -21,8 +21,8 @@ Soroform is a React and Next.js SDK layered on top of `@stellar/stellar-sdk`. It
     `useContractCall`, `useContractSend`, and `useSorobanForm` turn any contract method into a
     typed, validated React hook or form, derived from the contract's spec at runtime.
   </Card>
-  <Card title="Wallet layer" icon="wallet" href="/components/soroform-provider#wallet-connectors">
-    Pass a connector to `SoroformProvider`'s `wallet` prop — `stellarWalletsKit()`, `blux()`, or
+  <Card title="Wallet layer" icon="wallet" href="/components/sorokit-provider#wallet-connectors">
+    Pass a connector to `SorokitProvider`'s `wallet` prop — `stellarWalletsKit()`, `blux()`, or
     `para()` — and `useWallet`/`ConnectWalletButton` handle signing across whichever wallets that
     SDK supports.
   </Card>
@@ -34,7 +34,7 @@ Soroform is a React and Next.js SDK layered on top of `@stellar/stellar-sdk`. It
     `usePaymentStream` and `useEffectStream` subscribe to an account's activity over Horizon's SSE
     stream, invalidating balance and account queries automatically as events arrive.
   </Card>
-  <Card title="Devtools" icon="bug" href="/components/soroform-devtools">
+  <Card title="Devtools" icon="bug" href="/components/sorokit-devtools">
     A development-only panel that logs every contract send's status transitions and shows a readable
     summary of the built transaction.
   </Card>

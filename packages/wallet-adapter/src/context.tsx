@@ -31,7 +31,7 @@ const WalletContext = React.createContext<WalletState | undefined>(undefined);
  *
  * @example
  * ```tsx
- * import { useWallet } from "@soroform/wallet-adapter";
+ * import { useWallet } from "@sorokit/wallet-adapter";
  *
  * function AccountBadge() {
  *   const { address, isConnected, connect } = useWallet();
@@ -54,7 +54,7 @@ export interface WalletProviderProps {
   /**
    * The wallet connector to drive. Pass your own {@link WalletAdapter} —
    * most apps won't render this directly at all; pass `stellarWalletsKit()`,
-   * `blux()`, or `para()` as `SoroformProvider`'s `wallet` prop instead,
+   * `blux()`, or `para()` as `SorokitProvider`'s `wallet` prop instead,
    * which renders this underneath for you.
    */
   adapter: WalletAdapter;
@@ -66,12 +66,12 @@ export interface WalletProviderProps {
 /**
  * Wraps the app in a wallet connection context, driven by whichever
  * {@link WalletAdapter} is passed as `adapter`. This is the low-level
- * primitive `SoroformProvider`'s `wallet` prop renders internally — most
+ * primitive `SorokitProvider`'s `wallet` prop renders internally — most
  * apps should use that instead of rendering `WalletProvider` directly.
  *
  * @example
  * ```tsx
- * import { WalletProvider } from "@soroform/wallet-adapter";
+ * import { WalletProvider } from "@sorokit/wallet-adapter";
  *
  * <WalletProvider adapter={myAdapter} networkPassphrase="Test SDF Network ; September 2015">
  *   {children}

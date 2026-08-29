@@ -1,11 +1,11 @@
 import { Client, type Spec } from "@stellar/stellar-sdk/contract";
 import type { QueryClient } from "@tanstack/react-query";
-import { queryKeys, type SoroformConfig } from "@soroform/core";
+import { queryKeys, type SorokitConfig } from "@sorokit/core";
 
 /**
  * Fetches and caches a contract's spec for the given config, entirely at
  * runtime from its `contractId`. This is the mechanism that makes
- * Soroform's contract hooks work with no code generation step: the first
+ * Sorokit's contract hooks work with no code generation step: the first
  * call for a given (network, contractId) resolves the spec via
  * `contract.Client.from`, which transparently handles Wasm-hash lookup,
  * Wasm download, and the built-in spec for Stellar Asset Contracts; every
@@ -18,7 +18,7 @@ import { queryKeys, type SoroformConfig } from "@soroform/core";
  */
 export async function fetchContractSpec(
   contractId: string,
-  config: SoroformConfig,
+  config: SorokitConfig,
   queryClient: QueryClient,
 ): Promise<Spec> {
   return queryClient.fetchQuery({

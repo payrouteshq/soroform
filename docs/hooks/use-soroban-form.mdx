@@ -6,7 +6,7 @@ description: "A react-hook-form useForm wired to a contract method's generated Z
 Wraps `react-hook-form`'s `useForm`, sourcing its `resolver` from the Zod args schema generated for the given contract method. The schema is resolved lazily and asynchronously, which `react-hook-form` supports natively, so there is no separate loading state to manage before the form can be used.
 
 ```ts
-import { useSorobanForm } from "@soroform/contract";
+import { useSorobanForm } from "@sorokit/contract";
 
 function useSorobanForm<TFieldValues extends FieldValues = FieldValues>(
   options: UseSorobanFormOptions,
@@ -24,7 +24,7 @@ function useSorobanForm<TFieldValues extends FieldValues = FieldValues>(
 | ------------ | ----------------- | -------- | --------------------------------------------------------------- |
 | `contractId` | `string`          | Yes      | The deployed contract's address (`C...`).                       |
 | `method`     | `string`          | Yes      | The method whose args schema this form should validate against. |
-| `network`    | `SoroformNetwork` | No       | Overrides the network from the nearest `SoroformProvider`.      |
+| `network`    | `SorokitNetwork` | No       | Overrides the network from the nearest `SorokitProvider`.      |
 
 ## Return value
 
@@ -33,7 +33,7 @@ The full `UseFormReturn` object from `react-hook-form` (`register`, `handleSubmi
 ## Example
 
 ```tsx
-import { useSorobanForm } from "@soroform/contract";
+import { useSorobanForm } from "@sorokit/contract";
 
 interface TransferFields {
   to: string;

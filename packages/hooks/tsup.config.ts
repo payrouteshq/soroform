@@ -6,6 +6,6 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   clean: true,
-  external: ["react", "react-dom", "@stellar/stellar-sdk", "@soroform/core", "@soroform/provider"],
+  external: ["react", "react-dom", "@stellar/stellar-sdk", "@sorokit/core", "@sorokit/provider"],
   banner: { js: '"use client";' },
 });

@@ -1,13 +1,13 @@
 ---
-title: "Error handling and the SoroformError shape"
-description: "How every error surfaced by Soroform is normalized into one discriminated union"
+title: "Error handling and the SorokitError shape"
+description: "How every error surfaced by Sorokit is normalized into one discriminated union"
 ---
 
-Every error thrown by `@stellar/stellar-sdk` or by Soroform's own code is normalized into a single shape before it reaches your app: `SoroformError`, from `@soroform/core`. This is the one place error-to-message mapping lives in Soroform; individual hooks do not each reimplement it.
+Every error thrown by `@stellar/stellar-sdk` or by Sorokit's own code is normalized into a single shape before it reaches your app: `SorokitError`, from `@sorokit/core`. This is the one place error-to-message mapping lives in Sorokit; individual hooks do not each reimplement it.
 
 ```ts
-interface SoroformError {
-  kind: SoroformErrorKind;
+interface SorokitError {
+  kind: SorokitErrorKind;
   message: string;
   cause: unknown;
 }
@@ -17,7 +17,7 @@ interface SoroformError {
 
 ## Every error kind
 
-`@stellar/stellar-sdk/contract` defines 16 distinct error classes. Soroform maps all 16 to a `SoroformErrorKind`, plus one more kind of its own for args that fail validation before ever reaching the network:
+`@stellar/stellar-sdk/contract` defines 16 distinct error classes. Sorokit maps all 16 to a `SorokitErrorKind`, plus one more kind of its own for args that fail validation before ever reaching the network:
 
 | `kind`                                 | Thrown when                                                                                         |
 | -------------------------------------- | --------------------------------------------------------------------------------------------------- |
@@ -67,10 +67,10 @@ if (error) {
 
 ## Normalizing an error yourself
 
-If you call `@stellar/stellar-sdk` directly somewhere outside a Soroform hook, run the same normalizer:
+If you call `@stellar/stellar-sdk` directly somewhere outside a Sorokit hook, run the same normalizer:
 
 ```ts
-import { normalizeError } from "@soroform/core";
+import { normalizeError } from "@sorokit/core";
 
 try {
   await someSdkCall();

@@ -11,11 +11,11 @@ Say Alice invokes a `swap` call that also needs Bob's authorization. Alice's bro
 
 ## Building the initial transaction
 
-Use `fetchContractSpec` (the same runtime spec-fetching Soroform's own hooks use) to get a `Spec`, then build with `AssembledTransaction.build` directly instead of going through `useContractSend`, since the built-in hook only expects one signer.
+Use `fetchContractSpec` (the same runtime spec-fetching Sorokit's own hooks use) to get a `Spec`, then build with `AssembledTransaction.build` directly instead of going through `useContractSend`, since the built-in hook only expects one signer.
 
 ```ts
 import { AssembledTransaction } from "@stellar/stellar-sdk/contract";
-import { fetchContractSpec } from "@soroform/contract";
+import { fetchContractSpec } from "@sorokit/contract";
 
 const spec = await fetchContractSpec(contractId, config, queryClient);
 const args = spec.funcArgsToScVals("swap", {

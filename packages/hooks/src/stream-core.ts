@@ -27,7 +27,7 @@ const DEFAULT_MAX_EVENTS = 50;
 /**
  * Shared lifecycle plumbing for a Horizon SSE stream: opens on mount (and
  * whenever `deps` changes), closes on unmount, and keeps the last
- * `maxEvents` received records in state. Not exported from `@soroform/hooks`
+ * `maxEvents` received records in state. Not exported from `@sorokit/hooks`
  * directly; `usePaymentStream` and `useEffectStream` are the public,
  * typed entry points built on top of it.
  */

@@ -5,7 +5,7 @@ import { PayroutesLogo } from "@/components/payroutes-logo";
 export function SiteFooter() {
   return (
     <footer className="mx-auto flex w-full max-w-5xl flex-col items-center gap-4 px-6 py-10 text-sm text-muted-foreground sm:flex-row sm:justify-between">
-      <span>&copy; {new Date().getFullYear()} Soroform</span>
+      <span>&copy; {new Date().getFullYear()} Sorokit</span>
 
       <Link
         href="https://payroutes.com"
@@ -18,15 +18,15 @@ export function SiteFooter() {
 
       <div className="flex items-center gap-4">
         <Link
-          href="https://github.com/payrouteshq/soroform"
-          aria-label="Soroform on GitHub"
+          href="https://github.com/payrouteshq/sorokit"
+          aria-label="Sorokit on GitHub"
           className="transition-colors hover:text-foreground"
         >
           <GithubIcon className="size-4" />
         </Link>
         <Link
           href="https://x.com/payrouteshq"
-          aria-label="Soroform on X"
+          aria-label="Sorokit on X"
           className="transition-colors hover:text-foreground"
         >
           <svg viewBox="0 0 24 24" fill="currentColor" className="size-4" aria-hidden>

@@ -1,12 +1,12 @@
 ---
-title: "SoroformDevtools"
+title: "SorokitDevtools"
 description: "A development-only panel logging contract send activity and the TanStack Query cache"
 ---
 
-A development-only devtools panel for Soroform. Renders nothing when `process.env.NODE_ENV !== "development"`, matching `@tanstack/react-query-devtools`'s own convention, so it is always safe to leave mounted in an app.
+A development-only devtools panel for Sorokit. Renders nothing when `process.env.NODE_ENV !== "development"`, matching `@tanstack/react-query-devtools`'s own convention, so it is always safe to leave mounted in an app.
 
 ```tsx
-import { SoroformDevtools } from "@soroform/devtools";
+import { SorokitDevtools } from "@sorokit/devtools";
 ```
 
 ## Props
@@ -18,13 +18,13 @@ import { SoroformDevtools } from "@soroform/devtools";
 ## Example
 
 ```tsx
-import { SoroformDevtools } from "@soroform/devtools";
+import { SorokitDevtools } from "@sorokit/devtools";
 
 export function App({ children }: { children: React.ReactNode }) {
   return (
     <>
       {children}
-      <SoroformDevtools />
+      <SorokitDevtools />
     </>
   );
 }
@@ -39,10 +39,10 @@ The panel is built with shadcn/ui components. If your app already uses shadcn, t
 A floating toggle opens a panel with two tabs:
 
 - Sends: every [`useContractSend`](/hooks/use-contract-send) invocation this session, its current status, and, once available, its decoded args and result. For each send, a readable summary of the built transaction (operation type, source account, and simulated minimum resource fee) is shown alongside a button to copy its raw XDR, rather than a full XDR tree decode.
-- Query cache: the app's TanStack Query cache, via an embedded `@tanstack/react-query-devtools` panel. Soroform's own hooks namespace every query key under `"soroform"`, so they're easy to pick out from your app's own queries in the same view.
+- Query cache: the app's TanStack Query cache, via an embedded `@tanstack/react-query-devtools` panel. Sorokit's own hooks namespace every query key under `"sorokit"`, so they're easy to pick out from your app's own queries in the same view.
 
 <Tip>
-  The send log is powered by `@soroform/core`'s `devtoolsSendLog` store, which `useContractSend`
-  writes to regardless of whether `@soroform/devtools` is installed. Installing this package only
-  adds the panel that reads from it; it never needs to be a dependency of `@soroform/contract`.
+  The send log is powered by `@sorokit/core`'s `devtoolsSendLog` store, which `useContractSend`
+  writes to regardless of whether `@sorokit/devtools` is installed. Installing this package only
+  adds the panel that reads from it; it never needs to be a dependency of `@sorokit/contract`.
 </Tip>

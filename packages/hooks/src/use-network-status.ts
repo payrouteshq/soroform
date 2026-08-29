@@ -1,7 +1,7 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import type { Api } from "@stellar/stellar-sdk/rpc";
-import { createRpcServer, normalizeError, queryKeys } from "@soroform/core";
-import { useSoroformConfig } from "@soroform/provider";
+import { createRpcServer, normalizeError, queryKeys } from "@sorokit/core";
+import { useSorokitConfig } from "@sorokit/provider";
 
 /** RPC node health and latest ledger info, as returned by `useNetworkStatus`. */
 export interface NetworkStatus {
@@ -22,7 +22,7 @@ const REFETCH_INTERVAL_MS = 30_000;
  *
  * @example
  * ```tsx
- * import { useNetworkStatus } from "@soroform/hooks";
+ * import { useNetworkStatus } from "@sorokit/hooks";
  *
  * function StatusDot() {
  *   const { data } = useNetworkStatus();
@@ -31,7 +31,7 @@ const REFETCH_INTERVAL_MS = 30_000;
  * ```
  */
 export function useNetworkStatus(options?: UseNetworkStatusOptions): UseQueryResult<NetworkStatus> {
-  const config = useSoroformConfig();
+  const config = useSorokitConfig();
 
   return useQuery<NetworkStatus>({
     queryKey: queryKeys.networkStatus(),

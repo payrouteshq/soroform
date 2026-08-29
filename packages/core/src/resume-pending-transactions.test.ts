@@ -9,9 +9,9 @@ vi.mock("./rpc.js", () => ({
 
 const { resumePendingTransactions } = await import("./resume-pending-transactions.js");
 const { pendingTransactions } = await import("./pending-transactions.js");
-const { resolveSoroformConfig } = await import("./config.js");
+const { resolveSorokitConfig } = await import("./config.js");
 
-const config = resolveSoroformConfig({ network: "testnet" });
+const config = resolveSorokitConfig({ network: "testnet" });
 
 function pending(overrides: Partial<Parameters<typeof pendingTransactions.add>[0]> = {}) {
   return {

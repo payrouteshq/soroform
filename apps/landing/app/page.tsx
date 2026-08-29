@@ -10,7 +10,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SpeedLines } from "@/components/speed-lines";
 
-const REGISTRY_COMMAND = "npx shadcn@latest add https://soroform.dev/registry/stellar-provider";
+const REGISTRY_COMMAND = "npx shadcn@latest add https://sorokit.dev/registry/stellar-provider";
 
 const FEATURES = [
   {

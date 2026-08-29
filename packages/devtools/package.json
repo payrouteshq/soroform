@@ -1,7 +1,7 @@
 {
-  "name": "@soroform/devtools",
+  "name": "@sorokit/devtools",
   "version": "0.0.0",
-  "description": "Development-only devtools panel for inspecting Soroform contract read and write activity.",
+  "description": "Development-only devtools panel for inspecting Sorokit contract read and write activity.",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -34,7 +34,7 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "@soroform/core": "workspace:*",
+    "@sorokit/core": "workspace:*",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "radix-ui": "1.6.7",

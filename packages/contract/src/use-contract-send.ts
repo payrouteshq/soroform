@@ -8,15 +8,15 @@ import {
   normalizeError,
   pendingTransactions,
   queryKeys,
-  resolveSoroformConfig,
+  resolveSorokitConfig,
   transactionSequencer,
   type ContractSendLogEntry,
   type ContractSendStatus,
-  type SoroformError,
-  type SoroformNetwork,
-} from "@soroform/core";
-import { useSoroformConfig } from "@soroform/provider";
-import { useWallet } from "@soroform/wallet-adapter";
+  type SorokitError,
+  type SorokitNetwork,
+} from "@sorokit/core";
+import { useSorokitConfig } from "@sorokit/provider";
+import { useWallet } from "@sorokit/wallet-adapter";
 import { fetchContractSpec } from "./spec-cache.js";
 import { generateContractSchemas } from "./generate-schemas.js";
 import { toValidationError } from "./validation-error.js";
@@ -28,8 +28,8 @@ export interface UseContractSendOptions {
   contractId: string;
   /** The state-changing method to call. */
   method: string;
-  /** Overrides the network from the nearest `SoroformProvider`. */
-  network?: SoroformNetwork;
+  /** Overrides the network from the nearest `SorokitProvider`. */
+  network?: SorokitNetwork;
 }
 
 export interface UseContractSendResult<TResult = unknown> {
@@ -38,7 +38,7 @@ export interface UseContractSendResult<TResult = unknown> {
   /** The decoded result, once `status` is `"success"`. */
   data: TResult | undefined;
   /** The normalized error, once `status` is `"error"`. */
-  error: SoroformError | undefined;
+  error: SorokitError | undefined;
   /** The submitted transaction's hash, from the moment the network accepts it. */
   hash: string | undefined;
   /** Validates args, simulates, signs, and sends the transaction. */
@@ -80,7 +80,7 @@ class SubmissionWatcher extends Watcher {
  * "needsSignature" | "submitting" | "success" | "error"`) rather than a
  * single boolean, so a consuming app can render distinct UI per phase.
  *
- * Every send is routed through Soroform's global `transactionSequencer`,
+ * Every send is routed through Sorokit's global `transactionSequencer`,
  * keyed by the connected wallet address. This is what makes a double-click
  * on a Transfer button, or two components each firing a send, safe: a
  * Stellar transaction's sequence number must be exactly one past the
@@ -92,18 +92,18 @@ class SubmissionWatcher extends Watcher {
  *
  * Once the network accepts a transaction it is recorded in
  * `pendingTransactions`, which is mirrored into `localStorage`. If the page
- * is reloaded while a send is `"submitting"`, `SoroformProvider` resumes
+ * is reloaded while a send is `"submitting"`, `SorokitProvider` resumes
  * polling for the outcome on mount instead of losing it.
  *
- * Requires a connected wallet (see `useWallet` from `@soroform/wallet-adapter`).
+ * Requires a connected wallet (see `useWallet` from `@sorokit/wallet-adapter`).
  * On success, invalidates every `useContractCall` query for this contract,
  * so calls reflect the new state automatically. On error, the thrown
- * error is normalized via `@soroform/core`'s `normalizeError` before being
+ * error is normalized via `@sorokit/core`'s `normalizeError` before being
  * exposed.
  *
  * @example
  * ```tsx
- * import { useContractSend } from "@soroform/contract";
+ * import { useContractSend } from "@sorokit/contract";
  *
  * function TransferButton({ contractId }: { contractId: string }) {
  *   const { status, sendAsync, error } = useContractSend({
@@ -128,8 +128,8 @@ export function useContractSend<TResult = unknown>(
   options: UseContractSendOptions,
 ): UseContractSendResult<TResult> {
   const { contractId, method, network } = options;
-  const contextConfig = useSoroformConfig();
-  const config = network ? resolveSoroformConfig({ network }) : contextConfig;
+  const contextConfig = useSorokitConfig();
+  const config = network ? resolveSorokitConfig({ network }) : contextConfig;
   const wallet = useWallet();
   const queryClient = useQueryClient();
   const [status, setStatus] = React.useState<ContractSendStatus>("idle");
@@ -143,7 +143,7 @@ export function useContractSend<TResult = unknown>(
    */
   const latestRunId = React.useRef(0);
 
-  const mutation = useMutation<TResult, SoroformError, Record<string, unknown> | undefined>({
+  const mutation = useMutation<TResult, SorokitError, Record<string, unknown> | undefined>({
     mutationFn: async (args) => {
       const runId = (latestRunId.current += 1);
       const id = `${contractId}:${method}:${Date.now()}:${Math.random()}`;

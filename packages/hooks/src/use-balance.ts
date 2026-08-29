@@ -1,7 +1,7 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { Asset } from "@stellar/stellar-sdk";
-import { createRpcServer, normalizeError, queryKeys } from "@soroform/core";
-import { useSoroformConfig } from "@soroform/provider";
+import { createRpcServer, normalizeError, queryKeys } from "@sorokit/core";
+import { useSorokitConfig } from "@sorokit/provider";
 import { formatAmount } from "./format-amount.js";
 
 /** A normalized balance, regardless of which kind of asset it came from. */
@@ -28,7 +28,7 @@ function toClassicAsset(assetId: string): Asset {
   if (assetId === "native") return Asset.native();
   const [code, issuer] = assetId.split(":");
   if (!code || !issuer) {
-    throw new Error(`Soroform: invalid classic asset id "${assetId}", expected "CODE:ISSUER".`);
+    throw new Error(`Sorokit: invalid classic asset id "${assetId}", expected "CODE:ISSUER".`);
   }
   return new Asset(code, issuer);
 }
@@ -49,7 +49,7 @@ function toClassicAsset(assetId: string): Asset {
  *
  * @example
  * ```tsx
- * import { useBalance } from "@soroform/hooks";
+ * import { useBalance } from "@sorokit/hooks";
  *
  * function XlmBalance({ address }: { address: string }) {
  *   const { data, isLoading } = useBalance(address, "native");
@@ -63,7 +63,7 @@ export function useBalance(
   assetId: string,
   options?: UseBalanceOptions,
 ): UseQueryResult<BalanceState> {
-  const config = useSoroformConfig();
+  const config = useSorokitConfig();
 
   return useQuery<BalanceState>({
     queryKey: queryKeys.balance(address, assetId),

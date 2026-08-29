@@ -1,5 +1,5 @@
-import { useWallet } from "@soroform/wallet-adapter";
-import { useAccount, useBalance } from "@soroform/hooks";
+import { useWallet } from "@sorokit/wallet-adapter";
+import { useAccount, useBalance } from "@sorokit/hooks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 

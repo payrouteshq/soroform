@@ -1,25 +1,25 @@
-# @soroform/wallet-adapter
+# @sorokit/wallet-adapter
 
-Adapter-agnostic wallet connection and signing layer for Soroform. You
+Adapter-agnostic wallet connection and signing layer for Sorokit. You
 don't render anything from this package directly in most apps — pass one
-of its connectors as `SoroformProvider`'s `wallet` prop instead
-(`@soroform/provider`), and `useWallet()`/`ConnectWalletButton` work
+of its connectors as `SorokitProvider`'s `wallet` prop instead
+(`@sorokit/provider`), and `useWallet()`/`ConnectWalletButton` work
 anywhere below it.
 
 Three connectors ship as separate entry points, each with its own peer
 dependency so you only install what you use:
 
-- `@soroform/wallet-adapter/stellar-wallets-kit` — `stellarWalletsKit()`, backed by `@creit.tech/stellar-wallets-kit`
-- `@soroform/wallet-adapter/blux` — `blux()`, backed by `@bluxcc/core`
-- `@soroform/wallet-adapter/para` — `para()`, backed by `@getpara/react-sdk`
+- `@sorokit/wallet-adapter/stellar-wallets-kit` — `stellarWalletsKit()`, backed by `@creit.tech/stellar-wallets-kit`
+- `@sorokit/wallet-adapter/blux` — `blux()`, backed by `@bluxcc/core`
+- `@sorokit/wallet-adapter/para` — `para()`, backed by `@getpara/react-sdk`
 
 ```tsx
-import { SoroformProvider } from "@soroform/provider";
-import { stellarWalletsKit } from "@soroform/wallet-adapter/stellar-wallets-kit";
+import { SorokitProvider } from "@sorokit/provider";
+import { stellarWalletsKit } from "@sorokit/wallet-adapter/stellar-wallets-kit";
 
-<SoroformProvider network="testnet" wallet={stellarWalletsKit()}>
+<SorokitProvider network="testnet" wallet={stellarWalletsKit()}>
   {children}
-</SoroformProvider>;
+</SorokitProvider>;
 ```
 
 Write your own connector if none of these fit your wallet SDK — implement
@@ -27,5 +27,5 @@ the `WalletAdapter` interface exported from the package root, then wrap it
 as `{ useAdapter: () => myAdapter }`, which already satisfies
 `WalletConnector`.
 
-Full documentation: https://docs.soroform.dev (see the repository root
+Full documentation: https://docs.sorokit.dev (see the repository root
 README for the current status of the docs site).

@@ -1,5 +1,5 @@
 {
-  "name": "@soroform/hooks",
+  "name": "@sorokit/hooks",
   "version": "0.0.0",
   "description": "General-purpose React hooks for accounts, balances, transaction status, network status, and live Horizon streams.",
   "license": "Apache-2.0",
@@ -33,8 +33,8 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "@soroform/core": "workspace:*",
-    "@soroform/provider": "workspace:*",
+    "@sorokit/core": "workspace:*",
+    "@sorokit/provider": "workspace:*",
     "@stellar/stellar-sdk": "17.0.0"
   },
   "peerDependencies": {

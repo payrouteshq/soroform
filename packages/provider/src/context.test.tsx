@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
-import { useWallet } from "@soroform/wallet-adapter";
-import type { WalletAdapter, WalletConnector } from "@soroform/wallet-adapter";
-import { SoroformProvider, useSoroformConfig } from "./context.js";
+import { useWallet } from "@sorokit/wallet-adapter";
+import type { WalletAdapter, WalletConnector } from "@sorokit/wallet-adapter";
+import { SorokitProvider, useSorokitConfig } from "./context.js";
 
 const TEST_ADDRESS = "GABCDEFGHIJKLMNOPQRSTUVWXYZ234567ABCDEFGHIJKLMNOPQRSTUV";
 
@@ -43,7 +43,7 @@ function WalletProbe() {
 }
 
 function ConfigProbe() {
-  const config = useSoroformConfig();
+  const config = useSorokitConfig();
   return <span data-testid="probe">{JSON.stringify(config)}</span>;
 }
 
@@ -52,21 +52,21 @@ function QueryClientProbe() {
   return <span data-testid="probe">{String(client.getDefaultOptions().queries?.staleTime)}</span>;
 }
 
-describe("SoroformProvider", () => {
+describe("SorokitProvider", () => {
   it("renders its children", () => {
     render(
-      <SoroformProvider network="testnet">
+      <SorokitProvider network="testnet">
         <span>hello</span>
-      </SoroformProvider>,
+      </SorokitProvider>,
     );
     expect(screen.getByText("hello")).toBeInTheDocument();
   });
 
   it("resolves and propagates config from the network prop", () => {
     render(
-      <SoroformProvider network="testnet">
+      <SorokitProvider network="testnet">
         <ConfigProbe />
-      </SoroformProvider>,
+      </SorokitProvider>,
     );
     const config = JSON.parse(screen.getByTestId("probe").textContent ?? "{}");
     expect(config.network).toBe("testnet");
@@ -75,13 +75,13 @@ describe("SoroformProvider", () => {
 
   it("propagates rpcUrl and horizonUrl overrides", () => {
     render(
-      <SoroformProvider
+      <SorokitProvider
         network="testnet"
         rpcUrl="https://custom-rpc.example.com"
         horizonUrl="https://custom-horizon.example.com"
       >
         <ConfigProbe />
-      </SoroformProvider>,
+      </SorokitProvider>,
     );
     const config = JSON.parse(screen.getByTestId("probe").textContent ?? "{}");
     expect(config.rpcUrl).toBe("https://custom-rpc.example.com");
@@ -90,9 +90,9 @@ describe("SoroformProvider", () => {
 
   it("creates a default QueryClient with a 5 second staleTime when none is passed", () => {
     render(
-      <SoroformProvider network="testnet">
+      <SorokitProvider network="testnet">
         <QueryClientProbe />
-      </SoroformProvider>,
+      </SorokitProvider>,
     );
     expect(screen.getByTestId("probe")).toHaveTextContent("5000");
   });
@@ -102,31 +102,31 @@ describe("SoroformProvider", () => {
       defaultOptions: { queries: { staleTime: 42 } },
     });
     render(
-      <SoroformProvider network="testnet" queryClient={client}>
+      <SorokitProvider network="testnet" queryClient={client}>
         <QueryClientProbe />
-      </SoroformProvider>,
+      </SorokitProvider>,
     );
     expect(screen.getByTestId("probe")).toHaveTextContent("42");
   });
 });
 
-describe("useSoroformConfig", () => {
-  it("throws when called outside a SoroformProvider", () => {
+describe("useSorokitConfig", () => {
+  it("throws when called outside a SorokitProvider", () => {
     const originalError = console.error;
     console.error = () => {};
     expect(() => render(<ConfigProbe />)).toThrow(
-      /useSoroformConfig must be called within a <SoroformProvider>/,
+      /useSorokitConfig must be called within a <SorokitProvider>/,
     );
     console.error = originalError;
   });
 });
 
-describe("SoroformProvider wallet prop", () => {
+describe("SorokitProvider wallet prop", () => {
   it("mounts the connector so useWallet() works, without a separate WalletProvider", async () => {
     render(
-      <SoroformProvider network="testnet" wallet={createFakeConnector()}>
+      <SorokitProvider network="testnet" wallet={createFakeConnector()}>
         <WalletProbe />
-      </SoroformProvider>,
+      </SorokitProvider>,
     );
     expect(screen.getByTestId("address")).toHaveTextContent("none");
 
@@ -142,9 +142,9 @@ describe("SoroformProvider wallet prop", () => {
       Provider: ({ children }) => <div data-testid="connector-provider">{children}</div>,
     };
     render(
-      <SoroformProvider network="testnet" wallet={connector}>
+      <SorokitProvider network="testnet" wallet={connector}>
         <WalletProbe />
-      </SoroformProvider>,
+      </SorokitProvider>,
     );
     expect(screen.getByTestId("connector-provider")).toContainElement(
       screen.getByTestId("address"),
@@ -156,16 +156,16 @@ describe("SoroformProvider wallet prop", () => {
     console.error = () => {};
     expect(() =>
       render(
-        <SoroformProvider network="testnet">
+        <SorokitProvider network="testnet">
           <WalletProbe />
-        </SoroformProvider>,
+        </SorokitProvider>,
       ),
     ).toThrow(/useWallet must be called within a <WalletProvider>/);
     console.error = originalError;
   });
 });
 
-describe("SoroformProvider devtools prop", () => {
+describe("SorokitProvider devtools prop", () => {
   const originalEnv = process.env.NODE_ENV;
 
   afterEach(() => {
@@ -175,29 +175,29 @@ describe("SoroformProvider devtools prop", () => {
   it("does not render devtools when the prop is omitted", () => {
     process.env.NODE_ENV = "development";
     render(
-      <SoroformProvider network="testnet">
+      <SorokitProvider network="testnet">
         <span>hello</span>
-      </SoroformProvider>,
+      </SorokitProvider>,
     );
-    expect(screen.queryByRole("button", { name: "Soroform" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Sorokit" })).not.toBeInTheDocument();
   });
 
   it("renders devtools with defaults when passed true", () => {
     process.env.NODE_ENV = "development";
     render(
-      <SoroformProvider network="testnet" devtools>
+      <SorokitProvider network="testnet" devtools>
         <span>hello</span>
-      </SoroformProvider>,
+      </SorokitProvider>,
     );
-    expect(screen.getByRole("button", { name: "Soroform" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sorokit" })).toBeInTheDocument();
   });
 
-  it("forwards an options object to SoroformDevtools", () => {
+  it("forwards an options object to SorokitDevtools", () => {
     process.env.NODE_ENV = "development";
     render(
-      <SoroformProvider network="testnet" devtools={{ initialOpen: true }}>
+      <SorokitProvider network="testnet" devtools={{ initialOpen: true }}>
         <span>hello</span>
-      </SoroformProvider>,
+      </SorokitProvider>,
     );
     expect(screen.getByRole("tab", { name: "Sends" })).toBeInTheDocument();
   });

@@ -5,8 +5,8 @@ import { xdr } from "@stellar/stellar-sdk";
 import { Spec } from "@stellar/stellar-sdk/contract";
 import { QueryClient } from "@tanstack/react-query";
 import { z } from "zod";
-import { SoroformProvider } from "@soroform/provider";
-import { devtoolsSendLog, pendingTransactions, type SoroformError } from "@soroform/core";
+import { SorokitProvider } from "@sorokit/provider";
+import { devtoolsSendLog, pendingTransactions, type SorokitError } from "@sorokit/core";
 import { useContractSend } from "./use-contract-send.js";
 
 const T = xdr.ScSpecTypeDef;
@@ -57,10 +57,10 @@ vi.mock("@stellar/stellar-sdk/contract", async (importOriginal) => {
  * depends on — one send at a time per account, released the moment the
  * network accepts a transaction — and hands out a server the mocked
  * `AssembledTransaction.build` never actually calls. Sequence-number
- * projection itself is covered by `@soroform/core`'s own tests.
+ * projection itself is covered by `@sorokit/core`'s own tests.
  */
-vi.mock("@soroform/core", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@soroform/core")>();
+vi.mock("@sorokit/core", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@sorokit/core")>();
   let tail: Promise<void> = Promise.resolve();
   return {
     ...actual,
@@ -83,7 +83,7 @@ vi.mock("@soroform/core", async (importOriginal) => {
   };
 });
 
-vi.mock("@soroform/wallet-adapter", () => ({
+vi.mock("@sorokit/wallet-adapter", () => ({
   useWallet: () => ({
     address: "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ",
     network: undefined,
@@ -104,16 +104,16 @@ function renderWithProviders(children: React.ReactNode) {
   return {
     queryClient,
     ...render(
-      <SoroformProvider network="testnet" queryClient={queryClient}>
+      <SorokitProvider network="testnet" queryClient={queryClient}>
         {children}
-      </SoroformProvider>,
+      </SorokitProvider>,
     ),
   };
 }
 
 function TransferProbe(props: {
   args?: Record<string, unknown>;
-  onError?: (error: SoroformError) => void;
+  onError?: (error: SorokitError) => void;
 }) {
   const { status, data, error, hash, sendAsync } = useContractSend<boolean>({
     contractId: CONTRACT_ID,
@@ -211,7 +211,7 @@ describe("useContractSend", () => {
     screen.getByText("write").click();
 
     await waitFor(() => expect(onError).toHaveBeenCalled());
-    const error = onError.mock.calls[0]![0] as SoroformError;
+    const error = onError.mock.calls[0]![0] as SorokitError;
 
     expect(error.kind).toBe("validation-failed");
     expect(error.message).not.toContain('"code"');

@@ -19,7 +19,7 @@ export default defineConfig({
     "@getpara/react-sdk",
     "@getpara/react-sdk/stellar",
     "@tanstack/react-query",
-    "@soroform/provider",
+    "@sorokit/provider",
   ],
   banner: { js: '"use client";' },
 });

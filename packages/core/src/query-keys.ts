@@ -35,21 +35,21 @@ function toSerializableKeyPart(value: unknown): unknown {
 
 /**
  * Single source of truth for how TanStack Query keys are constructed
- * across Soroform. `@soroform/hooks`, `@soroform/contract`, and
- * `@soroform/devtools` all import these instead of building key arrays by
+ * across Sorokit. `@sorokit/hooks`, `@sorokit/contract`, and
+ * `@sorokit/devtools` all import these instead of building key arrays by
  * hand, so cache reads, invalidation, and the devtools cache viewer never
  * drift out of sync with each other.
  *
- * Every key is namespaced under `"soroform"` so Soroform's cache entries
+ * Every key is namespaced under `"sorokit"` so Sorokit's cache entries
  * are trivially distinguishable from a consuming app's own TanStack Query
  * usage.
  */
 export const queryKeys = {
   /** The current state of a Stellar account (sequence number, existence). */
-  account: (address: string) => ["soroform", "account", address] as const,
+  account: (address: string) => ["sorokit", "account", address] as const,
 
   /** An address's balance of a given asset (native, classic, or contract). */
-  balance: (address: string, assetId: string) => ["soroform", "balance", address, assetId] as const,
+  balance: (address: string, assetId: string) => ["sorokit", "balance", address, assetId] as const,
 
   /**
    * The prefix shared by every `balance` query for a given address, across
@@ -58,13 +58,13 @@ export const queryKeys = {
    * `usePaymentStream`), without needing to know every asset that has been
    * queried.
    */
-  balancesByAddress: (address: string) => ["soroform", "balance", address] as const,
+  balancesByAddress: (address: string) => ["sorokit", "balance", address] as const,
 
   /** The status of a submitted transaction, by hash. */
-  transactionStatus: (hash: string) => ["soroform", "transactionStatus", hash] as const,
+  transactionStatus: (hash: string) => ["sorokit", "transactionStatus", hash] as const,
 
   /** RPC node health and latest ledger info. */
-  networkStatus: () => ["soroform", "networkStatus"] as const,
+  networkStatus: () => ["sorokit", "networkStatus"] as const,
 
   /**
    * A contract's spec, fetched once per (network, contractId) and cached
@@ -72,7 +72,7 @@ export const queryKeys = {
    * redeploy under a new contract ID.
    */
   contractSpec: (networkPassphrase: string, contractId: string) =>
-    ["soroform", "contractSpec", networkPassphrase, contractId] as const,
+    ["sorokit", "contractSpec", networkPassphrase, contractId] as const,
 
   /**
    * The prefix shared by every `contractCall` query for a given contract.
@@ -81,12 +81,12 @@ export const queryKeys = {
    * combination that has been queried.
    */
   contractCallsByContract: (networkPassphrase: string, contractId: string) =>
-    ["soroform", "contractCall", networkPassphrase, contractId] as const,
+    ["sorokit", "contractCall", networkPassphrase, contractId] as const,
 
   /** The decoded result of simulating a specific contract call. */
   contractCall: (networkPassphrase: string, contractId: string, method: string, args: unknown) =>
     [
-      "soroform",
+      "sorokit",
       "contractCall",
       networkPassphrase,
       contractId,

@@ -1,5 +1,5 @@
 import { Account } from "@stellar/stellar-sdk";
-import type { SoroformConfig } from "./config.js";
+import type { SorokitConfig } from "./config.js";
 import { createRpcServer, type RpcServer } from "./rpc.js";
 
 /** What a queued send is handed when its turn comes up. */
@@ -47,7 +47,7 @@ interface Lane {
 /**
  * Wraps an RPC server so `getAccount` for one address reports a sequence
  * number the sequencer chose, leaving every other method (and every other
- * address) untouched. This is the seam that lets Soroform drive sequence
+ * address) untouched. This is the seam that lets Sorokit drive sequence
  * numbers without forking `AssembledTransaction`, which otherwise resolves
  * the account itself.
  *
@@ -93,7 +93,7 @@ function withProjectedSequence(server: RpcServer, address: string, sequence: str
  * lets a burst of sends go out back to back instead of one per ~5 second
  * ledger close. The projection is always taken as a floor against the
  * network's own answer, so a sequence number bumped by something outside
- * Soroform — another tab, a CLI, the wallet itself — wins.
+ * Sorokit — another tab, a CLI, the wallet itself — wins.
  *
  * The one thing this trades away: a queued send is simulated against a
  * ledger that does not yet contain the send ahead of it. That is fine for
@@ -113,7 +113,7 @@ export class TransactionSequencer {
    * ones queued behind it.
    */
   async enqueue<T>(options: {
-    config: SoroformConfig;
+    config: SorokitConfig;
     address: string;
     /** Called when the send reaches the front of the queue, before any RPC call. */
     onStart?: () => void;
@@ -170,7 +170,7 @@ export class TransactionSequencer {
    * built from: the network's answer, or this lane's projection, whichever
    * is further ahead.
    */
-  private async reserve(lane: Lane, config: SoroformConfig, address: string): Promise<string> {
+  private async reserve(lane: Lane, config: SorokitConfig, address: string): Promise<string> {
     if (lane.needsResync && lane.inFlight === 0) {
       lane.projected = null;
       lane.needsResync = false;

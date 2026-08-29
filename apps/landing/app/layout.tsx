@@ -15,11 +15,11 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Soroform",
+  title: "Sorokit",
   description: "Turn a deployed Soroban contract into typed, validated React hooks and forms.",
   icons: {
-    icon: "/soroforms-logo.jpeg",
-    apple: "/soroforms-logo.jpeg",
+    icon: "/favicon.png",
+    apple: "/favicon.png",
   },
 };
 

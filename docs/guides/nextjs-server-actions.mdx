@@ -1,9 +1,9 @@
 ---
-title: "Using Soroform in a Next.js Server Component + Server Action setup"
+title: "Using Sorokit in a Next.js Server Component + Server Action setup"
 description: "Build and simulate on the server, sign and send on the client"
 ---
 
-Soroform's hooks are client-side by design: they need a browser wallet to sign with. You can still do the build-and-simulate step on the server, which is useful when you want to keep RPC calls off the client, validate args server-side before a user's wallet ever sees them, or read the same contract state during server rendering that a client hook will read again later (cache warm-up).
+Sorokit's hooks are client-side by design: they need a browser wallet to sign with. You can still do the build-and-simulate step on the server, which is useful when you want to keep RPC calls off the client, validate args server-side before a user's wallet ever sees them, or read the same contract state during server rendering that a client hook will read again later (cache warm-up).
 
 The pattern: a Server Action builds and simulates the transaction and returns its serialized form; a Client Component reconstructs it, signs with the connected wallet, and sends it.
 
@@ -13,11 +13,11 @@ The pattern: a Server Action builds and simulates the transaction and returns it
 "use server";
 
 import { AssembledTransaction } from "@stellar/stellar-sdk/contract";
-import { fetchContractSpec } from "@soroform/contract";
-import { resolveSoroformConfig } from "@soroform/core";
+import { fetchContractSpec } from "@sorokit/contract";
+import { resolveSorokitConfig } from "@sorokit/core";
 import { QueryClient } from "@tanstack/react-query";
 
-const config = resolveSoroformConfig({ network: "testnet" });
+const config = resolveSorokitConfig({ network: "testnet" });
 const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
 
 export async function buildTransfer(sourceAddress: string, to: string, amount: bigint) {
@@ -50,16 +50,16 @@ Notice `AssembledTransaction.build` is called with no `signTransaction`: the ser
 
 import { useState } from "react";
 import { AssembledTransaction } from "@stellar/stellar-sdk/contract";
-import { fetchContractSpec } from "@soroform/contract";
-import { useSoroformConfig } from "@soroform/provider";
-import { useWallet } from "@soroform/wallet-adapter";
+import { fetchContractSpec } from "@sorokit/contract";
+import { useSorokitConfig } from "@sorokit/provider";
+import { useWallet } from "@sorokit/wallet-adapter";
 import { useQueryClient } from "@tanstack/react-query";
 import { buildTransfer } from "../actions";
 
 const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
 
 export function TransferButton({ to }: { to: string }) {
-  const config = useSoroformConfig();
+  const config = useSorokitConfig();
   const wallet = useWallet();
   const queryClient = useQueryClient();
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PendingTransactionStore, type PendingTransaction } from "./pending-transactions.js";
 
-const STORAGE_KEY = "soroform.pending-transactions.v1";
+const STORAGE_KEY = "sorokit.pending-transactions.v1";
 
 function createStorage(initial: Record<string, string> = {}): Storage {
   const map = new Map(Object.entries(initial));

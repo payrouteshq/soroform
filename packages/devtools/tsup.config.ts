@@ -11,7 +11,7 @@ export default defineConfig({
     "react-dom",
     "@tanstack/react-query",
     "@tanstack/react-query-devtools",
-    "@soroform/core",
+    "@sorokit/core",
   ],
   banner: { js: '"use client";' },
   loader: { ".css": "text" },

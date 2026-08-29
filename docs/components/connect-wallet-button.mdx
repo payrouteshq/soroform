@@ -6,7 +6,7 @@ description: "A minimally styled button that opens the wallet picker and shows t
 A minimally styled button that opens the wallet picker modal when no wallet is connected, and shows the connected address (disconnecting on click) once one is. Styled entirely through CSS custom properties, so you can restyle it without overriding classes.
 
 ```tsx
-import { ConnectWalletButton } from "@soroform/wallet-adapter";
+import { ConnectWalletButton } from "@sorokit/wallet-adapter";
 ```
 
 <Note>
@@ -24,7 +24,7 @@ import { ConnectWalletButton } from "@soroform/wallet-adapter";
 ## Example
 
 ```tsx
-import { ConnectWalletButton } from "@soroform/wallet-adapter";
+import { ConnectWalletButton } from "@sorokit/wallet-adapter";
 
 function Header() {
   return <ConnectWalletButton connectLabel="Sign in" />;
@@ -35,14 +35,14 @@ function Header() {
 
 ```css
 :root {
-  --soroform-button-bg: #4f46e5;
-  --soroform-button-fg: #ffffff;
-  --soroform-button-radius: 0.75rem;
-  --soroform-button-padding: 0.6rem 1.2rem;
-  --soroform-button-font-family: "Inter", sans-serif;
-  --soroform-button-font-size: 0.9rem;
-  --soroform-button-font-weight: 500;
-  --soroform-button-border: none;
+  --sorokit-button-bg: #4f46e5;
+  --sorokit-button-fg: #ffffff;
+  --sorokit-button-radius: 0.75rem;
+  --sorokit-button-padding: 0.6rem 1.2rem;
+  --sorokit-button-font-family: "Inter", sans-serif;
+  --sorokit-button-font-size: 0.9rem;
+  --sorokit-button-font-weight: 500;
+  --sorokit-button-border: none;
 }
 ```
 

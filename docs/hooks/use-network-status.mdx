@@ -6,7 +6,7 @@ description: "Fetch RPC node health and the latest ledger, refetched on an inter
 Fetches RPC node health and the latest ledger. Refetches every 30 seconds, making it suitable for a network status indicator.
 
 ```ts
-import { useNetworkStatus } from "@soroform/hooks";
+import { useNetworkStatus } from "@sorokit/hooks";
 
 function useNetworkStatus(options?: UseNetworkStatusOptions): UseQueryResult<NetworkStatus>;
 ```
@@ -29,7 +29,7 @@ function useNetworkStatus(options?: UseNetworkStatusOptions): UseQueryResult<Net
 ## Example
 
 ```tsx
-import { useNetworkStatus } from "@soroform/hooks";
+import { useNetworkStatus } from "@sorokit/hooks";
 
 function StatusDot() {
   const { data } = useNetworkStatus();

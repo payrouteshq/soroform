@@ -47,19 +47,19 @@ export function createDefaultModules(): ModuleInterface[] {
  * A `WalletConnector` backed by `@creit.tech/stellar-wallets-kit`, a
  * multi-wallet connector supporting Freighter, xBull, Albedo, Lobstr,
  * Hana, Rabet, hardware wallets, and WalletConnect. Pass it as
- * `SoroformProvider`'s `wallet` prop.
+ * `SorokitProvider`'s `wallet` prop.
  *
  * `@creit.tech/stellar-wallets-kit` is a peer dependency: install it
- * alongside `@soroform/wallet-adapter` to use this connector.
+ * alongside `@sorokit/wallet-adapter` to use this connector.
  *
  * @example
  * ```tsx
- * import { SoroformProvider } from "@soroform/provider";
- * import { stellarWalletsKit } from "@soroform/wallet-adapter/stellar-wallets-kit";
+ * import { SorokitProvider } from "@sorokit/provider";
+ * import { stellarWalletsKit } from "@sorokit/wallet-adapter/stellar-wallets-kit";
  *
- * <SoroformProvider network="testnet" wallet={stellarWalletsKit()}>
+ * <SorokitProvider network="testnet" wallet={stellarWalletsKit()}>
  *   {children}
- * </SoroformProvider>;
+ * </SorokitProvider>;
  * ```
  */
 export function stellarWalletsKit(options: StellarWalletsKitAdapterOptions = {}): WalletConnector {

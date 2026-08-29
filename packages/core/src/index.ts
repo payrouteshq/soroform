@@ -1,9 +1,9 @@
-export type { SoroformNetwork, SoroformConfigInput, SoroformConfig } from "./config.js";
-export { resolveSoroformConfig } from "./config.js";
+export type { SorokitNetwork, SorokitConfigInput, SorokitConfig } from "./config.js";
+export { resolveSorokitConfig } from "./config.js";
 
 export { queryKeys } from "./query-keys.js";
 
-export type { SoroformErrorKind, SoroformError } from "./errors.js";
+export type { SorokitErrorKind, SorokitError } from "./errors.js";
 export { normalizeError } from "./errors.js";
 
 export type { RpcServer } from "./rpc.js";

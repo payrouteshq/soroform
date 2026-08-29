@@ -1,4 +1,4 @@
-import type { SoroformError } from "./errors.js";
+import type { SorokitError } from "./errors.js";
 
 /**
  * The literal states a `useContractSend` call moves through, exposed
@@ -16,7 +16,7 @@ export type ContractSendStatus =
 /**
  * A readable summary of a built transaction's operation and Soroban
  * resource footprint, captured once `AssembledTransaction.build` succeeds.
- * Deliberately not a full XDR tree decode (see `@soroform/devtools`);
+ * Deliberately not a full XDR tree decode (see `@sorokit/devtools`);
  * `transactionXdr` is kept alongside it so a devtools UI can offer a raw
  * copy button for anything this summary does not surface.
  */
@@ -33,7 +33,7 @@ export interface ContractSendTransactionSummary {
 
 /**
  * One logged `useContractSend` invocation, as recorded by
- * `@soroform/contract` and read by `@soroform/devtools`.
+ * `@sorokit/contract` and read by `@sorokit/devtools`.
  */
 export interface ContractSendLogEntry {
   id: string;
@@ -42,7 +42,7 @@ export interface ContractSendLogEntry {
   status: ContractSendStatus;
   args?: unknown;
   result?: unknown;
-  error?: SoroformError;
+  error?: SorokitError;
   transaction?: ContractSendTransactionSummary;
   /** The submitted transaction's hash, once the network has accepted it. */
   hash?: string;
@@ -53,11 +53,11 @@ type Listener = () => void;
 
 /**
  * A minimal in-memory pub-sub store logging `useContractSend` activity
- * for `@soroform/devtools` to display. Lives in `@soroform/core`, not in
- * either package that actually cares about it, so that `@soroform/contract`
- * can write to it without depending on `@soroform/devtools`, and
- * `@soroform/devtools` can read from it without depending on
- * `@soroform/contract`. Recording is a no-op with no listeners subscribed,
+ * for `@sorokit/devtools` to display. Lives in `@sorokit/core`, not in
+ * either package that actually cares about it, so that `@sorokit/contract`
+ * can write to it without depending on `@sorokit/devtools`, and
+ * `@sorokit/devtools` can read from it without depending on
+ * `@sorokit/contract`. Recording is a no-op with no listeners subscribed,
  * so it stays effectively free when devtools is not installed.
  */
 class DevtoolsSendLogStore {
@@ -66,7 +66,7 @@ class DevtoolsSendLogStore {
   /**
    * `getAll()`'s result cached until the next mutation, so it returns a
    * stable reference between calls when nothing has changed. This matters
-   * for `React.useSyncExternalStore` (used by `@soroform/devtools`), whose
+   * for `React.useSyncExternalStore` (used by `@sorokit/devtools`), whose
    * contract requires `getSnapshot` to return `Object.is`-equal results
    * when the underlying data has not changed, or it will re-render in a
    * loop.
@@ -109,7 +109,7 @@ class DevtoolsSendLogStore {
 /**
  * The shared devtools send-log store instance. `useContractSend` calls
  * `devtoolsSendLog.record(...)` on every status transition (guarded by
- * `process.env.NODE_ENV === "development"`); `<SoroformDevtools>` calls
+ * `process.env.NODE_ENV === "development"`); `<SorokitDevtools>` calls
  * `devtoolsSendLog.subscribe(...)` and `getAll()` to render it.
  */
 export const devtoolsSendLog = new DevtoolsSendLogStore();

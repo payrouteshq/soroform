@@ -2,43 +2,43 @@ import * as React from "react";
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import {
   queryKeys,
-  resolveSoroformConfig,
+  resolveSorokitConfig,
   resumePendingTransactions,
-  type SoroformConfig,
-  type SoroformNetwork,
-} from "@soroform/core";
-import { WalletProvider } from "@soroform/wallet-adapter";
-import type { WalletConnector } from "@soroform/wallet-adapter";
-import { SoroformDevtools, type SoroformDevtoolsProps } from "@soroform/devtools";
+  type SorokitConfig,
+  type SorokitNetwork,
+} from "@sorokit/core";
+import { WalletProvider } from "@sorokit/wallet-adapter";
+import type { WalletConnector } from "@sorokit/wallet-adapter";
+import { SorokitDevtools, type SorokitDevtoolsProps } from "@sorokit/devtools";
 
-const SoroformConfigContext = React.createContext<SoroformConfig | undefined>(undefined);
+const SorokitConfigContext = React.createContext<SorokitConfig | undefined>(undefined);
 
 /**
- * Reads the {@link SoroformConfig} supplied by the nearest
- * {@link SoroformProvider} ancestor.
+ * Reads the {@link SorokitConfig} supplied by the nearest
+ * {@link SorokitProvider} ancestor.
  *
- * @throws If called outside a {@link SoroformProvider}.
+ * @throws If called outside a {@link SorokitProvider}.
  *
  * @example
  * ```tsx
- * import { useSoroformConfig } from "@soroform/provider";
+ * import { useSorokitConfig } from "@sorokit/provider";
  *
  * function NetworkBadge() {
- *   const config = useSoroformConfig();
+ *   const config = useSorokitConfig();
  *   return <span>{config.network}</span>;
  * }
  * ```
  */
-export function useSoroformConfig(): SoroformConfig {
-  const config = React.useContext(SoroformConfigContext);
+export function useSorokitConfig(): SorokitConfig {
+  const config = React.useContext(SorokitConfigContext);
   if (!config) {
-    throw new Error("useSoroformConfig must be called within a <SoroformProvider>.");
+    throw new Error("useSorokitConfig must be called within a <SorokitProvider>.");
   }
   return config;
 }
 
 /**
- * Creates the default `QueryClient` used when a {@link SoroformProvider}
+ * Creates the default `QueryClient` used when a {@link SorokitProvider}
  * is not given one explicitly. Contract reads are simulation calls
  * against a live network, so they use a short 5 second `staleTime` rather
  * than TanStack Query's default of 0, and `refetchOnWindowFocus` is
@@ -56,9 +56,9 @@ function createDefaultQueryClient(): QueryClient {
   });
 }
 
-export interface SoroformProviderProps {
+export interface SorokitProviderProps {
   /** The Stellar network to target. */
-  network: SoroformNetwork;
+  network: SorokitNetwork;
   /** Overrides the network's default Soroban RPC URL. */
   rpcUrl?: string;
   /** Overrides the network's default Horizon URL. */
@@ -68,59 +68,59 @@ export interface SoroformProviderProps {
   /**
    * A pre-constructed `QueryClient` to use instead of the default one. Pass
    * this if your app already has its own `QueryClient` (or its own
-   * `QueryClientProvider` higher in the tree) that Soroform's hooks should
+   * `QueryClientProvider` higher in the tree) that Sorokit's hooks should
    * share.
    */
   queryClient?: QueryClient;
   /**
    * The wallet connector to drive `useWallet()` with — `stellarWalletsKit()`,
-   * `blux()`, or `para()` from `@soroform/wallet-adapter`, or your own
+   * `blux()`, or `para()` from `@sorokit/wallet-adapter`, or your own
    * `WalletConnector`. Hot-swappable: pass a different connector and
-   * `SoroformProvider` remounts the wallet layer with it. Omit it if your
+   * `SorokitProvider` remounts the wallet layer with it. Omit it if your
    * app doesn't need wallet connection.
    */
   wallet?: WalletConnector;
   /**
-   * Renders `SoroformDevtools` for you — pass `true` for the defaults, or
+   * Renders `SorokitDevtools` for you — pass `true` for the defaults, or
    * an options object (e.g. `{ initialOpen: true }`). Omit it (or pass
-   * `false`) to not render devtools at all. `SoroformDevtools` itself only
+   * `false`) to not render devtools at all. `SorokitDevtools` itself only
    * renders in development, regardless of this prop.
    */
-  devtools?: boolean | SoroformDevtoolsProps;
+  devtools?: boolean | SorokitDevtoolsProps;
   children?: React.ReactNode;
 }
 
 /**
- * The root provider for Soroform, and the single entry point for wiring an
+ * The root provider for Sorokit, and the single entry point for wiring an
  * app into it: network config, wallet connection, and devtools all go
  * through this one component instead of several nested providers.
  *
- * Resolves a {@link SoroformConfig} from the given network (and any
+ * Resolves a {@link SorokitConfig} from the given network (and any
  * overrides) and supplies it to the rest of the tree via
- * {@link useSoroformConfig}, wraps children in a TanStack Query
- * `QueryClientProvider` so every Soroform hook has a query client to use,
+ * {@link useSorokitConfig}, wraps children in a TanStack Query
+ * `QueryClientProvider` so every Sorokit hook has a query client to use,
  * and — when `wallet` is passed — mounts that connector so `useWallet()`
  * works anywhere below.
  *
  * If your app already renders its own `QueryClientProvider`, pass that
- * client's instance as `queryClient` so Soroform shares it instead of
+ * client's instance as `queryClient` so Sorokit shares it instead of
  * creating a second one.
  *
  * @example
  * ```tsx
- * import { SoroformProvider } from "@soroform/provider";
- * import { stellarWalletsKit } from "@soroform/wallet-adapter/stellar-wallets-kit";
+ * import { SorokitProvider } from "@sorokit/provider";
+ * import { stellarWalletsKit } from "@sorokit/wallet-adapter/stellar-wallets-kit";
  *
  * export function App({ children }: { children: React.ReactNode }) {
  *   return (
- *     <SoroformProvider network="testnet" wallet={stellarWalletsKit()} devtools>
+ *     <SorokitProvider network="testnet" wallet={stellarWalletsKit()} devtools>
  *       {children}
- *     </SoroformProvider>
+ *     </SorokitProvider>
  *   );
  * }
  * ```
  */
-export function SoroformProvider(props: SoroformProviderProps) {
+export function SorokitProvider(props: SorokitProviderProps) {
   const {
     network,
     rpcUrl,
@@ -133,7 +133,7 @@ export function SoroformProvider(props: SoroformProviderProps) {
   } = props;
 
   const config = React.useMemo(
-    () => resolveSoroformConfig({ network, rpcUrl, horizonUrl, networkPassphrase }),
+    () => resolveSorokitConfig({ network, rpcUrl, horizonUrl, networkPassphrase }),
     [network, rpcUrl, horizonUrl, networkPassphrase],
   );
 
@@ -143,19 +143,19 @@ export function SoroformProvider(props: SoroformProviderProps) {
   const devtoolsProps = devtools === true ? {} : devtools || undefined;
 
   const body = (
-    <SoroformConfigContext.Provider value={config}>
+    <SorokitConfigContext.Provider value={config}>
       <QueryClientProvider client={client}>
         <PendingTransactionResumer config={config} />
         {children}
-        {devtoolsProps && <SoroformDevtools {...devtoolsProps} />}
+        {devtoolsProps && <SorokitDevtools {...devtoolsProps} />}
       </QueryClientProvider>
-    </SoroformConfigContext.Provider>
+    </SorokitConfigContext.Provider>
   );
 
   // `WalletMount` (calling `wallet.useAdapter()`) sits between `wallet.Provider`
-  // and Soroform's own `QueryClientProvider` deliberately: an SDK like Para
+  // and Sorokit's own `QueryClientProvider` deliberately: an SDK like Para
   // that needs its own react-query client for its own hooks (via its own
-  // `Provider`) must resolve that client, not Soroform's, when `useAdapter()`
+  // `Provider`) must resolve that client, not Sorokit's, when `useAdapter()`
   // runs — see `WalletConnector`'s docs.
   const withWallet = wallet ? (
     <WalletMount connector={wallet} networkPassphrase={config.networkPassphrase}>
@@ -184,10 +184,10 @@ function WalletMount(props: {
 /**
  * Resumes transactions that were in flight when the page was last
  * unloaded. Rendered inside `QueryClientProvider` rather than run from
- * `SoroformProvider`'s own body so it can reach the query client and
+ * `SorokitProvider`'s own body so it can reach the query client and
  * invalidate the reads each resumed transaction affected.
  */
-function PendingTransactionResumer(props: { config: SoroformConfig }) {
+function PendingTransactionResumer(props: { config: SorokitConfig }) {
   const { config } = props;
   const queryClient = useQueryClient();
 

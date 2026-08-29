@@ -1,7 +1,7 @@
 {
-  "name": "@soroform/wallet-adapter",
+  "name": "@sorokit/wallet-adapter",
   "version": "0.0.0",
-  "description": "Adapter-agnostic wallet connection and signing layer for Soroform. Bring your own connector via a WalletAdapter, or use the stellar-wallets-kit or blux adapters Soroform ships.",
+  "description": "Adapter-agnostic wallet connection and signing layer for Sorokit. Bring your own connector via a WalletAdapter, or use the stellar-wallets-kit or blux adapters Sorokit ships.",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.cjs",

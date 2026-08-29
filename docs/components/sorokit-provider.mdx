@@ -1,12 +1,12 @@
 ---
-title: "SoroformProvider"
-description: "The single entry point for Soroform: network config, wallet connection, and devtools all go through this one component"
+title: "SorokitProvider"
+description: "The single entry point for Sorokit: network config, wallet connection, and devtools all go through this one component"
 ---
 
-The root provider for Soroform, and the single entry point for wiring an app into it. Resolves a `SoroformConfig` from the given network (and any overrides) and supplies it to the rest of the tree via `useSoroformConfig`, wraps children in a TanStack Query `QueryClientProvider`, and — via the `wallet` and `devtools` props — mounts wallet connection and Soroform's devtools panel for you. Nothing else needs to be nested under it: no separate `WalletProvider`, no per-SDK provider like `ParaProvider`, no manually rendering `<SoroformDevtools />` somewhere in the tree.
+The root provider for Sorokit, and the single entry point for wiring an app into it. Resolves a `SorokitConfig` from the given network (and any overrides) and supplies it to the rest of the tree via `useSorokitConfig`, wraps children in a TanStack Query `QueryClientProvider`, and — via the `wallet` and `devtools` props — mounts wallet connection and Sorokit's devtools panel for you. Nothing else needs to be nested under it: no separate `WalletProvider`, no per-SDK provider like `ParaProvider`, no manually rendering `<SorokitDevtools />` somewhere in the tree.
 
 ```tsx
-import { SoroformProvider } from "@soroform/provider";
+import { SorokitProvider } from "@sorokit/provider";
 ```
 
 ## Props
@@ -19,7 +19,7 @@ import { SoroformProvider } from "@soroform/provider";
 | `networkPassphrase` | `string`                                            | No       | Overrides the network's default passphrase. Required for `"custom"`.                                                   |
 | `queryClient`       | `QueryClient`                                       | No       | A pre-constructed TanStack Query client to share instead of creating a new one.                                        |
 | `wallet`            | `WalletConnector`                                   | No       | The wallet connector to drive `useWallet()` with. See [Wallet connectors](#wallet-connectors) below.                   |
-| `devtools`          | `boolean \| SoroformDevtoolsProps`                  | No       | Renders `SoroformDevtools` for you. Pass `true` for the defaults, or an options object (e.g. `{ initialOpen: true }`). |
+| `devtools`          | `boolean \| SorokitDevtoolsProps`                  | No       | Renders `SorokitDevtools` for you. Pass `true` for the defaults, or an options object (e.g. `{ initialOpen: true }`). |
 
 <Note>
   `"testnet"` and `"futurenet"` have well-known defaults for every field. `"mainnet"` has no default
@@ -30,16 +30,16 @@ import { SoroformProvider } from "@soroform/provider";
 ## Example
 
 ```tsx
-import { SoroformProvider } from "@soroform/provider";
-import { stellarWalletsKit } from "@soroform/wallet-adapter/stellar-wallets-kit";
+import { SorokitProvider } from "@sorokit/provider";
+import { stellarWalletsKit } from "@sorokit/wallet-adapter/stellar-wallets-kit";
 
 const wallet = stellarWalletsKit();
 
 export function App({ children }: { children: React.ReactNode }) {
   return (
-    <SoroformProvider network="testnet" wallet={wallet} devtools>
+    <SorokitProvider network="testnet" wallet={wallet} devtools>
       {children}
-    </SoroformProvider>
+    </SorokitProvider>
   );
 }
 ```
@@ -47,53 +47,53 @@ export function App({ children }: { children: React.ReactNode }) {
 <Warning>
   Construct the connector once — at module scope, or in a `useMemo` with an empty dependency array —
   and pass the same reference every render. A fresh connector object each render makes
-  `SoroformProvider` tear down and resubscribe the wallet layer's listeners on every render.
+  `SorokitProvider` tear down and resubscribe the wallet layer's listeners on every render.
 </Warning>
 
 Sharing an existing `QueryClient`:
 
 ```tsx
 import { QueryClient } from "@tanstack/react-query";
-import { SoroformProvider } from "@soroform/provider";
+import { SorokitProvider } from "@sorokit/provider";
 
 const queryClient = new QueryClient();
 
 export function App({ children }: { children: React.ReactNode }) {
   return (
-    <SoroformProvider network="testnet" queryClient={queryClient}>
+    <SorokitProvider network="testnet" queryClient={queryClient}>
       {children}
-    </SoroformProvider>
+    </SorokitProvider>
   );
 }
 ```
 
 ## Default QueryClient
 
-When no `queryClient` is passed, Soroform creates one with `staleTime: 5000` (5 seconds) and `refetchOnWindowFocus: false`. Blockchain data does not follow typical web app refetch-on-focus heuristics, and a 5 second stale window keeps repeated reads from hammering your RPC endpoint without going stale for long.
+When no `queryClient` is passed, Sorokit creates one with `staleTime: 5000` (5 seconds) and `refetchOnWindowFocus: false`. Blockchain data does not follow typical web app refetch-on-focus heuristics, and a 5 second stale window keeps repeated reads from hammering your RPC endpoint without going stale for long.
 
-## useSoroformConfig
+## useSorokitConfig
 
-Reads the resolved config from context. Throws if called outside a `SoroformProvider`.
+Reads the resolved config from context. Throws if called outside a `SorokitProvider`.
 
 ```tsx
-import { useSoroformConfig } from "@soroform/provider";
+import { useSorokitConfig } from "@sorokit/provider";
 
 function NetworkBadge() {
-  const config = useSoroformConfig();
+  const config = useSorokitConfig();
   return <span>{config.network}</span>;
 }
 ```
 
 ## Wallet connectors
 
-Soroform isn't tied to one wallet SDK. `stellarWalletsKit()`, `blux()`, and `para()` — all from `@soroform/wallet-adapter`, each its own subpath so you only install the SDK you actually use — return a `WalletConnector`: the shape `wallet` expects.
+Sorokit isn't tied to one wallet SDK. `stellarWalletsKit()`, `blux()`, and `para()` — all from `@sorokit/wallet-adapter`, each its own subpath so you only install the SDK you actually use — return a `WalletConnector`: the shape `wallet` expects.
 
 ### `stellarWalletsKit()`
 
-From `@soroform/wallet-adapter/stellar-wallets-kit`. Backed by [`@creit.tech/stellar-wallets-kit`](https://github.com/Creit-Tech/Stellar-Wallets-Kit), a multi-wallet connector supporting Freighter, xBull, Albedo, Lobstr, Hana, Rabet, hardware wallets, and WalletConnect. `@creit.tech/stellar-wallets-kit` is a peer dependency: install it alongside `@soroform/wallet-adapter` to use this connector.
+From `@sorokit/wallet-adapter/stellar-wallets-kit`. Backed by [`@creit.tech/stellar-wallets-kit`](https://github.com/Creit-Tech/Stellar-Wallets-Kit), a multi-wallet connector supporting Freighter, xBull, Albedo, Lobstr, Hana, Rabet, hardware wallets, and WalletConnect. `@creit.tech/stellar-wallets-kit` is a peer dependency: install it alongside `@sorokit/wallet-adapter` to use this connector.
 
 ```tsx
-import { stellarWalletsKit } from "@soroform/wallet-adapter/stellar-wallets-kit";
+import { stellarWalletsKit } from "@sorokit/wallet-adapter/stellar-wallets-kit";
 
 const wallet = stellarWalletsKit({
   // modules?: ModuleInterface[] — defaults to Freighter, xBull, Albedo, Lobstr, Hana, Rabet
@@ -113,7 +113,7 @@ Adding a hardware wallet module:
 import {
   stellarWalletsKit,
   createDefaultModules,
-} from "@soroform/wallet-adapter/stellar-wallets-kit";
+} from "@sorokit/wallet-adapter/stellar-wallets-kit";
 import { LedgerModule } from "@creit.tech/stellar-wallets-kit/modules/ledger";
 
 const wallet = stellarWalletsKit({
@@ -128,12 +128,12 @@ const wallet = stellarWalletsKit({
 
 ### `blux()`
 
-From `@soroform/wallet-adapter/blux`. Backed by [`@bluxcc/core`](https://blux.cc), a wallet and authentication SDK supporting Freighter, Rabet, xBull, LOBSTR, Hana, Ledger, Trezor, WalletConnect, and non-wallet login (email, passkey, social) through one modal. `@bluxcc/core` is a peer dependency, along with the wallet SDKs it integrates (see its own peer dependencies).
+From `@sorokit/wallet-adapter/blux`. Backed by [`@bluxcc/core`](https://blux.cc), a wallet and authentication SDK supporting Freighter, Rabet, xBull, LOBSTR, Hana, Ledger, Trezor, WalletConnect, and non-wallet login (email, passkey, social) through one modal. `@bluxcc/core` is a peer dependency, along with the wallet SDKs it integrates (see its own peer dependencies).
 
 Requires an `appId` from the [Blux dashboard](https://dashboard.blux.cc/):
 
 ```tsx
-import { blux } from "@soroform/wallet-adapter/blux";
+import { blux } from "@sorokit/wallet-adapter/blux";
 
 const wallet = blux({
   appId: "...",
@@ -146,21 +146,21 @@ Signing runs headlessly against the connected wallet (`showWalletUIs: false`) by
 
 ### `para()`
 
-From `@soroform/wallet-adapter/para`. Backed by [`@getpara/react-sdk`](https://docs.getpara.com), an embedded-wallet SDK (email, passkey, social, and external wallet login) with native Stellar support. `@getpara/react-sdk` and `@tanstack/react-query` are peer dependencies.
+From `@sorokit/wallet-adapter/para`. Backed by [`@getpara/react-sdk`](https://docs.getpara.com), an embedded-wallet SDK (email, passkey, social, and external wallet login) with native Stellar support. `@getpara/react-sdk` and `@tanstack/react-query` are peer dependencies.
 
-Unlike the other two, this connector also sets a `Provider` — Para's connect UI only exists as a React component tied to Para's own context, so `SoroformProvider` mounts that provider for you internally. You never render `ParaProvider` (or any Para component) yourself.
+Unlike the other two, this connector also sets a `Provider` — Para's connect UI only exists as a React component tied to Para's own context, so `SorokitProvider` mounts that provider for you internally. You never render `ParaProvider` (or any Para component) yourself.
 
 Requires an `apiKey` from the [Para developer portal](https://developer.getpara.com/):
 
 ```tsx
-import { SoroformProvider } from "@soroform/provider";
-import { para } from "@soroform/wallet-adapter/para";
+import { SorokitProvider } from "@sorokit/provider";
+import { para } from "@sorokit/wallet-adapter/para";
 
 export function App({ children }: { children: React.ReactNode }) {
   return (
-    <SoroformProvider network="testnet" wallet={para({ apiKey: "..." })}>
+    <SorokitProvider network="testnet" wallet={para({ apiKey: "..." })}>
       {children}
-    </SoroformProvider>
+    </SorokitProvider>
   );
 }
 ```
@@ -169,7 +169,7 @@ export function App({ children }: { children: React.ReactNode }) {
   Built against Para's documented, type-checked API (`@getpara/react-sdk`'s real published types),
   not exercised against a live Para account — Para requires a dashboard `apiKey` to test at all. If
   Para's runtime behavior ever drifts from this, the fix belongs in `para()`'s small `useAdapter`
-  hook, not in `SoroformProvider` itself.
+  hook, not in `SorokitProvider` itself.
 </Note>
 
 ### Writing your own connector
@@ -177,7 +177,7 @@ export function App({ children }: { children: React.ReactNode }) {
 A `WalletConnector` is `{ Provider?, useAdapter }`. Most SDKs only need `useAdapter`; write your own `WalletAdapter` (a plain object — `init`, `connect`, `disconnect`, `signTransaction`, `signAuthEntry`, `onStateChange`, `onDisconnect`) and wrap it:
 
 ```ts
-import type { WalletAdapter, WalletConnector } from "@soroform/wallet-adapter";
+import type { WalletAdapter, WalletConnector } from "@sorokit/wallet-adapter";
 
 function myWallet(): WalletConnector {
   const adapter: WalletAdapter = {/* ... */};

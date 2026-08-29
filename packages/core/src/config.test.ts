@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { Networks } from "@stellar/stellar-sdk";
-import { resolveSoroformConfig } from "./config.js";
+import { resolveSorokitConfig } from "./config.js";
 
-describe("resolveSoroformConfig", () => {
+describe("resolveSorokitConfig", () => {
   it("resolves testnet defaults", () => {
-    const config = resolveSoroformConfig({ network: "testnet" });
+    const config = resolveSorokitConfig({ network: "testnet" });
     expect(config).toEqual({
       network: "testnet",
       rpcUrl: "https://soroban-testnet.stellar.org",
@@ -14,13 +14,13 @@ describe("resolveSoroformConfig", () => {
   });
 
   it("resolves futurenet defaults", () => {
-    const config = resolveSoroformConfig({ network: "futurenet" });
+    const config = resolveSorokitConfig({ network: "futurenet" });
     expect(config.rpcUrl).toBe("https://rpc-futurenet.stellar.org");
     expect(config.networkPassphrase).toBe(Networks.FUTURENET);
   });
 
   it("lets overrides win over testnet defaults", () => {
-    const config = resolveSoroformConfig({
+    const config = resolveSorokitConfig({
       network: "testnet",
       rpcUrl: "https://custom-rpc.example.com",
     });
@@ -29,11 +29,11 @@ describe("resolveSoroformConfig", () => {
   });
 
   it("requires an explicit rpcUrl for mainnet", () => {
-    expect(() => resolveSoroformConfig({ network: "mainnet" })).toThrow(/mainnet/);
+    expect(() => resolveSorokitConfig({ network: "mainnet" })).toThrow(/mainnet/);
   });
 
   it("resolves mainnet when rpcUrl is provided", () => {
-    const config = resolveSoroformConfig({
+    const config = resolveSorokitConfig({
       network: "mainnet",
       rpcUrl: "https://mainnet-rpc.example.com",
     });
@@ -43,7 +43,7 @@ describe("resolveSoroformConfig", () => {
 
   it("requires all three fields for a custom network", () => {
     expect(() =>
-      resolveSoroformConfig({
+      resolveSorokitConfig({
         network: "custom",
         rpcUrl: "https://rpc.example.com",
       }),
@@ -51,7 +51,7 @@ describe("resolveSoroformConfig", () => {
   });
 
   it("resolves a fully specified custom network", () => {
-    const config = resolveSoroformConfig({
+    const config = resolveSorokitConfig({
       network: "custom",
       rpcUrl: "https://rpc.example.com",
       horizonUrl: "https://horizon.example.com",

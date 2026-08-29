@@ -1,9 +1,9 @@
-# Soroform Next.js example
+# Sorokit Next.js example
 
-A Next.js App Router app demonstrating Soroform end to end: `SoroformProvider`,
+A Next.js App Router app demonstrating Sorokit end to end: `SorokitProvider`,
 `WalletProvider`, `ConnectWalletButton`, `useContractCall`, `useSorobanForm`,
 `useContractSend`, `useAccount`, `useBalance`, `useNetworkStatus`, and
-`SoroformDevtools`, all wired together.
+`SorokitDevtools`, all wired together.
 
 It targets the testnet native XLM Stellar Asset Contract
 (`CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC`), a real contract

@@ -6,7 +6,7 @@ description: "Simulate a read-only contract method call and get its decoded resu
 Simulates a read-only contract method call and returns its decoded result as a TanStack Query result. Requires no connected wallet: reads are simulation-only.
 
 ```ts
-import { useContractCall } from "@soroform/contract";
+import { useContractCall } from "@sorokit/contract";
 
 function useContractCall<TResult = unknown>(
   options: UseContractCallOptions,
@@ -20,7 +20,7 @@ function useContractCall<TResult = unknown>(
 | `contractId` | `string`                  | Yes      | The deployed contract's address (`C...`).                  |
 | `method`     | `string`                  | Yes      | The read-only method to call.                              |
 | `args`       | `Record<string, unknown>` | No       | Named arguments for the method, keyed by parameter name.   |
-| `network`    | `SoroformNetwork`         | No       | Overrides the network from the nearest `SoroformProvider`. |
+| `network`    | `SorokitNetwork`         | No       | Overrides the network from the nearest `SorokitProvider`. |
 | `enabled`    | `boolean`                 | No       | Whether the query should run. Defaults to `true`.          |
 
 ## Return value
@@ -31,13 +31,13 @@ Everything TanStack Query's `useQuery` returns, typed to `TResult`. The fields y
 | ----------- | ----------------------- | ------------------------------------------------------------------- |
 | `data`      | `TResult \| undefined`  | The decoded result, once loaded.                                    |
 | `isLoading` | `boolean`               | Whether the initial fetch is in flight.                             |
-| `error`     | `SoroformError \| null` | A normalized error; see [Error handling](/concepts/error-handling). |
+| `error`     | `SorokitError \| null` | A normalized error; see [Error handling](/concepts/error-handling). |
 | `refetch`   | `() => void`            | Manually re-runs the call.                                          |
 
 ## Example
 
 ```tsx
-import { useContractCall } from "@soroform/contract";
+import { useContractCall } from "@sorokit/contract";
 
 const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
 

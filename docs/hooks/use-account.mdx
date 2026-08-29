@@ -6,7 +6,7 @@ description: "Fetch a Stellar account's existence and sequence number"
 Fetches a Stellar account's existence and sequence number.
 
 ```ts
-import { useAccount } from "@soroform/hooks";
+import { useAccount } from "@sorokit/hooks";
 
 function useAccount(address: string, options?: UseAccountOptions): UseQueryResult<AccountState>;
 ```
@@ -30,7 +30,7 @@ function useAccount(address: string, options?: UseAccountOptions): UseQueryResul
 ## Example
 
 ```tsx
-import { useAccount } from "@soroform/hooks";
+import { useAccount } from "@sorokit/hooks";
 
 function AccountBadge({ address }: { address: string }) {
   const { data, isLoading } = useAccount(address);

@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import * as provider from "./index.js";
 
-describe("@soroform/provider public exports", () => {
+describe("@sorokit/provider public exports", () => {
   it("exports the documented public API", () => {
-    expect(typeof provider.SoroformProvider).toBe("function");
-    expect(typeof provider.useSoroformConfig).toBe("function");
+    expect(typeof provider.SorokitProvider).toBe("function");
+    expect(typeof provider.useSorokitConfig).toBe("function");
   });
 });

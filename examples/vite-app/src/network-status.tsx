@@ -1,4 +1,4 @@
-import { useNetworkStatus } from "@soroform/hooks";
+import { useNetworkStatus } from "@sorokit/hooks";
 
 export function NetworkStatus() {
   const { data } = useNetworkStatus();

@@ -1,6 +1,6 @@
 /**
  * A transaction the network has accepted but whose outcome this client has
- * not seen yet. Soroform persists these so a page refresh mid-submission
+ * not seen yet. Sorokit persists these so a page refresh mid-submission
  * is recoverable: the transaction is already on its way to the ledger, and
  * the only thing lost by a reload is the polling loop watching for it.
  */
@@ -22,7 +22,7 @@ export interface PendingTransaction {
 type Listener = () => void;
 
 /** The `localStorage` key the pending queue is persisted under. */
-const STORAGE_KEY = "soroform.pending-transactions.v1";
+const STORAGE_KEY = "sorokit.pending-transactions.v1";
 
 /**
  * How long a pending entry is worth resuming. A Stellar transaction that
@@ -54,7 +54,7 @@ function isPendingTransaction(value: unknown): value is PendingTransaction {
  * this works unchanged during server rendering, in a browser with storage
  * blocked, and when the quota is exhausted. In those cases the queue is
  * simply in-memory and a reload starts empty, which is the behavior
- * Soroform had before persistence existed.
+ * Sorokit had before persistence existed.
  *
  * The in-memory map is this tab's source of truth; the store hydrates from
  * storage once, at construction. It deliberately does not follow another
@@ -63,7 +63,7 @@ function isPendingTransaction(value: unknown): value is PendingTransaction {
  *
  * @example
  * ```ts
- * import { pendingTransactions } from "@soroform/core";
+ * import { pendingTransactions } from "@sorokit/core";
  *
  * const unsubscribe = pendingTransactions.subscribe(() => {
  *   console.log(pendingTransactions.getAll().length, "transactions in flight");
@@ -176,6 +176,6 @@ export class PendingTransactionStore {
  * The shared pending-transaction queue. `useContractSend` adds to it the
  * moment the network accepts a transaction and removes the entry once the
  * outcome is known; `resumePendingTransactions` (called for you by
- * `SoroformProvider`) drains whatever a reload left behind.
+ * `SorokitProvider`) drains whatever a reload left behind.
  */
 export const pendingTransactions = new PendingTransactionStore();

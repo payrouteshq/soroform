@@ -1,5 +1,5 @@
 import { Api, BasicSleepStrategy } from "@stellar/stellar-sdk/rpc";
-import type { SoroformConfig } from "./config.js";
+import type { SorokitConfig } from "./config.js";
 import { pendingTransactions, type PendingTransaction } from "./pending-transactions.js";
 import { createRpcServer } from "./rpc.js";
 
@@ -10,7 +10,7 @@ interface ResumePendingTransactionsOptions {
    * Called once per transaction whose outcome is now known, successful or
    * not, just before it is dropped from the queue. This is where a
    * consuming layer refreshes whatever the transaction changed —
-   * `SoroformProvider` uses it to invalidate the contract's cached reads.
+   * `SorokitProvider` uses it to invalidate the contract's cached reads.
    */
   onSettled?: (entry: PendingTransaction, response: Api.GetTransactionResponse) => void;
 }
@@ -35,20 +35,20 @@ const inProgress = new Set<string>();
  * discarded by {@link PendingTransactionStore} once they are too old to
  * still be includable.
  *
- * `SoroformProvider` calls this on mount, so most apps never call it
+ * `SorokitProvider` calls this on mount, so most apps never call it
  * directly.
  *
  * @example
  * ```ts
- * import { resolveSoroformConfig, resumePendingTransactions } from "@soroform/core";
+ * import { resolveSorokitConfig, resumePendingTransactions } from "@sorokit/core";
  *
- * await resumePendingTransactions(resolveSoroformConfig({ network: "testnet" }), {
+ * await resumePendingTransactions(resolveSorokitConfig({ network: "testnet" }), {
  *   onSettled: (entry) => console.log("landed:", entry.method, entry.hash),
  * });
  * ```
  */
 export async function resumePendingTransactions(
-  config: SoroformConfig,
+  config: SorokitConfig,
   options: ResumePendingTransactionsOptions = {},
 ): Promise<void> {
   const { signal, onSettled } = options;

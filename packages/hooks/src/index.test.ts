@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import * as hooks from "./index.js";
 
-describe("@soroform/hooks public exports", () => {
+describe("@sorokit/hooks public exports", () => {
   it("exports the documented public API", () => {
     expect(typeof hooks.useAccount).toBe("function");
     expect(typeof hooks.useBalance).toBe("function");

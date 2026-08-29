@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { createHorizonServer, queryKeys, type Horizon } from "@soroform/core";
-import { useSoroformConfig } from "@soroform/provider";
+import { createHorizonServer, queryKeys, type Horizon } from "@sorokit/core";
+import { useSorokitConfig } from "@sorokit/provider";
 import { useHorizonStream, type UseHorizonStreamResult } from "./stream-core.js";
 
 /** A ledger effect received from `useEffectStream`. */
@@ -34,7 +34,7 @@ export interface UseEffectStreamOptions {
  *
  * @example
  * ```tsx
- * import { useEffectStream } from "@soroform/hooks";
+ * import { useEffectStream } from "@sorokit/hooks";
  *
  * function ActivityFeed({ address }: { address: string }) {
  *   const { events } = useEffectStream(address);
@@ -53,7 +53,7 @@ export function useEffectStream(
   options: UseEffectStreamOptions = {},
 ): UseHorizonStreamResult<EffectStreamRecord> {
   const { enabled = true, onEffect, cursor = "now", maxEvents } = options;
-  const config = useSoroformConfig();
+  const config = useSorokitConfig();
   const queryClient = useQueryClient();
 
   return useHorizonStream<EffectStreamRecord>(

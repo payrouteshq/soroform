@@ -6,7 +6,7 @@ description: "Fetch an address's balance of any asset, classic or Soroban, norma
 Fetches an address's balance of a given asset, normalized to `{ raw, formatted, decimals }` regardless of which kind of asset it is, so a component never has to branch on asset type itself.
 
 ```ts
-import { useBalance } from "@soroform/hooks";
+import { useBalance } from "@sorokit/hooks";
 
 function useBalance(
   address: string,
@@ -36,7 +36,7 @@ function useBalance(
 ## Example
 
 ```tsx
-import { useBalance } from "@soroform/hooks";
+import { useBalance } from "@sorokit/hooks";
 
 function XlmBalance({ address }: { address: string }) {
   const { data, isLoading } = useBalance(address, "native");

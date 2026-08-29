@@ -1,13 +1,13 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Soroform",
+  "name": "Sorokit",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
     "dark": "#15803D"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/favicon.png",
   "navigation": {
     "pages": [
       {
@@ -41,10 +41,10 @@
       {
         "group": "Components Reference",
         "pages": [
-          "components/soroform-provider",
+          "components/sorokit-provider",
           "components/wallet-provider",
           "components/connect-wallet-button",
-          "components/soroform-devtools"
+          "components/sorokit-devtools"
         ]
       },
       {
@@ -58,20 +58,20 @@
     ]
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/logo/light.png",
+    "dark": "/logo/dark.png"
   },
   "navbar": {
     "links": [
       {
         "label": "GitHub",
-        "href": "https://github.com/soroform/soroform"
+        "href": "https://github.com/sorokit/sorokit"
       }
     ]
   },
   "footer": {
     "socials": {
-      "github": "https://github.com/soroform/soroform"
+      "github": "https://github.com/sorokit/sorokit"
     }
   }
 }

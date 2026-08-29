@@ -1,2 +1,2 @@
-export { SoroformProvider, useSoroformConfig } from "./context.js";
-export type { SoroformProviderProps } from "./context.js";
+export { SorokitProvider, useSorokitConfig } from "./context.js";
+export type { SorokitProviderProps } from "./context.js";

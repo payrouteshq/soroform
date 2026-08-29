@@ -20,7 +20,7 @@ import type { Spec } from "@stellar/stellar-sdk/contract";
  * @example
  * ```ts
  * import { xdr } from "@stellar/stellar-sdk";
- * import { sorobanTypeToZod } from "@soroform/contract";
+ * import { sorobanTypeToZod } from "@sorokit/contract";
  *
  * const schema = sorobanTypeToZod(xdr.ScSpecTypeDef.scSpecTypeU32(), spec);
  * schema.parse(42); // ok

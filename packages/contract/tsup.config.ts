@@ -14,9 +14,9 @@ export default defineConfig({
     "@hookform/resolvers/zod",
     "zod",
     "@stellar/stellar-sdk",
-    "@soroform/core",
-    "@soroform/provider",
-    "@soroform/wallet-adapter",
+    "@sorokit/core",
+    "@sorokit/provider",
+    "@sorokit/wallet-adapter",
   ],
   banner: { js: '"use client";' },
 });

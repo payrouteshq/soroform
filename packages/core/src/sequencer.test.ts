@@ -12,9 +12,9 @@ vi.mock("./rpc.js", () => ({
 }));
 
 const { TransactionSequencer } = await import("./sequencer.js");
-const { resolveSoroformConfig } = await import("./config.js");
+const { resolveSorokitConfig } = await import("./config.js");
 
-const config = resolveSoroformConfig({ network: "testnet" });
+const config = resolveSorokitConfig({ network: "testnet" });
 const ADDRESS = "GBZXN7PIRZGNMHGA7MUUUF4GWPY5AYPV6LY4UV2GL6VJGIQRXFDNMADI";
 const OTHER = "GA7QYNF7SOWQ3GLR2BGMZEHXAVIRZA4KVWLTJJFC7MGXUA74P7UJVSGZ";
 
@@ -68,7 +68,7 @@ describe("transactionSequencer", () => {
   it("lets the network win when it is ahead of the projection", async () => {
     const sequencer = new TransactionSequencer();
     expect(await reservedSequence(sequencer)).toBe("100");
-    // Something outside Soroform — another tab, a CLI — moved the account on.
+    // Something outside Sorokit — another tab, a CLI — moved the account on.
     getAccount.mockImplementation((id: string) => Promise.resolve(new Account(id, "500")));
     expect(await reservedSequence(sequencer)).toBe("500");
   });

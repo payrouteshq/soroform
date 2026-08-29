@@ -1,7 +1,7 @@
 {
-  "name": "@soroform/provider",
+  "name": "@sorokit/provider",
   "version": "0.0.0",
-  "description": "React context provider that wires Soroform configuration and TanStack Query into a React tree.",
+  "description": "React context provider that wires Sorokit configuration and TanStack Query into a React tree.",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -33,9 +33,9 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "@soroform/core": "workspace:*",
-    "@soroform/devtools": "workspace:*",
-    "@soroform/wallet-adapter": "workspace:*"
+    "@sorokit/core": "workspace:*",
+    "@sorokit/devtools": "workspace:*",
+    "@sorokit/wallet-adapter": "workspace:*"
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.0.0",

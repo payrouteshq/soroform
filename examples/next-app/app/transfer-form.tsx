@@ -1,7 +1,7 @@
 "use client";
 
-import { useSorobanForm, useContractSend } from "@soroform/contract";
-import { useWallet } from "@soroform/wallet-adapter";
+import { useSorobanForm, useContractSend } from "@sorokit/contract";
+import { useWallet } from "@sorokit/wallet-adapter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

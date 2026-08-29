@@ -1,7 +1,7 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { BasicSleepStrategy, type Api } from "@stellar/stellar-sdk/rpc";
-import { createRpcServer, normalizeError, queryKeys } from "@soroform/core";
-import { useSoroformConfig } from "@soroform/provider";
+import { createRpcServer, normalizeError, queryKeys } from "@sorokit/core";
+import { useSorokitConfig } from "@sorokit/provider";
 
 export interface UseTransactionStatusOptions {
   enabled?: boolean;
@@ -16,7 +16,7 @@ export interface UseTransactionStatusOptions {
  *
  * @example
  * ```tsx
- * import { useTransactionStatus } from "@soroform/hooks";
+ * import { useTransactionStatus } from "@sorokit/hooks";
  *
  * function TxStatus({ hash }: { hash: string }) {
  *   const { data, isLoading } = useTransactionStatus(hash);
@@ -29,7 +29,7 @@ export function useTransactionStatus(
   hash: string,
   options?: UseTransactionStatusOptions,
 ): UseQueryResult<Api.GetTransactionResponse> {
-  const config = useSoroformConfig();
+  const config = useSorokitConfig();
 
   return useQuery<Api.GetTransactionResponse>({
     queryKey: queryKeys.transactionStatus(hash),

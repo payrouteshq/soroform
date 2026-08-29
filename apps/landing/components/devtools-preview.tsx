@@ -7,11 +7,11 @@ export function DevtoolsPreview() {
         <span className="size-2.5 rounded-full bg-white/15" />
         <span className="size-2.5 rounded-full bg-white/15" />
         <span className="size-2.5 rounded-full bg-white/15" />
-        <span className="ml-2 font-mono text-xs text-white/40">soroform devtools</span>
+        <span className="ml-2 font-mono text-xs text-white/40">sorokit devtools</span>
       </div>
       <Image
         src="/devtools-panel.png"
-        alt="The Soroform devtools panel, showing a log of two contract sends with their status, args, result, and a copy transaction XDR button"
+        alt="The Sorokit devtools panel, showing a log of two contract sends with their status, args, result, and a copy transaction XDR button"
         width={1400}
         height={352}
         className="w-full"

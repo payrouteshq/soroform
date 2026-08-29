@@ -22,10 +22,10 @@ export interface SignOptions {
 }
 
 /**
- * The contract every wallet connector Soroform can drive implements.
- * `stellarWalletsKit()` (from `@soroform/wallet-adapter/stellar-wallets-kit`)
- * and `blux()` (from `@soroform/wallet-adapter/blux`) both return one of
- * these; write your own to plug in a wallet SDK Soroform doesn't ship an
+ * The contract every wallet connector Sorokit can drive implements.
+ * `stellarWalletsKit()` (from `@sorokit/wallet-adapter/stellar-wallets-kit`)
+ * and `blux()` (from `@sorokit/wallet-adapter/blux`) both return one of
+ * these; write your own to plug in a wallet SDK Sorokit doesn't ship an
  * adapter for.
  *
  * Construct an adapter once — at module scope, or in a `useMemo` with an
@@ -58,11 +58,11 @@ export interface WalletAdapter {
 
 /**
  * What `stellarWalletsKit()`, `blux()`, and `para()` each return, and what
- * `SoroformProvider`'s `wallet` prop expects. This is the layer that makes
- * `SoroformProvider` the single entry point: SDKs that just need a plain
+ * `SorokitProvider`'s `wallet` prop expects. This is the layer that makes
+ * `SorokitProvider` the single entry point: SDKs that just need a plain
  * `WalletAdapter` (Stellar Wallets Kit, Blux) only implement `useAdapter`;
  * SDKs whose connect UI is only reachable through their own React context
- * (Para) also supply `Provider`, and `SoroformProvider` mounts it for you
+ * (Para) also supply `Provider`, and `SorokitProvider` mounts it for you
  * instead of you rendering e.g. `ParaProvider` yourself.
  *
  * A custom `WalletAdapter` becomes a connector by wrapping it:
@@ -77,10 +77,10 @@ export interface WalletConnector {
   Provider?: React.ComponentType<{ children?: React.ReactNode }>;
   /**
    * Returns the `WalletAdapter` to drive. Called as a hook from inside
-   * `SoroformProvider` (and, when `Provider` is set, from inside it) — for
+   * `SorokitProvider` (and, when `Provider` is set, from inside it) — for
    * hook-driven SDKs this is where those hooks actually run; for
    * SDKs that just build a plain adapter object, it's a no-op accessor.
-   * Receives the network passphrase `SoroformProvider` resolved from its
+   * Receives the network passphrase `SorokitProvider` resolved from its
    * `network` prop.
    */
   useAdapter(networkPassphrase: string): WalletAdapter;

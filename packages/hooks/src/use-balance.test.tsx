@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { QueryClient } from "@tanstack/react-query";
-import { SoroformProvider } from "@soroform/provider";
+import { SorokitProvider } from "@sorokit/provider";
 import { useBalance } from "./use-balance.js";
 
 const { mockGetAssetBalance, mockQueryContract } = vi.hoisted(() => ({
@@ -24,9 +24,9 @@ const TOKEN_CONTRACT = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5
 function renderWithProvider(children: React.ReactNode) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <SoroformProvider network="testnet" queryClient={queryClient}>
+    <SorokitProvider network="testnet" queryClient={queryClient}>
       {children}
-    </SoroformProvider>,
+    </SorokitProvider>,
   );
 }
 

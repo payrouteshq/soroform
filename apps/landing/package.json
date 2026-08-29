@@ -2,7 +2,7 @@
   "name": "landing",
   "private": true,
   "version": "0.0.0",
-  "description": "Soroform marketing site.",
+  "description": "Sorokit marketing site.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

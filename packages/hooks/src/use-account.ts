@@ -1,6 +1,6 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
-import { createRpcServer, normalizeError, queryKeys } from "@soroform/core";
-import { useSoroformConfig } from "@soroform/provider";
+import { createRpcServer, normalizeError, queryKeys } from "@sorokit/core";
+import { useSorokitConfig } from "@sorokit/provider";
 
 /** The current state of a Stellar account, as returned by `useAccount`. */
 export interface AccountState {
@@ -26,7 +26,7 @@ export interface UseAccountOptions {
  *
  * @example
  * ```tsx
- * import { useAccount } from "@soroform/hooks";
+ * import { useAccount } from "@sorokit/hooks";
  *
  * function AccountBadge({ address }: { address: string }) {
  *   const { data, isLoading } = useAccount(address);
@@ -39,7 +39,7 @@ export function useAccount(
   address: string,
   options?: UseAccountOptions,
 ): UseQueryResult<AccountState> {
-  const config = useSoroformConfig();
+  const config = useSorokitConfig();
 
   return useQuery<AccountState>({
     queryKey: queryKeys.account(address),

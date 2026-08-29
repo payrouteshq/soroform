@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import { queryKeys } from "./query-keys.js";
 
 describe("queryKeys", () => {
-  it("namespaces every key under soroform", () => {
-    expect(queryKeys.account("G123")[0]).toBe("soroform");
-    expect(queryKeys.balance("G123", "native")[0]).toBe("soroform");
-    expect(queryKeys.transactionStatus("abc")[0]).toBe("soroform");
-    expect(queryKeys.networkStatus()[0]).toBe("soroform");
-    expect(queryKeys.contractSpec("passphrase", "C123")[0]).toBe("soroform");
-    expect(queryKeys.contractCall("passphrase", "C123", "method", {})[0]).toBe("soroform");
+  it("namespaces every key under sorokit", () => {
+    expect(queryKeys.account("G123")[0]).toBe("sorokit");
+    expect(queryKeys.balance("G123", "native")[0]).toBe("sorokit");
+    expect(queryKeys.transactionStatus("abc")[0]).toBe("sorokit");
+    expect(queryKeys.networkStatus()[0]).toBe("sorokit");
+    expect(queryKeys.contractSpec("passphrase", "C123")[0]).toBe("sorokit");
+    expect(queryKeys.contractCall("passphrase", "C123", "method", {})[0]).toBe("sorokit");
   });
 
   it("makes contractCall keys extend the contractCallsByContract prefix", () => {

@@ -5,8 +5,8 @@ import { GithubIcon } from "@/components/github-icon";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const NAV_LINKS = [
-  { label: "GitHub", href: "https://github.com/payrouteshq/soroform", icon: GithubIcon },
-  { label: "Docs", href: "https://docs.soroform.dev", icon: BookOpen },
+  { label: "GitHub", href: "https://github.com/payrouteshq/sorokit", icon: GithubIcon },
+  { label: "Docs", href: "https://docs.sorokit.dev", icon: BookOpen },
   { label: "Registry", href: "#registry", icon: Package },
 ];
 
@@ -16,10 +16,10 @@ export function SiteHeader() {
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2.5">
           <span className="relative size-7 overflow-hidden rounded-md ring-1 ring-border">
-            <Image src="/soroforms-logo.jpeg" alt="" fill className="object-cover" priority />
+            <Image src="/sorokit-logo.png" alt="" fill className="object-contain p-1" priority />
           </span>
           <span className="font-(family-name:--font-display) text-[1.05rem] font-bold tracking-tight text-foreground">
-            soroform
+            sorokit
           </span>
         </Link>
 

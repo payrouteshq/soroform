@@ -1,33 +1,33 @@
 import { Networks } from "@stellar/stellar-sdk";
 
 /**
- * A Stellar network Soroform can target. `"custom"` is for standalone
+ * A Stellar network Sorokit can target. `"custom"` is for standalone
  * networks, sandboxes, or any deployment that is not one of the well-known
  * public networks.
  */
-export type SoroformNetwork = "testnet" | "mainnet" | "futurenet" | "custom";
+export type SorokitNetwork = "testnet" | "mainnet" | "futurenet" | "custom";
 
 /**
- * Configuration a consuming app supplies to {@link resolveSoroformConfig}.
+ * Configuration a consuming app supplies to {@link resolveSorokitConfig}.
  * For `"testnet"` and `"futurenet"`, `rpcUrl`, `horizonUrl`, and
  * `networkPassphrase` all have well-known defaults and may be omitted. For
  * `"mainnet"`, `rpcUrl` must be supplied explicitly: there is no single
  * free public RPC endpoint for the public network. For `"custom"`, all
  * three fields are required.
  */
-export interface SoroformConfigInput {
-  network: SoroformNetwork;
+export interface SorokitConfigInput {
+  network: SorokitNetwork;
   rpcUrl?: string;
   horizonUrl?: string;
   networkPassphrase?: string;
 }
 
 /**
- * A fully resolved Soroform configuration: every field is populated, either
+ * A fully resolved Sorokit configuration: every field is populated, either
  * from an explicit override or from the network's well-known defaults.
  */
-export interface SoroformConfig {
-  network: SoroformNetwork;
+export interface SorokitConfig {
+  network: SorokitNetwork;
   rpcUrl: string;
   horizonUrl: string;
   networkPassphrase: string;
@@ -39,7 +39,7 @@ interface NetworkDefaults {
   networkPassphrase: string;
 }
 
-const NETWORK_DEFAULTS: Record<Exclude<SoroformNetwork, "custom">, NetworkDefaults> = {
+const NETWORK_DEFAULTS: Record<Exclude<SorokitNetwork, "custom">, NetworkDefaults> = {
   testnet: {
     rpcUrl: "https://soroban-testnet.stellar.org",
     horizonUrl: "https://horizon-testnet.stellar.org",
@@ -57,8 +57,8 @@ const NETWORK_DEFAULTS: Record<Exclude<SoroformNetwork, "custom">, NetworkDefaul
 };
 
 /**
- * Resolves a {@link SoroformConfigInput} into a fully populated
- * {@link SoroformConfig}, filling in well-known defaults for `rpcUrl`,
+ * Resolves a {@link SorokitConfigInput} into a fully populated
+ * {@link SorokitConfig}, filling in well-known defaults for `rpcUrl`,
  * `horizonUrl`, and `networkPassphrase` where the network provides them.
  *
  * @throws If `network` is `"custom"` and any of `rpcUrl`, `horizonUrl`, or
@@ -67,17 +67,17 @@ const NETWORK_DEFAULTS: Record<Exclude<SoroformNetwork, "custom">, NetworkDefaul
  *
  * @example
  * ```ts
- * import { resolveSoroformConfig } from "@soroform/core";
+ * import { resolveSorokitConfig } from "@sorokit/core";
  *
- * const config = resolveSoroformConfig({ network: "testnet" });
+ * const config = resolveSorokitConfig({ network: "testnet" });
  * console.log(config.rpcUrl); // "https://soroban-testnet.stellar.org"
  * ```
  */
-export function resolveSoroformConfig(input: SoroformConfigInput): SoroformConfig {
+export function resolveSorokitConfig(input: SorokitConfigInput): SorokitConfig {
   if (input.network === "custom") {
     if (!input.rpcUrl || !input.horizonUrl || !input.networkPassphrase) {
       throw new Error(
-        'Soroform: network "custom" requires rpcUrl, horizonUrl, and networkPassphrase to all be provided.',
+        'Sorokit: network "custom" requires rpcUrl, horizonUrl, and networkPassphrase to all be provided.',
       );
     }
     return {
@@ -92,7 +92,7 @@ export function resolveSoroformConfig(input: SoroformConfigInput): SoroformConfi
   const rpcUrl = input.rpcUrl ?? defaults.rpcUrl;
   if (!rpcUrl) {
     throw new Error(
-      `Soroform: network "${input.network}" has no default rpcUrl; pass one explicitly.`,
+      `Sorokit: network "${input.network}" has no default rpcUrl; pass one explicitly.`,
     );
   }
 

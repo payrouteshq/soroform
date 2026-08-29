@@ -3,7 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { xdr } from "@stellar/stellar-sdk";
 import { Spec } from "@stellar/stellar-sdk/contract";
 import { QueryClient } from "@tanstack/react-query";
-import { SoroformProvider } from "@soroform/provider";
+import { SorokitProvider } from "@sorokit/provider";
 import { useSorobanForm } from "./use-soroban-form.js";
 
 const T = xdr.ScSpecTypeDef;
@@ -34,9 +34,9 @@ const VALID_ADDRESS = "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ"
 function renderWithProviders(children: React.ReactNode) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <SoroformProvider network="testnet" queryClient={queryClient}>
+    <SorokitProvider network="testnet" queryClient={queryClient}>
       {children}
-    </SoroformProvider>,
+    </SorokitProvider>,
   );
 }
 

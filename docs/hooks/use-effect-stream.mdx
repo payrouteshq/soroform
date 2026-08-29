@@ -6,7 +6,7 @@ description: "Subscribe to every ledger effect an account is involved in, over H
 Subscribes to every effect an account is involved in (trustline changes, sponsorship changes, signer changes, and more, not just payments), live for as long as the component is mounted. On every effect, automatically invalidates that address's [`useAccount`](/hooks/use-account) and [`useBalance`](/hooks/use-balance) queries.
 
 ```ts
-import { useEffectStream } from "@soroform/hooks";
+import { useEffectStream } from "@sorokit/hooks";
 
 function useEffectStream(
   address: string,
@@ -35,7 +35,7 @@ function useEffectStream(
 ## Example
 
 ```tsx
-import { useEffectStream } from "@soroform/hooks";
+import { useEffectStream } from "@sorokit/hooks";
 
 function ActivityFeed({ address }: { address: string }) {
   const { events } = useEffectStream(address);

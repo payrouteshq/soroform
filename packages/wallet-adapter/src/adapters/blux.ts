@@ -19,7 +19,7 @@ type BluxConfig = Parameters<typeof createConfig>[0];
 export interface BluxAdapterOptions extends Omit<BluxConfig, "networks" | "defaultNetwork"> {
   /**
    * Networks the Blux modal should offer. Defaults to just the network
-   * `SoroformProvider` is configured with; pass this if you want Blux's
+   * `SorokitProvider` is configured with; pass this if you want Blux's
    * own in-modal network switcher to offer more than one.
    */
   networks?: string[];
@@ -29,7 +29,7 @@ export interface BluxAdapterOptions extends Omit<BluxConfig, "networks" | "defau
  * A `WalletConnector` backed by `@bluxcc/core`, a wallet and authentication
  * SDK supporting Freighter, Rabet, xBull, LOBSTR, Hana, Ledger, Trezor,
  * WalletConnect, and non-wallet login (email, passkey, social) through
- * one modal. Pass it as `SoroformProvider`'s `wallet` prop.
+ * one modal. Pass it as `SorokitProvider`'s `wallet` prop.
  *
  * Signing runs headlessly against the connected wallet
  * (`showWalletUIs: false`) unless overridden, matching
@@ -38,17 +38,17 @@ export interface BluxAdapterOptions extends Omit<BluxConfig, "networks" | "defau
  *
  * `@bluxcc/core` is a peer dependency: install it, along with the wallet
  * SDKs it integrates (see its own peer dependencies), alongside
- * `@soroform/wallet-adapter` to use this connector. Requires an `appId` from the
+ * `@sorokit/wallet-adapter` to use this connector. Requires an `appId` from the
  * [Blux dashboard](https://dashboard.blux.cc/).
  *
  * @example
  * ```tsx
- * import { SoroformProvider } from "@soroform/provider";
- * import { blux } from "@soroform/wallet-adapter/blux";
+ * import { SorokitProvider } from "@sorokit/provider";
+ * import { blux } from "@sorokit/wallet-adapter/blux";
  *
- * <SoroformProvider network="testnet" wallet={blux({ appId: "...", appName: "My App" })}>
+ * <SorokitProvider network="testnet" wallet={blux({ appId: "...", appName: "My App" })}>
  *   {children}
- * </SoroformProvider>;
+ * </SorokitProvider>;
  * ```
  */
 export function blux(options: BluxAdapterOptions): WalletConnector {

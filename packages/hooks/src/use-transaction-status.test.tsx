@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { QueryClient } from "@tanstack/react-query";
-import { SoroformProvider } from "@soroform/provider";
+import { SorokitProvider } from "@sorokit/provider";
 import { useTransactionStatus } from "./use-transaction-status.js";
 
 const { mockPollTransaction } = vi.hoisted(() => ({ mockPollTransaction: vi.fn() }));
@@ -19,9 +19,9 @@ const HASH = "c4515e3bdc0897f21cc5dbec8c82cf0a936d4741cb74a8e158eb51b9fb00411a";
 function renderWithProvider(children: React.ReactNode) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <SoroformProvider network="testnet" queryClient={queryClient}>
+    <SorokitProvider network="testnet" queryClient={queryClient}>
       {children}
-    </SoroformProvider>,
+    </SorokitProvider>,
   );
 }
 

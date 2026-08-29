@@ -7,14 +7,14 @@ function truncateAddress(address: string): string {
 }
 
 const baseStyle: React.CSSProperties = {
-  fontFamily: "var(--soroform-button-font-family, inherit)",
-  fontSize: "var(--soroform-button-font-size, 0.875rem)",
-  fontWeight: "var(--soroform-button-font-weight, 600)" as React.CSSProperties["fontWeight"],
-  padding: "var(--soroform-button-padding, 0.5rem 1rem)",
-  borderRadius: "var(--soroform-button-radius, 0.5rem)",
-  border: "var(--soroform-button-border, 1px solid transparent)",
-  background: "var(--soroform-button-bg, #000000)",
-  color: "var(--soroform-button-fg, #ffffff)",
+  fontFamily: "var(--sorokit-button-font-family, inherit)",
+  fontSize: "var(--sorokit-button-font-size, 0.875rem)",
+  fontWeight: "var(--sorokit-button-font-weight, 600)" as React.CSSProperties["fontWeight"],
+  padding: "var(--sorokit-button-padding, 0.5rem 1rem)",
+  borderRadius: "var(--sorokit-button-radius, 0.5rem)",
+  border: "var(--sorokit-button-border, 1px solid transparent)",
+  background: "var(--sorokit-button-bg, #000000)",
+  color: "var(--sorokit-button-fg, #ffffff)",
   cursor: "pointer",
 };
 
@@ -28,13 +28,13 @@ export interface ConnectWalletButtonProps {
  * A minimally styled button that opens the wallet picker modal when no
  * wallet is connected, and shows the connected address (disconnecting on
  * click) once one is. Styled entirely through CSS custom properties
- * (`--soroform-button-*`) so a consuming app can restyle it without
+ * (`--sorokit-button-*`) so a consuming app can restyle it without
  * overriding classes; the defaults are intentionally plain, since most
  * apps will want their own look.
  *
  * @example
  * ```tsx
- * import { ConnectWalletButton } from "@soroform/wallet-adapter";
+ * import { ConnectWalletButton } from "@sorokit/wallet-adapter";
  *
  * function Header() {
  *   return <ConnectWalletButton />;

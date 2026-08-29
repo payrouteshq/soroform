@@ -6,7 +6,7 @@ description: "Poll for a submitted transaction's final status"
 Polls for a submitted transaction's final status. Resolves once the transaction is found, successful or failed, or the poll's attempt limit is reached.
 
 ```ts
-import { useTransactionStatus } from "@soroform/hooks";
+import { useTransactionStatus } from "@sorokit/hooks";
 
 function useTransactionStatus(
   hash: string,
@@ -28,7 +28,7 @@ function useTransactionStatus(
 ## Example
 
 ```tsx
-import { useTransactionStatus } from "@soroform/hooks";
+import { useTransactionStatus } from "@sorokit/hooks";
 
 function TxStatus({ hash }: { hash: string }) {
   const { data, isLoading } = useTransactionStatus(hash);

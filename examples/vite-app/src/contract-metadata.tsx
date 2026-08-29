@@ -1,4 +1,4 @@
-import { useContractCall } from "@soroform/contract";
+import { useContractCall } from "@sorokit/contract";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { NATIVE_SAC_CONTRACT_ID } from "./contract";
 

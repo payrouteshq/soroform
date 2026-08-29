@@ -4,11 +4,11 @@ import {
   createRpcServer,
   normalizeError,
   queryKeys,
-  resolveSoroformConfig,
-  type SoroformError,
-  type SoroformNetwork,
-} from "@soroform/core";
-import { useSoroformConfig } from "@soroform/provider";
+  resolveSorokitConfig,
+  type SorokitError,
+  type SorokitNetwork,
+} from "@sorokit/core";
+import { useSorokitConfig } from "@sorokit/provider";
 import { fetchContractSpec } from "./spec-cache.js";
 import { generateContractSchemas } from "./generate-schemas.js";
 import { toValidationError } from "./validation-error.js";
@@ -20,8 +20,8 @@ export interface UseContractCallOptions {
   method: string;
   /** Named arguments for the method, keyed by parameter name. */
   args?: Record<string, unknown>;
-  /** Overrides the network from the nearest `SoroformProvider`. */
-  network?: SoroformNetwork;
+  /** Overrides the network from the nearest `SorokitProvider`. */
+  network?: SorokitNetwork;
   /** Whether the query should run. Defaults to `true`. */
   enabled?: boolean;
 }
@@ -39,7 +39,7 @@ export interface UseContractCallOptions {
  *
  * @example
  * ```tsx
- * import { useContractCall } from "@soroform/contract";
+ * import { useContractCall } from "@sorokit/contract";
  *
  * function Balance({ contractId, address }: { contractId: string; address: string }) {
  *   const { data, isLoading, error } = useContractCall<bigint>({
@@ -55,13 +55,13 @@ export interface UseContractCallOptions {
  */
 export function useContractCall<TResult = unknown>(
   options: UseContractCallOptions,
-): UseQueryResult<TResult, SoroformError> {
+): UseQueryResult<TResult, SorokitError> {
   const { contractId, method, args, network, enabled } = options;
-  const contextConfig = useSoroformConfig();
-  const config = network ? resolveSoroformConfig({ network }) : contextConfig;
+  const contextConfig = useSorokitConfig();
+  const config = network ? resolveSorokitConfig({ network }) : contextConfig;
   const queryClient = useQueryClient();
 
-  return useQuery<TResult, SoroformError>({
+  return useQuery<TResult, SorokitError>({
     queryKey: queryKeys.contractCall(config.networkPassphrase, contractId, method, args ?? {}),
     enabled: (enabled ?? true) && Boolean(contractId) && Boolean(method),
     queryFn: async () => {

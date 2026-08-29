@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { QueryClient } from "@tanstack/react-query";
-import { SoroformProvider } from "@soroform/provider";
+import { SorokitProvider } from "@sorokit/provider";
 import { useNetworkStatus } from "./use-network-status.js";
 
 const { mockGetHealth, mockGetLatestLedger } = vi.hoisted(() => ({
@@ -21,9 +21,9 @@ vi.mock("@stellar/stellar-sdk/rpc", async (importOriginal) => {
 function renderWithProvider(children: React.ReactNode) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <SoroformProvider network="testnet" queryClient={queryClient}>
+    <SorokitProvider network="testnet" queryClient={queryClient}>
       {children}
-    </SoroformProvider>,
+    </SorokitProvider>,
   );
 }
 

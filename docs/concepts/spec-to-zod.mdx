@@ -1,15 +1,15 @@
 ---
 title: "How the spec-to-Zod pipeline works"
-description: "How Soroform turns a contract's spec into Zod schemas, entirely at runtime"
+description: "How Sorokit turns a contract's spec into Zod schemas, entirely at runtime"
 ---
 
-Soroform has no code generation step. Every contract-facing hook derives its validation and types from the contract's own spec, fetched at runtime from just a `contractId`.
+Sorokit has no code generation step. Every contract-facing hook derives its validation and types from the contract's own spec, fetched at runtime from just a `contractId`.
 
 ## The pipeline
 
 <Steps>
   <Step title="Fetch the spec">
-    The first time a hook is called for a given `contractId`, Soroform calls `contract.Client.from({ contractId, rpcUrl, networkPassphrase })`. This single call handles Wasm-hash lookup, Wasm download, and the built-in spec for Stellar Asset Contracts, whichever applies to that contract. The result is cached in the TanStack Query cache under `queryKeys.contractSpec(networkPassphrase, contractId)`, with an infinite `staleTime`: a deployed contract's spec cannot change without deploying under a new contract ID.
+    The first time a hook is called for a given `contractId`, Sorokit calls `contract.Client.from({ contractId, rpcUrl, networkPassphrase })`. This single call handles Wasm-hash lookup, Wasm download, and the built-in spec for Stellar Asset Contracts, whichever applies to that contract. The result is cached in the TanStack Query cache under `queryKeys.contractSpec(networkPassphrase, contractId)`, with an infinite `staleTime`: a deployed contract's spec cannot change without deploying under a new contract ID.
   </Step>
   <Step title="Generate schemas">
     `generateContractSchemas(spec)` iterates every function in `spec.funcs()` and builds a Zod object schema for its arguments, via `sorobanTypeToZod`. This runs once per `Spec` instance; the result is cached in a `WeakMap` keyed by the spec object itself, so calling it again for the same spec (which every render of every hook does) is free.
@@ -56,17 +56,17 @@ Soroform has no code generation step. Every contract-facing hook derives its val
 
 ## Validation errors
 
-A failed `.parse()` against the generated schema is caught and re-thrown as a normal Soroform error, not a bare `ZodError` escaping the hook and not a stringified blob either:
+A failed `.parse()` against the generated schema is caught and re-thrown as a normal Sorokit error, not a bare `ZodError` escaping the hook and not a stringified blob either:
 
 ```ts
-interface SoroformError {
+interface SorokitError {
   kind: "validation-failed";
   message: string; // z.prettifyError(zodError) — the readable, multi-line format
   cause: z.ZodError; // the original ZodError, completely untouched
 }
 ```
 
-`cause` is the real `ZodError`, so `error.cause.issues`, `error.cause.flatten()`, and every other Zod API stay available exactly as they would from a direct `schema.parse()` call. Soroform normalizes the `kind` and `message` for consistency with every other error it surfaces (see [Error handling](/concepts/error-handling)); it does not hide or reformat the underlying Zod error data.
+`cause` is the real `ZodError`, so `error.cause.issues`, `error.cause.flatten()`, and every other Zod API stay available exactly as they would from a direct `schema.parse()` call. Sorokit normalizes the `kind` and `message` for consistency with every other error it surfaces (see [Error handling](/concepts/error-handling)); it does not hide or reformat the underlying Zod error data.
 
 ```tsx
 const { error } = useContractCall({ contractId, method: "transfer", args });
@@ -83,7 +83,7 @@ if (error?.kind === "validation-failed") {
 
 ```ts
 import { Client } from "@stellar/stellar-sdk/contract";
-import { generateContractSchemas } from "@soroform/contract";
+import { generateContractSchemas } from "@sorokit/contract";
 
 const client = await Client.from({
   contractId: "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5",

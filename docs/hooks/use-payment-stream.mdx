@@ -6,7 +6,7 @@ description: "Subscribe to an account's live payments over Horizon's SSE stream"
 Subscribes to an account's incoming and outgoing payments, live for as long as the component is mounted. On every payment, automatically invalidates that address's [`useAccount`](/hooks/use-account) and [`useBalance`](/hooks/use-balance) queries, so a balance or sequence number displayed elsewhere in the app updates without a manual refetch.
 
 ```ts
-import { usePaymentStream } from "@soroform/hooks";
+import { usePaymentStream } from "@sorokit/hooks";
 
 function usePaymentStream(
   address: string,
@@ -35,7 +35,7 @@ function usePaymentStream(
 ## Example
 
 ```tsx
-import { usePaymentStream, useBalance } from "@soroform/hooks";
+import { usePaymentStream, useBalance } from "@sorokit/hooks";
 
 function LiveBalance({ address }: { address: string }) {
   const { data: balance } = useBalance(address, "native");

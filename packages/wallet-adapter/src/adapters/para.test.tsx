@@ -92,7 +92,7 @@ function Probe() {
 }
 
 /**
- * Mirrors what `SoroformProvider`'s `wallet` prop mounts internally: the
+ * Mirrors what `SorokitProvider`'s `wallet` prop mounts internally: the
  * connector's own `Provider` (if any), wrapping a component that calls
  * `useAdapter()` and hands the result to the low-level `WalletProvider`.
  */

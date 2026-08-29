@@ -5,8 +5,8 @@ import { xdr } from "@stellar/stellar-sdk";
 import { Spec } from "@stellar/stellar-sdk/contract";
 import { QueryClient } from "@tanstack/react-query";
 import { z } from "zod";
-import type { SoroformError } from "@soroform/core";
-import { SoroformProvider } from "@soroform/provider";
+import type { SorokitError } from "@sorokit/core";
+import { SorokitProvider } from "@sorokit/provider";
 import { useContractCall } from "./use-contract-call.js";
 
 const T = xdr.ScSpecTypeDef;
@@ -50,9 +50,9 @@ function renderWithProviders(children: React.ReactNode) {
     defaultOptions: { queries: { retry: false } },
   });
   return render(
-    <SoroformProvider network="testnet" queryClient={queryClient}>
+    <SorokitProvider network="testnet" queryClient={queryClient}>
       {children}
-    </SoroformProvider>,
+    </SorokitProvider>,
   );
 }
 
@@ -69,7 +69,7 @@ function BalanceProbe(props: { args: Record<string, unknown> }) {
 
 function ErrorCapture(props: {
   args: Record<string, unknown>;
-  onError: (error: SoroformError) => void;
+  onError: (error: SorokitError) => void;
 }) {
   const { args, onError } = props;
   const { error } = useContractCall<bigint>({
@@ -120,7 +120,7 @@ describe("useContractCall", () => {
     renderWithProviders(<ErrorCapture args={{ id: "not-an-address" }} onError={onError} />);
 
     await waitFor(() => expect(onError).toHaveBeenCalled());
-    const error = onError.mock.calls[0]![0] as SoroformError;
+    const error = onError.mock.calls[0]![0] as SorokitError;
 
     expect(error.kind).toBe("validation-failed");
     expect(error.message).not.toContain('"code"');
@@ -128,7 +128,7 @@ describe("useContractCall", () => {
     expect((error.cause as z.ZodError).issues.length).toBeGreaterThan(0);
   });
 
-  it("normalizes a network error into a SoroformError", async () => {
+  it("normalizes a network error into a SorokitError", async () => {
     mockClientFrom.mockResolvedValue({ spec: buildFixtureSpec() });
     mockQueryContract.mockRejectedValue(new Error("network is down"));
 

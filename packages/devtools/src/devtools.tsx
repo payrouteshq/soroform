@@ -5,11 +5,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SendLogPanel } from "./send-log-panel.js";
 import css from "./styles.generated.css";
 
-export interface SoroformDevtoolsProps {
+export interface SorokitDevtoolsProps {
   initialOpen?: boolean;
 }
 
-export function SoroformDevtools(props: SoroformDevtoolsProps) {
+export function SorokitDevtools(props: SorokitDevtoolsProps) {
   const [isOpen, setIsOpen] = React.useState(props.initialOpen ?? false);
 
   if (process.env.NODE_ENV !== "development") return null;
@@ -22,7 +22,7 @@ export function SoroformDevtools(props: SoroformDevtoolsProps) {
           className="fixed right-4 bottom-4 z-99998 rounded-full"
           onClick={() => setIsOpen(true)}
         >
-          Soroform
+          Sorokit
         </Button>
       ) : (
         <div className="bg-background text-foreground fixed inset-x-0 bottom-0 z-99999 flex h-88 flex-col border-t">

@@ -6,7 +6,7 @@ description: "Build, simulate, sign, and send a state-changing contract method c
 Builds, simulates, signs, and sends a state-changing contract method call, exposing the full lifecycle as a `status` field rather than a single boolean. Requires a connected wallet. See [The useContractCall / useContractSend state machine](/concepts/call-send-state-machine) for the full phase-by-phase breakdown.
 
 ```ts
-import { useContractSend } from "@soroform/contract";
+import { useContractSend } from "@sorokit/contract";
 
 function useContractSend<TResult = unknown>(
   options: UseContractSendOptions,
@@ -19,7 +19,7 @@ function useContractSend<TResult = unknown>(
 | ------------ | ----------------- | -------- | ---------------------------------------------------------- |
 | `contractId` | `string`          | Yes      | The deployed contract's address (`C...`).                  |
 | `method`     | `string`          | Yes      | The state-changing method to call.                         |
-| `network`    | `SoroformNetwork` | No       | Overrides the network from the nearest `SoroformProvider`. |
+| `network`    | `SorokitNetwork` | No       | Overrides the network from the nearest `SorokitProvider`. |
 
 ## Return value
 
@@ -27,7 +27,7 @@ function useContractSend<TResult = unknown>(
 | ----------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
 | `status`    | `"idle" \| "queued" \| "simulating" \| "needsSignature" \| "submitting" \| "success" \| "error"` | The current phase.                                                         |
 | `data`      | `TResult \| undefined`                                                                           | The decoded result, once `status` is `"success"`.                          |
-| `error`     | `SoroformError \| undefined`                                                                     | A normalized error, once `status` is `"error"`.                            |
+| `error`     | `SorokitError \| undefined`                                                                     | A normalized error, once `status` is `"error"`.                            |
 | `hash`      | `string \| undefined`                                                                            | The transaction hash, from the moment the network accepts it.              |
 | `sendAsync` | `(args?: Record<string, unknown>) => Promise<TResult>`                                           | Validates args, simulates, signs, and sends.                               |
 | `reset`     | `() => void`                                                                                     | Resets `status`, `data`, `error`, and `hash` back to their initial values. |
@@ -35,7 +35,7 @@ function useContractSend<TResult = unknown>(
 ## Example
 
 ```tsx
-import { useContractSend } from "@soroform/contract";
+import { useContractSend } from "@sorokit/contract";
 
 function TransferButton({ contractId, to }: { contractId: string; to: string }) {
   const { status, sendAsync, error } = useContractSend<boolean>({
@@ -67,7 +67,7 @@ The one thing this trades away: a queued send is simulated against a ledger that
 
 ## Surviving a page reload
 
-Once the network accepts a transaction it is recorded in a queue mirrored into `localStorage`. If the page is reloaded while a send is `"submitting"`, [`SoroformProvider`](/components/soroform-provider) picks the transaction back up on mount, polls for its outcome, and invalidates the contract's cached reads once it lands. Nothing needs to be wired up for this; entries that never land age out of the queue on their own.
+Once the network accepts a transaction it is recorded in a queue mirrored into `localStorage`. If the page is reloaded while a send is `"submitting"`, [`SorokitProvider`](/components/sorokit-provider) picks the transaction back up on mount, polls for its outcome, and invalidates the contract's cached reads once it lands. Nothing needs to be wired up for this; entries that never land age out of the queue on their own.
 
 ## Caching and invalidation
 
@@ -75,4 +75,4 @@ On success, every [`useContractCall`](/hooks/use-contract-call) query for the sa
 
 ## Devtools logging
 
-In development (`process.env.NODE_ENV === "development"`), every status transition is recorded to `@soroform/core`'s `devtoolsSendLog` store, which [`SoroformDevtools`](/components/soroform-devtools) reads from. This has no effect if `@soroform/devtools` is not installed.
+In development (`process.env.NODE_ENV === "development"`), every status transition is recorded to `@sorokit/core`'s `devtoolsSendLog` store, which [`SorokitDevtools`](/components/sorokit-devtools) reads from. This has no effect if `@sorokit/devtools` is not installed.

@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils";
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Soroform Next.js example",
-  description: "Soroform end to end, in a Next.js App Router app.",
+  title: "Sorokit Next.js example",
+  description: "Sorokit end to end, in a Next.js App Router app.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

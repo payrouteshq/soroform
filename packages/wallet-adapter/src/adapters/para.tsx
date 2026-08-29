@@ -30,29 +30,29 @@ export interface ParaConnectorOptions {
 /**
  * A `WalletConnector` backed by `@getpara/react-sdk`, an embedded-wallet
  * SDK (email, passkey, social, and external wallet login) with native
- * Stellar support. Pass it as `SoroformProvider`'s `wallet` prop — unlike
+ * Stellar support. Pass it as `SorokitProvider`'s `wallet` prop — unlike
  * `stellarWalletsKit()`/`blux()`, this connector also sets `Provider`,
  * since Para's connect UI only exists as a React component tied to Para's
- * own context; `SoroformProvider` mounts it for you, so you never render
+ * own context; `SorokitProvider` mounts it for you, so you never render
  * Para's own provider yourself.
  *
  * `@getpara/react-sdk` and `@tanstack/react-query` are peer dependencies:
- * install them alongside `@soroform/wallet-adapter` to use this connector.
+ * install them alongside `@sorokit/wallet-adapter` to use this connector.
  *
  * Built from Para's documentation (`docs.getpara.com`), not exercised
  * against a live Para account — Para requires an `apiKey` from their
  * dashboard to test at all. If something here doesn't match Para's actual
  * runtime behavior, the fix almost certainly belongs in the small
- * `useAdapter` hook below, not in `SoroformProvider` itself.
+ * `useAdapter` hook below, not in `SorokitProvider` itself.
  *
  * @example
  * ```tsx
- * import { SoroformProvider } from "@soroform/provider";
- * import { para } from "@soroform/wallet-adapter/para";
+ * import { SorokitProvider } from "@sorokit/provider";
+ * import { para } from "@sorokit/wallet-adapter/para";
  *
- * <SoroformProvider network="testnet" wallet={para({ apiKey: "..." })}>
+ * <SorokitProvider network="testnet" wallet={para({ apiKey: "..." })}>
  *   {children}
- * </SoroformProvider>;
+ * </SorokitProvider>;
  * ```
  */
 export function para(options: ParaConnectorOptions): WalletConnector {

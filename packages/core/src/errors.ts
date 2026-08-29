@@ -1,8 +1,8 @@
 import { AssembledTransaction } from "@stellar/stellar-sdk/contract";
 
 /**
- * Every distinct kind of error Soroform can normalize an underlying error
- * into. `"validation-failed"` is raised by `@soroform/contract` when a
+ * Every distinct kind of error Sorokit can normalize an underlying error
+ * into. `"validation-failed"` is raised by `@sorokit/contract` when a
  * contract call's args fail their generated Zod schema, before any network
  * call is made; its `cause` is the original `ZodError`, so `issues`,
  * `flatten()`, and every other Zod API a caller already knows are still
@@ -11,7 +11,7 @@ import { AssembledTransaction } from "@stellar/stellar-sdk/contract";
  * classes, including plain network failures and application errors thrown
  * from consuming code.
  */
-export type SoroformErrorKind =
+export type SorokitErrorKind =
   | "expired-state"
   | "restore-failure"
   | "needs-more-signatures"
@@ -32,15 +32,15 @@ export type SoroformErrorKind =
   | "unknown";
 
 /**
- * A normalized Soroform error. `kind` is a discriminated union member
+ * A normalized Sorokit error. `kind` is a discriminated union member
  * suitable for an exhaustive `switch`, so a UI can render distinct
  * messaging per failure mode without re-deriving it from the raw error.
  * `message` is a plain-language default suitable for displaying directly;
  * a consuming app is free to override it per `kind`. `cause` retains the
  * original thrown value for logging or deeper inspection.
  */
-export interface SoroformError {
-  kind: SoroformErrorKind;
+export interface SorokitError {
+  kind: SorokitErrorKind;
   message: string;
   cause: unknown;
 }
@@ -56,7 +56,7 @@ export interface SoroformError {
 const { Errors } = AssembledTransaction;
 
 const KIND_BY_ERROR_CLASS: ReadonlyArray<
-  readonly [new (...args: never[]) => Error, SoroformErrorKind, string]
+  readonly [new (...args: never[]) => Error, SorokitErrorKind, string]
 > = [
   [
     Errors.ExpiredState,
@@ -113,7 +113,7 @@ const KIND_BY_ERROR_CLASS: ReadonlyArray<
   [Errors.UserRejected, "user-rejected", "The request was rejected in the connected wallet."],
 ];
 
-const KIND_BY_ERROR_NAME: ReadonlyArray<readonly [string, SoroformErrorKind, string]> = [
+const KIND_BY_ERROR_NAME: ReadonlyArray<readonly [string, SorokitErrorKind, string]> = [
   ["SendFailedError", "send-failed", "Sending this transaction to the network failed."],
   [
     "SendResultOnlyError",
@@ -130,16 +130,16 @@ const KIND_BY_ERROR_NAME: ReadonlyArray<readonly [string, SoroformErrorKind, str
 /**
  * Normalizes any error thrown by `@stellar/stellar-sdk` (including all 16
  * `contract` error classes) or by application code into a
- * {@link SoroformError}. This is the single place error-to-message mapping
- * lives in Soroform; hooks should not each reimplement it.
+ * {@link SorokitError}. This is the single place error-to-message mapping
+ * lives in Sorokit; hooks should not each reimplement it.
  *
  * @param error - the thrown value, of any shape
- * @returns a {@link SoroformError} with a `kind` suitable for an
+ * @returns a {@link SorokitError} with a `kind` suitable for an
  * exhaustive `switch`, and a plain-language default `message`
  *
  * @example
  * ```ts
- * import { normalizeError } from "@soroform/core";
+ * import { normalizeError } from "@sorokit/core";
  *
  * try {
  *   await doSomethingWithTheSdk();
@@ -149,7 +149,7 @@ const KIND_BY_ERROR_NAME: ReadonlyArray<readonly [string, SoroformErrorKind, str
  * }
  * ```
  */
-export function normalizeError(error: unknown): SoroformError {
+export function normalizeError(error: unknown): SorokitError {
   for (const [ErrorClass, kind, message] of KIND_BY_ERROR_CLASS) {
     if (error instanceof ErrorClass) {
       return { kind, message, cause: error };
