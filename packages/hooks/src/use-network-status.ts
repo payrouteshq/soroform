@@ -3,9 +3,14 @@ import type { Api } from "@stellar/stellar-sdk/rpc";
 import { createRpcServer, normalizeError, queryKeys } from "@sorokit/core";
 import { useSorokitConfig } from "@sorokit/provider";
 
-/** RPC node health and latest ledger info, as returned by `useNetworkStatus`. */
 export interface NetworkStatus {
+  /**
+   * RPC node health
+   */
   health: Api.GetHealthResponse;
+  /**
+   * Latest ledger
+   */
   latestLedger: Api.GetLatestLedgerResponse;
 }
 
@@ -16,9 +21,8 @@ export interface UseNetworkStatusOptions {
 const REFETCH_INTERVAL_MS = 30_000;
 
 /**
- * Fetches RPC node health and the latest ledger, via
- * `rpc.Server.getHealth` and `rpc.Server.getLatestLedger`. Refetches every
- * 30 seconds, making it suitable for a network status indicator.
+ * Fetches RPC node health and the latest ledger
+ * Refetches every 30 seconds, making it suitable for a network status indicator.
  *
  * @example
  * ```tsx

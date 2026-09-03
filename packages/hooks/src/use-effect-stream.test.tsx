@@ -36,7 +36,7 @@ const ADDRESS = "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ";
 function renderWithProvider(children: React.ReactNode) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <SorokitProvider network="testnet" queryClient={queryClient}>
+    <SorokitProvider network="TESTNET" queryClient={queryClient}>
       {children}
     </SorokitProvider>,
   );

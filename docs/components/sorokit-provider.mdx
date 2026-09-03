@@ -37,7 +37,7 @@ const wallet = stellarWalletsKit();
 
 export function App({ children }: { children: React.ReactNode }) {
   return (
-    <SorokitProvider network="testnet" wallet={wallet} devtools>
+    <SorokitProvider network="TESTNET" wallet={wallet} devtools>
       {children}
     </SorokitProvider>
   );
@@ -60,7 +60,7 @@ const queryClient = new QueryClient();
 
 export function App({ children }: { children: React.ReactNode }) {
   return (
-    <SorokitProvider network="testnet" queryClient={queryClient}>
+    <SorokitProvider network="TESTNET" queryClient={queryClient}>
       {children}
     </SorokitProvider>
   );
@@ -110,14 +110,12 @@ const wallet = stellarWalletsKit({
 Adding a hardware wallet module:
 
 ```tsx
-import {
-  stellarWalletsKit,
-  createDefaultModules,
-} from "@sorokit/wallet-adapter/stellar-wallets-kit";
+import { stellarWalletsKit } from "@sorokit/wallet-adapter/stellar-wallets-kit";
+import { defaultModules } from "@creit.tech/stellar-wallets-kit/modules/utils";
 import { LedgerModule } from "@creit.tech/stellar-wallets-kit/modules/ledger";
 
 const wallet = stellarWalletsKit({
-  modules: [...createDefaultModules(), new LedgerModule()],
+  modules: [...defaultModules(), new LedgerModule()],
 });
 ```
 
@@ -158,7 +156,7 @@ import { para } from "@sorokit/wallet-adapter/para";
 
 export function App({ children }: { children: React.ReactNode }) {
   return (
-    <SorokitProvider network="testnet" wallet={para({ apiKey: "..." })}>
+    <SorokitProvider network="TESTNET" wallet={para({ apiKey: "..." })}>
       {children}
     </SorokitProvider>
   );

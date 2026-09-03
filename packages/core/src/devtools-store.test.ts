@@ -6,7 +6,7 @@ function entry(overrides: Partial<ContractSendLogEntry> = {}): ContractSendLogEn
     id: "1",
     contractId: "CABC",
     method: "transfer",
-    status: "idle",
+    status: "IDLE",
     updatedAt: Date.now(),
     ...overrides,
   };
@@ -22,11 +22,11 @@ describe("devtoolsSendLog", () => {
 
   it("overwrites an entry recorded again with the same id", () => {
     devtoolsSendLog.clear();
-    devtoolsSendLog.record(entry({ id: "a", status: "idle" }));
-    devtoolsSendLog.record(entry({ id: "a", status: "success" }));
+    devtoolsSendLog.record(entry({ id: "a", status: "IDLE" }));
+    devtoolsSendLog.record(entry({ id: "a", status: "SUCCESS" }));
     const all = devtoolsSendLog.getAll();
     expect(all).toHaveLength(1);
-    expect(all[0]?.status).toBe("success");
+    expect(all[0]?.status).toBe("SUCCESS");
   });
 
   it("notifies subscribers on record and clear", () => {

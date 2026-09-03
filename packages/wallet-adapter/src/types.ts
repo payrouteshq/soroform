@@ -1,23 +1,46 @@
 import type * as React from "react";
 
-/** The live connection state a `WalletAdapter` reports to `WalletProvider`. */
 export interface WalletAdapterState {
+  /**
+   * The connected account's public key
+   */
   address: string | undefined;
+  /**
+   * The network passphrase the wallet last reported
+   */
   network: string | undefined;
 }
 
 export interface WalletSignResult {
+  /**
+   * The signed transaction XDR
+   */
   signedTxXdr: string;
+  /**
+   * The address of the signer
+   */
   signerAddress?: string;
 }
 
 export interface AuthEntrySignResult {
+  /**
+   * The signed auth entry
+   */
   signedAuthEntry: string;
+  /**
+   * The address of the signer
+   */
   signerAddress?: string;
 }
 
 export interface SignOptions {
+  /**
+   * The network passphrase to sign the transaction with
+   */
   networkPassphrase?: string;
+  /**
+   * The address of the signer
+   */
   address?: string;
 }
 
@@ -39,49 +62,46 @@ export interface WalletAdapter {
    * network passphrase it's configured with changes.
    */
   init(networkPassphrase: string): void;
-  /** Opens whatever UI this adapter uses to connect a wallet. */
+  /**
+   * Opens whatever UI this adapter uses to connect a wallet.
+   */
   connect(): Promise<{ address: string }>;
+  /**
+   * Disconnects the wallet
+   */
   disconnect(): Promise<void>;
+  /**
+   * Signs a transaction
+   */
   signTransaction(xdr: string, opts?: SignOptions): Promise<WalletSignResult>;
+  /**
+   * Signs an auth entry
+   */
   signAuthEntry(authEntry: string, opts?: SignOptions): Promise<AuthEntrySignResult>;
   /**
    * Subscribes to address/network changes the adapter's own UI causes
-   * (including a successful `connect()`). Returns an unsubscribe function.
+   * (including a successful `connect()`).
+   * @returns An unsubscribe function.
    */
   onStateChange(listener: (state: WalletAdapterState) => void): () => void;
   /**
    * Subscribes to a disconnect fired by the wallet itself, outside of
    * `WalletProvider` calling `disconnect()`. Returns an unsubscribe function.
+   * @returns An unsubscribe function.
    */
   onDisconnect(listener: () => void): () => void;
 }
 
-/**
- * What `stellarWalletsKit()`, `blux()`, and `para()` each return, and what
- * `SorokitProvider`'s `wallet` prop expects. This is the layer that makes
- * `SorokitProvider` the single entry point: SDKs that just need a plain
- * `WalletAdapter` (Stellar Wallets Kit, Blux) only implement `useAdapter`;
- * SDKs whose connect UI is only reachable through their own React context
- * (Para) also supply `Provider`, and `SorokitProvider` mounts it for you
- * instead of you rendering e.g. `ParaProvider` yourself.
- *
- * A custom `WalletAdapter` becomes a connector by wrapping it:
- * `{ useAdapter: () => myAdapter }`.
- */
 export interface WalletConnector {
   /**
    * Extra React context this connector's SDK needs mounted above the rest
-   * of the app (e.g. Para's own SDK provider and query client). Most
-   * connectors don't need this.
+   * of the app (e.g. Para's own SDK provider and query client).
+   * NB: Most connectors don't need this.
    */
   Provider?: React.ComponentType<{ children?: React.ReactNode }>;
   /**
    * Returns the `WalletAdapter` to drive. Called as a hook from inside
-   * `SorokitProvider` (and, when `Provider` is set, from inside it) — for
-   * hook-driven SDKs this is where those hooks actually run; for
-   * SDKs that just build a plain adapter object, it's a no-op accessor.
-   * Receives the network passphrase `SorokitProvider` resolved from its
-   * `network` prop.
+   * `SorokitProvider` (and, when `Provider` is set, from inside it)
    */
   useAdapter(networkPassphrase: string): WalletAdapter;
 }

@@ -55,7 +55,7 @@ function QueryClientProbe() {
 describe("SorokitProvider", () => {
   it("renders its children", () => {
     render(
-      <SorokitProvider network="testnet">
+      <SorokitProvider network="TESTNET">
         <span>hello</span>
       </SorokitProvider>,
     );
@@ -64,19 +64,19 @@ describe("SorokitProvider", () => {
 
   it("resolves and propagates config from the network prop", () => {
     render(
-      <SorokitProvider network="testnet">
+      <SorokitProvider network="TESTNET">
         <ConfigProbe />
       </SorokitProvider>,
     );
     const config = JSON.parse(screen.getByTestId("probe").textContent ?? "{}");
-    expect(config.network).toBe("testnet");
+    expect(config.network).toBe("TESTNET");
     expect(config.rpcUrl).toBe("https://soroban-testnet.stellar.org");
   });
 
   it("propagates rpcUrl and horizonUrl overrides", () => {
     render(
       <SorokitProvider
-        network="testnet"
+        network="TESTNET"
         rpcUrl="https://custom-rpc.example.com"
         horizonUrl="https://custom-horizon.example.com"
       >
@@ -90,7 +90,7 @@ describe("SorokitProvider", () => {
 
   it("creates a default QueryClient with a 5 second staleTime when none is passed", () => {
     render(
-      <SorokitProvider network="testnet">
+      <SorokitProvider network="TESTNET">
         <QueryClientProbe />
       </SorokitProvider>,
     );
@@ -102,7 +102,7 @@ describe("SorokitProvider", () => {
       defaultOptions: { queries: { staleTime: 42 } },
     });
     render(
-      <SorokitProvider network="testnet" queryClient={client}>
+      <SorokitProvider network="TESTNET" queryClient={client}>
         <QueryClientProbe />
       </SorokitProvider>,
     );
@@ -124,7 +124,7 @@ describe("useSorokitConfig", () => {
 describe("SorokitProvider wallet prop", () => {
   it("mounts the connector so useWallet() works, without a separate WalletProvider", async () => {
     render(
-      <SorokitProvider network="testnet" wallet={createFakeConnector()}>
+      <SorokitProvider network="TESTNET" wallet={createFakeConnector()}>
         <WalletProbe />
       </SorokitProvider>,
     );
@@ -142,7 +142,7 @@ describe("SorokitProvider wallet prop", () => {
       Provider: ({ children }) => <div data-testid="connector-provider">{children}</div>,
     };
     render(
-      <SorokitProvider network="testnet" wallet={connector}>
+      <SorokitProvider network="TESTNET" wallet={connector}>
         <WalletProbe />
       </SorokitProvider>,
     );
@@ -156,7 +156,7 @@ describe("SorokitProvider wallet prop", () => {
     console.error = () => {};
     expect(() =>
       render(
-        <SorokitProvider network="testnet">
+        <SorokitProvider network="TESTNET">
           <WalletProbe />
         </SorokitProvider>,
       ),
@@ -175,7 +175,7 @@ describe("SorokitProvider devtools prop", () => {
   it("does not render devtools when the prop is omitted", () => {
     process.env.NODE_ENV = "development";
     render(
-      <SorokitProvider network="testnet">
+      <SorokitProvider network="TESTNET">
         <span>hello</span>
       </SorokitProvider>,
     );
@@ -185,7 +185,7 @@ describe("SorokitProvider devtools prop", () => {
   it("renders devtools with defaults when passed true", () => {
     process.env.NODE_ENV = "development";
     render(
-      <SorokitProvider network="testnet" devtools>
+      <SorokitProvider network="TESTNET" devtools>
         <span>hello</span>
       </SorokitProvider>,
     );
@@ -195,7 +195,7 @@ describe("SorokitProvider devtools prop", () => {
   it("forwards an options object to SorokitDevtools", () => {
     process.env.NODE_ENV = "development";
     render(
-      <SorokitProvider network="testnet" devtools={{ initialOpen: true }}>
+      <SorokitProvider network="TESTNET" devtools={{ initialOpen: true }}>
         <span>hello</span>
       </SorokitProvider>,
     );

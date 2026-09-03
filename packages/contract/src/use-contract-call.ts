@@ -14,29 +14,30 @@ import { generateContractSchemas } from "./generate-schemas.js";
 import { toValidationError } from "./validation-error.js";
 
 export interface UseContractCallOptions {
-  /** The deployed contract's address (`C...`). */
+  /**
+   * The deployed contract's address (`C...`)
+   */
   contractId: string;
-  /** The read-only method to call. */
+  /**
+   * The read-only method to call
+   */
   method: string;
-  /** Named arguments for the method, keyed by parameter name. */
+  /**
+   * Named arguments for the method, keyed by parameter name
+   */
   args?: Record<string, unknown>;
-  /** Overrides the network from the nearest `SorokitProvider`. */
+  /**
+   * Overrides the network from the nearest `SorokitProvider`
+   */
   network?: SorokitNetwork;
-  /** Whether the query should run. Defaults to `true`. */
+  /**
+   * Whether the query should run
+   * @default `true`
+   */
   enabled?: boolean;
 }
 
 /**
- * Simulates a read-only contract method call and returns its decoded
- * result as a TanStack Query result, so loading and error states are
- * directly usable in JSX with no extra wrapping.
- *
- * Requires no connected wallet: reads are simulation-only. The contract's
- * spec is fetched and its args schema derived automatically from just
- * `contractId`, the first time this contract is read; both are cached, so
- * there is no code generation step and no action needed when the
- * `contractId` a hook points at changes.
- *
  * @example
  * ```tsx
  * import { useContractCall } from "@sorokit/contract";

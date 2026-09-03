@@ -24,41 +24,49 @@ import { toValidationError } from "./validation-error.js";
 export type { ContractSendStatus };
 
 export interface UseContractSendOptions {
-  /** The deployed contract's address (`C...`). */
+  /**
+   * The deployed contract's address (`C...`).
+   */
   contractId: string;
-  /** The state-changing method to call. */
+  /**
+   * The state-changing method to call.
+   */
   method: string;
-  /** Overrides the network from the nearest `SorokitProvider`. */
+  /**
+   * Overrides the network from the nearest `SorokitProvider`.
+   */
   network?: SorokitNetwork;
 }
 
 export interface UseContractSendResult<TResult = unknown> {
-  /** The current phase of the send, for rendering distinct UI per phase. */
+  /**
+   * The current phase of the send, for rendering distinct UI per phase.
+   */
   status: ContractSendStatus;
-  /** The decoded result, once `status` is `"success"`. */
+  /**
+   * The decoded result, once `status` is `"success"`.
+   */
   data: TResult | undefined;
-  /** The normalized error, once `status` is `"error"`. */
+  /**
+   * The normalized error, once `status` is `"error"`.
+   */
   error: SorokitError | undefined;
-  /** The submitted transaction's hash, from the moment the network accepts it. */
+  /**
+   * The submitted transaction's hash, from the moment the network accepts it.
+   */
   hash: string | undefined;
-  /** Validates args, simulates, signs, and sends the transaction. */
+  /**
+   * Validates args, simulates, signs, and sends the transaction.
+   */
   sendAsync: (args?: Record<string, unknown>) => Promise<TResult>;
-  /** Resets `status`, `data`, `error`, and `hash` back to their initial values. */
+  /**
+   * Resets `status`, `data`, `error`, and `hash` back to their initial values.
+   */
   reset: () => void;
 }
 
-function isDevelopment(): boolean {
-  return typeof process !== "undefined" && process.env?.NODE_ENV === "development";
-}
+const __DEV__ = process.env.NODE_ENV !== "production";
 
-/**
- * Reports the transaction hash the moment RPC accepts the transaction,
- * rather than only when `send()` resolves several seconds later. That
- * moment is the one that matters: the sequence number is spoken for, the
- * transaction is on its way to the ledger whether or not this tab stays
- * open, and everything downstream — releasing the account's queue,
- * persisting the transaction for resume after a reload — keys off it.
- */
 class SubmissionWatcher extends Watcher {
   constructor(private readonly onHash: (hash: string) => void) {
     super();
@@ -74,32 +82,6 @@ class SubmissionWatcher extends Watcher {
 }
 
 /**
- * Builds, simulates, signs, and sends a state-changing contract method
- * call, exposing the full `queue -> build -> simulate -> sign -> send`
- * lifecycle as a `status` field (`"idle" | "queued" | "simulating" |
- * "needsSignature" | "submitting" | "success" | "error"`) rather than a
- * single boolean, so a consuming app can render distinct UI per phase.
- *
- * Every send is routed through Sorokit's global `transactionSequencer`,
- * keyed by the connected wallet address. This is what makes a double-click
- * on a Transfer button, or two components each firing a send, safe: a
- * Stellar transaction's sequence number must be exactly one past the
- * account's current one, so sends that are assembled concurrently would
- * otherwise claim the same number and the second to land would fail with
- * `tx_bad_seq`. The sequencer serializes assembly per account and projects
- * the sequence number forward as transactions are accepted, so a burst of
- * sends is submitted back to back rather than one per ledger close.
- *
- * Once the network accepts a transaction it is recorded in
- * `pendingTransactions`, which is mirrored into `localStorage`. If the page
- * is reloaded while a send is `"submitting"`, `SorokitProvider` resumes
- * polling for the outcome on mount instead of losing it.
- *
- * Requires a connected wallet (see `useWallet` from `@sorokit/wallet-adapter`).
- * On success, invalidates every `useContractCall` query for this contract,
- * so calls reflect the new state automatically. On error, the thrown
- * error is normalized via `@sorokit/core`'s `normalizeError` before being
- * exposed.
  *
  * @example
  * ```tsx
@@ -132,15 +114,9 @@ export function useContractSend<TResult = unknown>(
   const config = network ? resolveSorokitConfig({ network }) : contextConfig;
   const wallet = useWallet();
   const queryClient = useQueryClient();
-  const [status, setStatus] = React.useState<ContractSendStatus>("idle");
+  const [status, setStatus] = React.useState<ContractSendStatus>("IDLE");
   const [hash, setHash] = React.useState<string | undefined>(undefined);
 
-  /**
-   * Sends are queued, so one hook can have several of them outstanding at
-   * once. Only the most recently started send drives `status` and `hash`;
-   * without this, a send still waiting its turn would keep overwriting the
-   * phase of the one that is actually signing.
-   */
   const latestRunId = React.useRef(0);
 
   const mutation = useMutation<TResult, SorokitError, Record<string, unknown> | undefined>({
@@ -159,25 +135,26 @@ export function useContractSend<TResult = unknown>(
           if (partial.status) setStatus(partial.status);
           if (partial.hash) setHash(partial.hash);
         }
-        if (!isDevelopment()) return;
+        if (!__DEV__) return;
         devtoolsSendLog.record({
           id,
           contractId,
           method,
           args,
+          network: config.network,
           updatedAt: Date.now(),
-          status: "idle",
+          status: "IDLE",
           ...logged,
         });
       };
 
       try {
-        set({ status: "queued" });
+        set({ status: "QUEUED" });
 
         return await transactionSequencer.enqueue<TResult>({
           config,
           address,
-          onStart: () => set({ status: "simulating" }),
+          onStart: () => set({ status: "SIMULATING" }),
           task: async ({ server, markSubmitted }) => {
             const spec = await fetchContractSpec(contractId, config, queryClient);
             const schema = generateContractSchemas(spec)[method];
@@ -190,9 +167,6 @@ export function useContractSend<TResult = unknown>(
               contractId,
               networkPassphrase: config.networkPassphrase,
               rpcUrl: config.rpcUrl,
-              // The sequencer's server reports the sequence number this
-              // send reserved, instead of the one the last closed ledger
-              // knows about.
               server,
               publicKey: address,
               method,
@@ -203,7 +177,7 @@ export function useContractSend<TResult = unknown>(
             });
 
             set({
-              status: "needsSignature",
+              status: "NEEDS_SIGNATURE",
               transaction: {
                 operationType: tx.built?.operations[0]?.type,
                 sourceAccount: tx.built?.source,
@@ -216,7 +190,7 @@ export function useContractSend<TResult = unknown>(
             });
             await tx.sign();
 
-            set({ status: "submitting" });
+            set({ status: "SUBMITTING" });
 
             let submittedHash: string | undefined;
             const watcher = new SubmissionWatcher((submitted) => {
@@ -237,14 +211,14 @@ export function useContractSend<TResult = unknown>(
             try {
               const sentTx = await tx.send(watcher);
               if (submittedHash) pendingTransactions.remove(id);
-              set({ status: "success", result: sentTx.result });
+              set({ status: "SUCCESS", result: sentTx.result });
               return sentTx.result;
             } catch (error) {
               // A transaction the network accepted but that has not turned
               // up in a ledger yet is exactly what a resume after reload is
               // for, so it stays queued. Any other failure has an outcome
               // already; there is nothing left to poll for.
-              if (submittedHash && normalizeError(error).kind !== "transaction-still-pending") {
+              if (submittedHash && normalizeError(error).kind !== "TRANSACTION_STILL_PENDING") {
                 pendingTransactions.remove(id);
               }
               throw error;
@@ -254,7 +228,7 @@ export function useContractSend<TResult = unknown>(
       } catch (rawError) {
         const normalized =
           rawError instanceof z.ZodError ? toValidationError(rawError) : normalizeError(rawError);
-        set({ status: "error", error: normalized });
+        set({ status: "ERROR", error: normalized });
         throw normalized;
       }
     },
@@ -271,7 +245,7 @@ export function useContractSend<TResult = unknown>(
   );
 
   const reset = React.useCallback(() => {
-    setStatus("idle");
+    setStatus("IDLE");
     setHash(undefined);
     mutation.reset();
   }, [mutation]);

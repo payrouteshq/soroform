@@ -1,23 +1,34 @@
 import * as React from "react";
 import type { AuthEntrySignResult, SignOptions, WalletAdapter, WalletSignResult } from "./types.js";
 
-/**
- * The shape of `useWallet()`'s return value. `signTransaction` and
- * `signAuthEntry` match `ClientOptions.signTransaction` /
- * `ClientOptions.signAuthEntry` from `@stellar/stellar-sdk/contract`, so
- * they can be passed straight through to `contract.Client` or
- * `AssembledTransaction`.
- */
 export interface WalletState {
-  /** The connected account's public key, or undefined if not connected. */
+  /**
+   * The connected account's public key
+   */
   address: string | undefined;
-  /** The network passphrase the wallet last reported, if known. */
+  /**
+   * The network passphrase the wallet last reported
+   */
   network: string | undefined;
+  /**
+   * Whether the wallet is connected
+   */
   isConnected: boolean;
-  /** Opens whatever UI the configured adapter uses to connect a wallet. */
+  /**
+   * Opens whatever UI the configured adapter uses to connect a wallet.
+   */
   connect: () => Promise<{ address: string }>;
+  /**
+   * Disconnects the wallet
+   */
   disconnect: () => Promise<void>;
+  /**
+   * Signs a transaction
+   */
   signTransaction: (xdr: string, opts?: SignOptions) => Promise<WalletSignResult>;
+  /**
+   * Signs an auth entry
+   */
   signAuthEntry: (authEntry: string, opts?: SignOptions) => Promise<AuthEntrySignResult>;
 }
 
@@ -35,6 +46,7 @@ const WalletContext = React.createContext<WalletState | undefined>(undefined);
  *
  * function AccountBadge() {
  *   const { address, isConnected, connect } = useWallet();
+ *
  *   if (!isConnected) {
  *     return <button onClick={() => connect()}>Connect</button>;
  *   }
@@ -44,31 +56,25 @@ const WalletContext = React.createContext<WalletState | undefined>(undefined);
  */
 export function useWallet(): WalletState {
   const state = React.useContext(WalletContext);
-  if (!state) {
-    throw new Error("useWallet must be called within a <WalletProvider>.");
-  }
+
+  if (!state) throw new Error("useWallet must be called within a <WalletProvider>.");
+
   return state;
 }
 
 export interface WalletProviderProps {
   /**
    * The wallet connector to drive. Pass your own {@link WalletAdapter} —
-   * most apps won't render this directly at all; pass `stellarWalletsKit()`,
-   * `blux()`, or `para()` as `SorokitProvider`'s `wallet` prop instead,
-   * which renders this underneath for you.
    */
   adapter: WalletAdapter;
-  /** The network passphrase to initialize (and re-initialize) the adapter with. */
+  /**
+   * The network passphrase to initialize (and re-initialize) the adapter with.
+   */
   networkPassphrase: string;
   children?: React.ReactNode;
 }
 
 /**
- * Wraps the app in a wallet connection context, driven by whichever
- * {@link WalletAdapter} is passed as `adapter`. This is the low-level
- * primitive `SorokitProvider`'s `wallet` prop renders internally — most
- * apps should use that instead of rendering `WalletProvider` directly.
- *
  * @example
  * ```tsx
  * import { WalletProvider } from "@sorokit/wallet-adapter";

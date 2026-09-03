@@ -14,7 +14,7 @@ vi.mock("./rpc.js", () => ({
 const { TransactionSequencer } = await import("./sequencer.js");
 const { resolveSorokitConfig } = await import("./config.js");
 
-const config = resolveSorokitConfig({ network: "testnet" });
+const config = resolveSorokitConfig({ network: "TESTNET" });
 const ADDRESS = "GBZXN7PIRZGNMHGA7MUUUF4GWPY5AYPV6LY4UV2GL6VJGIQRXFDNMADI";
 const OTHER = "GA7QYNF7SOWQ3GLR2BGMZEHXAVIRZA4KVWLTJJFC7MGXUA74P7UJVSGZ";
 

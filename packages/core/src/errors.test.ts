@@ -5,32 +5,25 @@ import { normalizeError, type SorokitErrorKind } from "./errors.js";
 const { Errors } = AssembledTransaction;
 
 const INSTANCEOF_CASES: ReadonlyArray<readonly [new () => Error, SorokitErrorKind]> = [
-  [Errors.ExpiredState, "expired-state"],
-  [Errors.RestorationFailure, "restore-failure"],
-  [Errors.NeedsMoreSignatures, "needs-more-signatures"],
-  [Errors.NoSignatureNeeded, "no-signature-needed"],
-  [Errors.NoUnsignedNonInvokerAuthEntries, "no-unsigned-non-invoker-auth-entries"],
-  [Errors.NoSigner, "no-signer"],
-  [Errors.NotYetSimulated, "not-yet-simulated"],
-  [Errors.FakeAccount, "fake-account"],
-  [Errors.SimulationFailed, "simulation-failed"],
-  [Errors.InternalWalletError, "internal-wallet-error"],
-  [Errors.ExternalServiceError, "external-service-error"],
-  [Errors.InvalidClientRequest, "invalid-client-request"],
-  [Errors.UserRejected, "user-rejected"],
+  [Errors.ExpiredState, "EXPIRED_STATE"],
+  [Errors.RestorationFailure, "RESTORE_FAILURE"],
+  [Errors.NeedsMoreSignatures, "NEEDS_MORE_SIGNATURES"],
+  [Errors.NoSignatureNeeded, "NO_SIGNATURE_NEEDED"],
+  [Errors.NoUnsignedNonInvokerAuthEntries, "NO_UNSIGNED_NON_INVOKER_AUTH_ENTRIES"],
+  [Errors.NoSigner, "NO_SIGNER"],
+  [Errors.NotYetSimulated, "NOT_YET_SIMULATED"],
+  [Errors.FakeAccount, "FAKE_ACCOUNT"],
+  [Errors.SimulationFailed, "SIMULATION_FAILED"],
+  [Errors.InternalWalletError, "INTERNAL_WALLET_ERROR"],
+  [Errors.ExternalServiceError, "EXTERNAL_SERVICE_ERROR"],
+  [Errors.InvalidClientRequest, "INVALID_CLIENT_REQUEST"],
+  [Errors.UserRejected, "USER_REJECTED"],
 ];
 
-/**
- * SendFailedError, SendResultOnlyError, and TransactionStillPendingError are
- * not reachable from any exported surface of @stellar/stellar-sdk/contract
- * (see errors.ts), so normalizeError matches them by constructor name. These
- * locally-defined stand-ins, named identically to the real SDK classes,
- * exercise that same name-matching path.
- */
 const NAME_MATCH_CASES: ReadonlyArray<readonly [new () => Error, SorokitErrorKind]> = [
-  [class SendFailedError extends Error {}, "send-failed"],
-  [class SendResultOnlyError extends Error {}, "send-result-only"],
-  [class TransactionStillPendingError extends Error {}, "transaction-still-pending"],
+  [class SendFailedError extends Error {}, "SEND_FAILED"],
+  [class SendResultOnlyError extends Error {}, "SEND_RESULT_ONLY"],
+  [class TransactionStillPendingError extends Error {}, "TRANSACTION_STILL_PENDING"],
 ];
 
 describe("normalizeError", () => {
@@ -54,13 +47,13 @@ describe("normalizeError", () => {
 
   it("maps a plain Error to kind unknown, preserving its message", () => {
     const normalized = normalizeError(new Error("boom"));
-    expect(normalized.kind).toBe("unknown");
+    expect(normalized.kind).toBe("UNKNOWN");
     expect(normalized.message).toBe("boom");
   });
 
   it("maps a non-Error thrown value to kind unknown", () => {
     const normalized = normalizeError("just a string");
-    expect(normalized.kind).toBe("unknown");
+    expect(normalized.kind).toBe("UNKNOWN");
     expect(normalized.message).toBe("just a string");
     expect(normalized.cause).toBe("just a string");
   });

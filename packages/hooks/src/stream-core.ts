@@ -1,11 +1,5 @@
 import * as React from "react";
 
-/**
- * The shape every Horizon `CallBuilder` satisfies once narrowed to a single
- * account (`.forAccount(...)`) and cursor. Structurally typed against the
- * real SDK's `stream()` method rather than importing its (unexported)
- * `CallBuilder` class.
- */
 export interface Streamable<T> {
   stream(options: {
     onmessage?: (record: T) => void;
@@ -13,25 +7,24 @@ export interface Streamable<T> {
   }): () => void;
 }
 
-export interface UseHorizonStreamResult<T> {
-  /** Records received this session, newest first, capped at `maxEvents`. */
+export interface UseHorizonStream$PrivateResult<T> {
+  /**
+   * Records received this session, newest first, capped at `maxEvents`
+   */
   events: T[];
-  /** The most recently received record, if any. */
+  /**
+   * The most recently received record, if any
+   */
   latest: T | undefined;
-  /** Whether the stream connection is currently open. */
+  /**
+   * Whether the stream connection is currently open
+   */
   isStreaming: boolean;
 }
 
 const DEFAULT_MAX_EVENTS = 50;
 
-/**
- * Shared lifecycle plumbing for a Horizon SSE stream: opens on mount (and
- * whenever `deps` changes), closes on unmount, and keeps the last
- * `maxEvents` received records in state. Not exported from `@sorokit/hooks`
- * directly; `usePaymentStream` and `useEffectStream` are the public,
- * typed entry points built on top of it.
- */
-export function useHorizonStream<T>(
+export function useHorizonStream$Private<T>(
   build: () => Streamable<T> | undefined,
   deps: unknown[],
   options: {
@@ -39,7 +32,7 @@ export function useHorizonStream<T>(
     onMessage?: (record: T) => void;
     maxEvents?: number;
   } = {},
-): UseHorizonStreamResult<T> {
+): UseHorizonStream$PrivateResult<T> {
   const { enabled = true, maxEvents = DEFAULT_MAX_EVENTS } = options;
   const [events, setEvents] = React.useState<T[]>([]);
   const [isStreaming, setIsStreaming] = React.useState(false);

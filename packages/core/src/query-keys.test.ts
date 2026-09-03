@@ -3,7 +3,6 @@ import { queryKeys } from "./query-keys.js";
 
 describe("queryKeys", () => {
   it("namespaces every key under sorokit", () => {
-    expect(queryKeys.account("G123")[0]).toBe("sorokit");
     expect(queryKeys.balance("G123", "native")[0]).toBe("sorokit");
     expect(queryKeys.transactionStatus("abc")[0]).toBe("sorokit");
     expect(queryKeys.networkStatus()[0]).toBe("sorokit");

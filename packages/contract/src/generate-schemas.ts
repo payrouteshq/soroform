@@ -7,27 +7,21 @@ import { sorobanTypeToZod } from "./type-mapping.js";
  * The generated schema and result type for one contract method.
  */
 export interface ContractMethodSchema {
-  /** Validates a named-args object for this method against its spec. */
+  /**
+   * Validates a named-args object for this method against its spec
+   */
   argsSchema: z.ZodTypeAny;
   /**
-   * The method's declared return type, for decoding via
-   * `spec.funcResToNative`. `undefined` for a method with no return value.
+   * The method's declared return type
    */
   resultType: xdr.ScSpecTypeDef | undefined;
 }
 
-/** A contract's generated schemas, keyed by method name. */
 export type ContractSchemas = Record<string, ContractMethodSchema>;
 
 const schemasBySpec = new WeakMap<Spec, ContractSchemas>();
 
 /**
- * Builds a Zod args schema (and notes the result type) for every method
- * in a contract's spec, by iterating `spec.funcs()`. The result is cached
- * per `Spec` instance (via a `WeakMap`), so calling this repeatedly for
- * the same spec, as `useContractCall`/`useContractSend`/`useSorobanForm`
- * do on every render, does not rebuild the schemas each time.
- *
  * @example
  * ```ts
  * import { generateContractSchemas } from "@sorokit/contract";

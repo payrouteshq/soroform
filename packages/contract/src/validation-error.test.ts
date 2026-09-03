@@ -9,7 +9,7 @@ describe("toValidationError", () => {
     if (result.success) throw new Error("expected validation to fail");
 
     const error = toValidationError(result.error);
-    expect(error.kind).toBe("validation-failed");
+    expect(error.kind).toBe("VALIDATION_FAILED");
   });
 
   it("formats message with z.prettifyError, not the raw JSON issue dump", () => {

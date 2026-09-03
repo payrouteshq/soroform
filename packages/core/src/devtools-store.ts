@@ -1,76 +1,78 @@
+import type { SorokitNetwork } from "./config.js";
 import type { SorokitError } from "./errors.js";
 
-/**
- * The literal states a `useContractSend` call moves through, exposed
- * directly (rather than a boolean `isLoading`) so a consuming app can
- * render distinct UI per phase.
- *
- * `"queued"` is the phase before any network call: the send is waiting
- * behind another send from the same account, because a Stellar sequence
- * number can only be claimed by one transaction at a time. See
- * `transactionSequencer`.
- */
 export type ContractSendStatus =
-  "idle" | "queued" | "simulating" | "needsSignature" | "submitting" | "success" | "error";
+  "IDLE" | "QUEUED" | "SIMULATING" | "NEEDS_SIGNATURE" | "SUBMITTING" | "SUCCESS" | "ERROR";
 
-/**
- * A readable summary of a built transaction's operation and Soroban
- * resource footprint, captured once `AssembledTransaction.build` succeeds.
- * Deliberately not a full XDR tree decode (see `@sorokit/devtools`);
- * `transactionXdr` is kept alongside it so a devtools UI can offer a raw
- * copy button for anything this summary does not surface.
- */
 export interface ContractSendTransactionSummary {
-  /** The built transaction's single operation type, e.g. "invokeHostFunction". */
+  /**
+   * The built transaction's single operation type, e.g. "invokeHostFunction"
+   */
   operationType: string | undefined;
-  /** The source account that will submit the transaction. */
+  /**
+   * The source account that will submit the transaction
+   */
   sourceAccount: string | undefined;
-  /** The simulated minimum resource fee, in stroops, as a string. */
+  /**
+   * The simulated minimum resource fee, in stroops, as a string
+   */
   minResourceFee: string | undefined;
-  /** The full built transaction, base64-encoded XDR. */
+  /**
+   * The full built transaction, base64-encoded XDR
+   */
   transactionXdr: string | undefined;
 }
 
-/**
- * One logged `useContractSend` invocation, as recorded by
- * `@sorokit/contract` and read by `@sorokit/devtools`.
- */
 export interface ContractSendLogEntry {
+  /**
+   * The unique identifier for the log entry
+   */
   id: string;
+  /**
+   * The contract ID
+   */
   contractId: string;
+  /**
+   * The method name
+   */
   method: string;
+  /**
+   * The status of the contract send
+   */
   status: ContractSendStatus;
+  /**
+   * The arguments for the contract send
+   */
   args?: unknown;
+  /**
+   * The result of the contract send
+   */
   result?: unknown;
+  /**
+   * The error of the contract send
+   */
   error?: SorokitError;
   transaction?: ContractSendTransactionSummary;
-  /** The submitted transaction's hash, once the network has accepted it. */
+  /**
+   * The network the send was submitted to
+   */
+  network?: SorokitNetwork;
+  /**
+   * The submitted transaction's hash, once the network has accepted it
+   */
   hash?: string;
+  /**
+   * The timestamp of the last update
+   */
   updatedAt: number;
 }
 
 type Listener = () => void;
 
-/**
- * A minimal in-memory pub-sub store logging `useContractSend` activity
- * for `@sorokit/devtools` to display. Lives in `@sorokit/core`, not in
- * either package that actually cares about it, so that `@sorokit/contract`
- * can write to it without depending on `@sorokit/devtools`, and
- * `@sorokit/devtools` can read from it without depending on
- * `@sorokit/contract`. Recording is a no-op with no listeners subscribed,
- * so it stays effectively free when devtools is not installed.
- */
 class DevtoolsSendLogStore {
   private entries = new Map<string, ContractSendLogEntry>();
   private listeners = new Set<Listener>();
-  /**
-   * `getAll()`'s result cached until the next mutation, so it returns a
-   * stable reference between calls when nothing has changed. This matters
-   * for `React.useSyncExternalStore` (used by `@sorokit/devtools`), whose
-   * contract requires `getSnapshot` to return `Object.is`-equal results
-   * when the underlying data has not changed, or it will re-render in a
-   * loop.
-   */
+
   private cachedSnapshot: ContractSendLogEntry[] | null = null;
 
   record(entry: ContractSendLogEntry): void {
@@ -106,10 +108,4 @@ class DevtoolsSendLogStore {
   }
 }
 
-/**
- * The shared devtools send-log store instance. `useContractSend` calls
- * `devtoolsSendLog.record(...)` on every status transition (guarded by
- * `process.env.NODE_ENV === "development"`); `<SorokitDevtools>` calls
- * `devtoolsSendLog.subscribe(...)` and `getAll()` to render it.
- */
 export const devtoolsSendLog = new DevtoolsSendLogStore();

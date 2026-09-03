@@ -20,11 +20,9 @@
           "hooks/use-contract-call",
           "hooks/use-contract-send",
           "hooks/use-soroban-form",
-          "hooks/use-account",
           "hooks/use-balance",
           "hooks/use-transaction-status",
           "hooks/use-network-status",
-          "hooks/use-payment-stream",
           "hooks/use-effect-stream",
           "hooks/use-wallet"
         ]

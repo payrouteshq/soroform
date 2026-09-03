@@ -17,7 +17,7 @@ dependency so you only install what you use:
 import { SorokitProvider } from "@sorokit/provider";
 import { stellarWalletsKit } from "@sorokit/wallet-adapter/stellar-wallets-kit";
 
-<SorokitProvider network="testnet" wallet={stellarWalletsKit()}>
+<SorokitProvider network="TESTNET" wallet={stellarWalletsKit()}>
   {children}
 </SorokitProvider>;
 ```

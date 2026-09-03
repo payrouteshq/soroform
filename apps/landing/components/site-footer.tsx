@@ -93,14 +93,25 @@ export function SiteFooter() {
       <div className="border-t border-border">
         <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-4 px-6 py-6 text-sm text-muted-foreground sm:flex-row sm:justify-between">
           <span>&copy; {new Date().getFullYear()} Sorokit</span>
-          <Link
-            href="https://payroutes.sh"
-            className="flex items-center gap-1.5 transition-colors hover:text-foreground"
-          >
-            Built with <span aria-hidden>&#10084;&#65039;</span> by
-            <PayroutesLogo className="size-4" />
-            Payroutes
-          </Link>
+          <span className="flex items-center gap-1.5">
+            <span>Built with</span>
+            <span aria-hidden>&#10084;&#65039;</span>
+            <span>by</span>
+            <Link
+              href="https://odii.site"
+              className="underline underline-offset-2 transition-colors hover:text-foreground"
+            >
+              Odii
+            </Link>
+            <span>at</span>
+            <Link
+              href="https://payroutes.sh"
+              className="flex items-center gap-1.5 transition-colors hover:text-foreground"
+            >
+              <PayroutesLogo className="size-4" aria-hidden />
+              Payroutes
+            </Link>
+          </span>
         </div>
       </div>
     </footer>

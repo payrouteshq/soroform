@@ -3,8 +3,7 @@
 A simpler, non-Next React app demonstrating the same Sorokit flow as
 `examples/next-app`: `SorokitProvider`, `WalletProvider`,
 `ConnectWalletButton`, `useContractCall`, `useSorobanForm`,
-`useContractSend`, `useAccount`, `useBalance`, `useNetworkStatus`, and
-`SorokitDevtools`.
+`useContractSend`, `useBalance`, `useNetworkStatus`, and `SorokitDevtools`.
 
 It targets the testnet native XLM Stellar Asset Contract
 (`CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC`), a real contract

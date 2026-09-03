@@ -11,7 +11,7 @@ to be nested under it manually.
 import { SorokitProvider } from "@sorokit/provider";
 import { stellarWalletsKit } from "@sorokit/wallet-adapter/stellar-wallets-kit";
 
-<SorokitProvider network="testnet" wallet={stellarWalletsKit()} devtools>
+<SorokitProvider network="TESTNET" wallet={stellarWalletsKit()} devtools>
   {children}
 </SorokitProvider>;
 ```

@@ -11,7 +11,7 @@ const { resumePendingTransactions } = await import("./resume-pending-transaction
 const { pendingTransactions } = await import("./pending-transactions.js");
 const { resolveSorokitConfig } = await import("./config.js");
 
-const config = resolveSorokitConfig({ network: "testnet" });
+const config = resolveSorokitConfig({ network: "TESTNET" });
 
 function pending(overrides: Partial<Parameters<typeof pendingTransactions.add>[0]> = {}) {
   return {

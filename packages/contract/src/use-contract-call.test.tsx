@@ -50,7 +50,7 @@ function renderWithProviders(children: React.ReactNode) {
     defaultOptions: { queries: { retry: false } },
   });
   return render(
-    <SorokitProvider network="testnet" queryClient={queryClient}>
+    <SorokitProvider network="TESTNET" queryClient={queryClient}>
       {children}
     </SorokitProvider>,
   );
@@ -122,7 +122,7 @@ describe("useContractCall", () => {
     await waitFor(() => expect(onError).toHaveBeenCalled());
     const error = onError.mock.calls[0]![0] as SorokitError;
 
-    expect(error.kind).toBe("validation-failed");
+    expect(error.kind).toBe("VALIDATION_FAILED");
     expect(error.message).not.toContain('"code"');
     expect(error.cause).toBeInstanceOf(z.ZodError);
     expect((error.cause as z.ZodError).issues.length).toBeGreaterThan(0);

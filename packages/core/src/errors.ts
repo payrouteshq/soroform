@@ -1,58 +1,40 @@
 import { AssembledTransaction } from "@stellar/stellar-sdk/contract";
 
-/**
- * Every distinct kind of error Sorokit can normalize an underlying error
- * into. `"validation-failed"` is raised by `@sorokit/contract` when a
- * contract call's args fail their generated Zod schema, before any network
- * call is made; its `cause` is the original `ZodError`, so `issues`,
- * `flatten()`, and every other Zod API a caller already knows are still
- * available, not just the normalized message. `"unknown"` covers anything
- * else that is not one of the 16 `@stellar/stellar-sdk/contract` error
- * classes, including plain network failures and application errors thrown
- * from consuming code.
- */
 export type SorokitErrorKind =
-  | "expired-state"
-  | "restore-failure"
-  | "needs-more-signatures"
-  | "no-signature-needed"
-  | "no-unsigned-non-invoker-auth-entries"
-  | "no-signer"
-  | "not-yet-simulated"
-  | "fake-account"
-  | "simulation-failed"
-  | "internal-wallet-error"
-  | "external-service-error"
-  | "invalid-client-request"
-  | "user-rejected"
-  | "send-failed"
-  | "send-result-only"
-  | "transaction-still-pending"
-  | "validation-failed"
-  | "unknown";
+  | "EXPIRED_STATE"
+  | "RESTORE_FAILURE"
+  | "NEEDS_MORE_SIGNATURES"
+  | "NO_SIGNATURE_NEEDED"
+  | "NO_UNSIGNED_NON_INVOKER_AUTH_ENTRIES"
+  | "NO_SIGNER"
+  | "NOT_YET_SIMULATED"
+  | "FAKE_ACCOUNT"
+  | "SIMULATION_FAILED"
+  | "INTERNAL_WALLET_ERROR"
+  | "EXTERNAL_SERVICE_ERROR"
+  | "INVALID_CLIENT_REQUEST"
+  | "USER_REJECTED"
+  | "SEND_FAILED"
+  | "SEND_RESULT_ONLY"
+  | "TRANSACTION_STILL_PENDING"
+  | "VALIDATION_FAILED"
+  | "UNKNOWN";
 
-/**
- * A normalized Sorokit error. `kind` is a discriminated union member
- * suitable for an exhaustive `switch`, so a UI can render distinct
- * messaging per failure mode without re-deriving it from the raw error.
- * `message` is a plain-language default suitable for displaying directly;
- * a consuming app is free to override it per `kind`. `cause` retains the
- * original thrown value for logging or deeper inspection.
- */
 export interface SorokitError {
+  /**
+   * The kind of error
+   */
   kind: SorokitErrorKind;
+  /**
+   * The message of the error
+   */
   message: string;
+  /**
+   * The cause of the error
+   */
   cause: unknown;
 }
 
-/**
- * `@stellar/stellar-sdk/contract` defines 16 error classes (in
- * `contract/errors.ts`) but its public barrel only re-exports 13 of them,
- * indirectly, as `AssembledTransaction.Errors`. `SendFailedError`,
- * `SendResultOnlyError`, and `TransactionStillPendingError` are not
- * reachable from the package's public API surface at all, so those three
- * are matched by constructor name below instead of `instanceof`.
- */
 const { Errors } = AssembledTransaction;
 
 const KIND_BY_ERROR_CLASS: ReadonlyArray<
@@ -60,95 +42,73 @@ const KIND_BY_ERROR_CLASS: ReadonlyArray<
 > = [
   [
     Errors.ExpiredState,
-    "expired-state",
+    "EXPIRED_STATE",
     "The contract call touched ledger entries that have expired and need to be restored before this transaction can succeed.",
   ],
   [
     Errors.RestorationFailure,
-    "restore-failure",
+    "RESTORE_FAILURE",
     "Restoring the expired ledger entries required for this call failed.",
   ],
   [
     Errors.NeedsMoreSignatures,
-    "needs-more-signatures",
+    "NEEDS_MORE_SIGNATURES",
     "This transaction needs signatures from other accounts before it can be sent.",
   ],
   [
     Errors.NoSignatureNeeded,
-    "no-signature-needed",
+    "NO_SIGNATURE_NEEDED",
     "This is a read-only call and does not need to be signed or sent.",
   ],
   [
     Errors.NoUnsignedNonInvokerAuthEntries,
-    "no-unsigned-non-invoker-auth-entries",
+    "NO_UNSIGNED_NON_INVOKER_AUTH_ENTRIES",
     "There are no remaining authorization entries from other accounts left to sign.",
   ],
   [
     Errors.NoSigner,
-    "no-signer",
+    "NO_SIGNER",
     "No signing function was provided, so this transaction cannot be signed.",
   ],
-  [Errors.NotYetSimulated, "not-yet-simulated", "This transaction has not been simulated yet."],
+  [Errors.NotYetSimulated, "NOT_YET_SIMULATED", "This transaction has not been simulated yet."],
   [
     Errors.FakeAccount,
-    "fake-account",
+    "FAKE_ACCOUNT",
     "The source account used to simulate this call does not exist on the network.",
   ],
-  [Errors.SimulationFailed, "simulation-failed", "Simulating this contract call failed."],
+  [Errors.SimulationFailed, "SIMULATION_FAILED", "Simulating this contract call failed."],
   [
     Errors.InternalWalletError,
-    "internal-wallet-error",
+    "INTERNAL_WALLET_ERROR",
     "The connected wallet encountered an internal error.",
   ],
   [
     Errors.ExternalServiceError,
-    "external-service-error",
+    "EXTERNAL_SERVICE_ERROR",
     "A service the wallet depends on failed to respond.",
   ],
   [
     Errors.InvalidClientRequest,
-    "invalid-client-request",
+    "INVALID_CLIENT_REQUEST",
     "The request sent to the wallet was invalid.",
   ],
-  [Errors.UserRejected, "user-rejected", "The request was rejected in the connected wallet."],
+  [Errors.UserRejected, "USER_REJECTED", "The request was rejected in the connected wallet."],
 ];
 
 const KIND_BY_ERROR_NAME: ReadonlyArray<readonly [string, SorokitErrorKind, string]> = [
-  ["SendFailedError", "send-failed", "Sending this transaction to the network failed."],
+  ["SendFailedError", "SEND_FAILED", "Sending this transaction to the network failed."],
   [
     "SendResultOnlyError",
-    "send-result-only",
+    "SEND_RESULT_ONLY",
     "The transaction was sent, but its final on-chain result is not yet available.",
   ],
   [
     "TransactionStillPendingError",
-    "transaction-still-pending",
+    "TRANSACTION_STILL_PENDING",
     "The transaction is still pending; its final status is not yet known.",
   ],
 ];
 
-/**
- * Normalizes any error thrown by `@stellar/stellar-sdk` (including all 16
- * `contract` error classes) or by application code into a
- * {@link SorokitError}. This is the single place error-to-message mapping
- * lives in Sorokit; hooks should not each reimplement it.
- *
- * @param error - the thrown value, of any shape
- * @returns a {@link SorokitError} with a `kind` suitable for an
- * exhaustive `switch`, and a plain-language default `message`
- *
- * @example
- * ```ts
- * import { normalizeError } from "@sorokit/core";
- *
- * try {
- *   await doSomethingWithTheSdk();
- * } catch (error) {
- *   const normalized = normalizeError(error);
- *   console.log(normalized.kind, normalized.message);
- * }
- * ```
- */
 export function normalizeError(error: unknown): SorokitError {
   for (const [ErrorClass, kind, message] of KIND_BY_ERROR_CLASS) {
     if (error instanceof ErrorClass) {
@@ -162,8 +122,8 @@ export function normalizeError(error: unknown): SorokitError {
         return { kind, message, cause: error };
       }
     }
-    return { kind: "unknown", message: error.message, cause: error };
+    return { kind: "UNKNOWN", message: error.message, cause: error };
   }
 
-  return { kind: "unknown", message: String(error), cause: error };
+  return { kind: "UNKNOWN", message: String(error), cause: error };
 }

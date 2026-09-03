@@ -1,24 +1,24 @@
 import { Networks } from "@stellar/stellar-sdk";
 
-/**
- * A Stellar network Sorokit can target. `"custom"` is for standalone
- * networks, sandboxes, or any deployment that is not one of the well-known
- * public networks.
- */
-export type SorokitNetwork = "testnet" | "mainnet" | "futurenet" | "custom";
+export type SorokitNetwork = keyof typeof Networks | "CUSTOM";
 
-/**
- * Configuration a consuming app supplies to {@link resolveSorokitConfig}.
- * For `"testnet"` and `"futurenet"`, `rpcUrl`, `horizonUrl`, and
- * `networkPassphrase` all have well-known defaults and may be omitted. For
- * `"mainnet"`, `rpcUrl` must be supplied explicitly: there is no single
- * free public RPC endpoint for the public network. For `"custom"`, all
- * three fields are required.
- */
 export interface SorokitConfigInput {
+  /**
+   * The network to target
+   */
   network: SorokitNetwork;
+  /**
+   * The RPC URL to use
+   */
   rpcUrl?: string;
+  /**
+   * The Horizon URL to use
+   */
   horizonUrl?: string;
+  /**
+   * The network passphrase to use
+   * @default `undefined`
+   */
   networkPassphrase?: string;
 }
 
@@ -27,61 +27,75 @@ export interface SorokitConfigInput {
  * from an explicit override or from the network's well-known defaults.
  */
 export interface SorokitConfig {
+  /**
+   * The network to target
+   */
   network: SorokitNetwork;
+  /**
+   * The RPC URL to use
+   */
   rpcUrl: string;
+  /**
+   * The Horizon URL to use
+   */
   horizonUrl: string;
+  /**
+   * The network passphrase to use
+   */
   networkPassphrase: string;
 }
 
 interface NetworkDefaults {
+  /**
+   * The RPC URL to use
+   */
   rpcUrl?: string;
-  horizonUrl: string;
+  /**
+   * The Horizon URL to use
+   */
+  horizonUrl?: string;
+  /**
+   * The network passphrase to use
+   */
   networkPassphrase: string;
 }
 
-const NETWORK_DEFAULTS: Record<Exclude<SorokitNetwork, "custom">, NetworkDefaults> = {
-  testnet: {
+const NETWORK_DEFAULTS: Record<Exclude<SorokitNetwork, "CUSTOM">, NetworkDefaults> = {
+  TESTNET: {
     rpcUrl: "https://soroban-testnet.stellar.org",
     horizonUrl: "https://horizon-testnet.stellar.org",
     networkPassphrase: Networks.TESTNET,
   },
-  futurenet: {
+  FUTURENET: {
     rpcUrl: "https://rpc-futurenet.stellar.org",
     horizonUrl: "https://horizon-futurenet.stellar.org",
     networkPassphrase: Networks.FUTURENET,
   },
-  mainnet: {
+  PUBLIC: {
     horizonUrl: "https://horizon.stellar.org",
     networkPassphrase: Networks.PUBLIC,
   },
+  SANDBOX: {
+    rpcUrl: undefined,
+    horizonUrl: undefined,
+    networkPassphrase: Networks.SANDBOX,
+  },
+  STANDALONE: {
+    rpcUrl: undefined,
+    horizonUrl: undefined,
+    networkPassphrase: Networks.STANDALONE,
+  },
 };
 
-/**
- * Resolves a {@link SorokitConfigInput} into a fully populated
- * {@link SorokitConfig}, filling in well-known defaults for `rpcUrl`,
- * `horizonUrl`, and `networkPassphrase` where the network provides them.
- *
- * @throws If `network` is `"custom"` and any of `rpcUrl`, `horizonUrl`, or
- * `networkPassphrase` is omitted, or if `network` is `"mainnet"` and
- * `rpcUrl` is omitted (mainnet has no default RPC endpoint).
- *
- * @example
- * ```ts
- * import { resolveSorokitConfig } from "@sorokit/core";
- *
- * const config = resolveSorokitConfig({ network: "testnet" });
- * console.log(config.rpcUrl); // "https://soroban-testnet.stellar.org"
- * ```
- */
 export function resolveSorokitConfig(input: SorokitConfigInput): SorokitConfig {
-  if (input.network === "custom") {
+  if (input.network === "CUSTOM") {
     if (!input.rpcUrl || !input.horizonUrl || !input.networkPassphrase) {
       throw new Error(
-        'Sorokit: network "custom" requires rpcUrl, horizonUrl, and networkPassphrase to all be provided.',
+        'Sorokit: network "CUSTOM" requires rpcUrl, horizonUrl, and networkPassphrase to all be provided.',
       );
     }
     return {
-      network: "custom",
+      network: "CUSTOM",
       rpcUrl: input.rpcUrl,
       horizonUrl: input.horizonUrl,
       networkPassphrase: input.networkPassphrase,
@@ -89,7 +103,9 @@ export function resolveSorokitConfig(input: SorokitConfigInput): SorokitConfig {
   }
 
   const defaults = NETWORK_DEFAULTS[input.network];
+
   const rpcUrl = input.rpcUrl ?? defaults.rpcUrl;
+
   if (!rpcUrl) {
     throw new Error(
       `Sorokit: network "${input.network}" has no default rpcUrl; pass one explicitly.`,
@@ -99,7 +115,7 @@ export function resolveSorokitConfig(input: SorokitConfigInput): SorokitConfig {
   return {
     network: input.network,
     rpcUrl,
-    horizonUrl: input.horizonUrl ?? defaults.horizonUrl,
+    horizonUrl: input.horizonUrl ?? defaults.horizonUrl ?? "",
     networkPassphrase: input.networkPassphrase ?? defaults.networkPassphrase,
   };
 }

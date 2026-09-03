@@ -10,7 +10,7 @@ const wallet = stellarWalletsKit();
 
 export function App() {
   return (
-    <SorokitProvider network="testnet" wallet={wallet} devtools>
+    <SorokitProvider network="TESTNET" wallet={wallet} devtools>
       <main className="mx-auto flex max-w-lg flex-col gap-6 px-6 py-8">
         <header className="flex items-center justify-between">
           <div>

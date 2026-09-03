@@ -3,7 +3,7 @@ title: "useEffectStream"
 description: "Subscribe to every ledger effect an account is involved in, over Horizon's SSE stream"
 ---
 
-Subscribes to every effect an account is involved in (trustline changes, sponsorship changes, signer changes, and more, not just payments), live for as long as the component is mounted. On every effect, automatically invalidates that address's [`useAccount`](/hooks/use-account) and [`useBalance`](/hooks/use-balance) queries.
+Subscribes to every effect an account is involved in (trustline changes, sponsorship changes, signer changes, and more, not just payments), live for as long as the component is mounted. On every effect, automatically invalidates that address's [`useBalance`](/hooks/use-balance) queries.
 
 ```ts
 import { useEffectStream } from "@sorokit/hooks";
@@ -11,7 +11,11 @@ import { useEffectStream } from "@sorokit/hooks";
 function useEffectStream(
   address: string,
   options?: UseEffectStreamOptions,
-): UseHorizonStreamResult<EffectStreamRecord>;
+): {
+  events: EffectStreamRecord[];
+  latest: EffectStreamRecord | undefined;
+  isStreaming: boolean;
+};
 ```
 
 ## Parameters
@@ -48,8 +52,3 @@ function ActivityFeed({ address }: { address: string }) {
   );
 }
 ```
-
-<Tip>
-  Reach for [`usePaymentStream`](/hooks/use-payment-stream) instead if you only care about payments;
-  it covers the common "show a live balance" case with a narrower, more specific event type.
-</Tip>

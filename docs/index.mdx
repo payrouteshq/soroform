@@ -26,13 +26,13 @@ Sorokit is a React and Next.js SDK layered on top of `@stellar/stellar-sdk`. It 
     `para()` — and `useWallet`/`ConnectWalletButton` handle signing across whichever wallets that
     SDK supports.
   </Card>
-  <Card title="General hooks" icon="chart-line" href="/hooks/use-account">
-    `useAccount`, `useBalance`, `useTransactionStatus`, and `useNetworkStatus` cover the account and
-    network state most apps need beyond contract calls.
+  <Card title="General hooks" icon="chart-line" href="/hooks/use-balance">
+    `useBalance`, `useTransactionStatus`, and `useNetworkStatus` cover the account and network state
+    most apps need beyond contract calls.
   </Card>
-  <Card title="Live streams" icon="satellite-dish" href="/hooks/use-payment-stream">
-    `usePaymentStream` and `useEffectStream` subscribe to an account's activity over Horizon's SSE
-    stream, invalidating balance and account queries automatically as events arrive.
+  <Card title="Live streams" icon="satellite-dish" href="/hooks/use-effect-stream">
+    `useEffectStream` subscribes to an account's activity over Horizon's SSE stream, invalidating
+    balance queries automatically as events arrive.
   </Card>
   <Card title="Devtools" icon="bug" href="/components/sorokit-devtools">
     A development-only panel that logs every contract send's status transitions and shows a readable

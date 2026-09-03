@@ -1,5 +1,5 @@
 import * as React from "react";
-import { devtoolsSendLog, type ContractSendLogEntry } from "@sorokit/core";
+import { devtoolsSendLog, type ContractSendLogEntry, type SorokitNetwork } from "@sorokit/core";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,13 +10,13 @@ const STATUS_VARIANT: Record<
   ContractSendLogEntry["status"],
   "default" | "secondary" | "destructive" | "outline"
 > = {
-  idle: "secondary",
-  queued: "secondary",
-  simulating: "outline",
-  needsSignature: "outline",
-  submitting: "outline",
-  success: "default",
-  error: "destructive",
+  IDLE: "secondary",
+  QUEUED: "secondary",
+  SIMULATING: "outline",
+  NEEDS_SIGNATURE: "outline",
+  SUBMITTING: "outline",
+  SUCCESS: "default",
+  ERROR: "destructive",
 };
 
 function safeStringify(value: unknown): string {
@@ -24,6 +24,35 @@ function safeStringify(value: unknown): string {
     value,
     (_key, val) => (typeof val === "bigint" ? `${val.toString()}n` : val),
     2,
+  );
+}
+
+const EXPLORER_NETWORKS: Partial<Record<SorokitNetwork, string>> = {
+  PUBLIC: "public",
+  TESTNET: "testnet",
+};
+
+function stellarExpertTxUrl(entry: ContractSendLogEntry): string | undefined {
+  const explorer = entry.network && EXPLORER_NETWORKS[entry.network];
+  if (!explorer || !entry.hash) return undefined;
+  return `https://stellar.expert/explorer/${explorer}/tx/${entry.hash}`;
+}
+
+function ArrowUpRightIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      {...props}
+    >
+      <path d="M7 17 17 7" />
+      <path d="M7 7h10v10" />
+    </svg>
   );
 }
 
@@ -36,6 +65,9 @@ async function copyToClipboard(text: string): Promise<void> {
 }
 
 function SendLogRow({ entry }: { entry: ContractSendLogEntry }) {
+  const transactionXdr = entry.transaction?.transactionXdr;
+  const explorerUrl = stellarExpertTxUrl(entry);
+
   return (
     <Card className="rounded-none border-x-0 border-t-0 shadow-none">
       <CardHeader>
@@ -66,21 +98,31 @@ function SendLogRow({ entry }: { entry: ContractSendLogEntry }) {
           </p>
         )}
         {entry.transaction && (
-          <div className="space-y-1.5">
-            <p>
-              operation: {entry.transaction.operationType ?? "unknown"} · source:{" "}
-              {entry.transaction.sourceAccount ?? "unknown"} · min resource fee:{" "}
-              {entry.transaction.minResourceFee ?? "unknown"}
-            </p>
-            {entry.transaction.transactionXdr && (
+          <p>
+            operation: {entry.transaction.operationType ?? "unknown"} · source:{" "}
+            {entry.transaction.sourceAccount ?? "unknown"} · min resource fee:{" "}
+            {entry.transaction.minResourceFee ?? "unknown"}
+          </p>
+        )}
+        {(transactionXdr || explorerUrl) && (
+          <div className="flex flex-wrap items-center gap-1.5">
+            {transactionXdr && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  void copyToClipboard(entry.transaction!.transactionXdr!);
+                  void copyToClipboard(transactionXdr);
                 }}
               >
                 Copy transaction XDR
+              </Button>
+            )}
+            {explorerUrl && (
+              <Button variant="outline" size="sm" asChild>
+                <a href={explorerUrl} target="_blank" rel="noreferrer">
+                  Stellar Expert
+                  <ArrowUpRightIcon />
+                </a>
               </Button>
             )}
           </div>

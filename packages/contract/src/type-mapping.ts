@@ -3,29 +3,6 @@ import { StrKey } from "@stellar/stellar-sdk";
 import type { xdr } from "@stellar/stellar-sdk";
 import type { Spec } from "@stellar/stellar-sdk/contract";
 
-/**
- * Converts a single Soroban contract spec type into a Zod schema that
- * validates a JS value in the exact shape `Spec.nativeToScVal` expects for
- * that type, so a value that passes this schema is guaranteed to encode
- * successfully. Behavior here is grounded in `@stellar/stellar-sdk`'s
- * actual `Spec` encode/decode implementation (not just its type
- * declarations), since a few of its conventions are not obvious from the
- * types alone; see the case-by-case notes below.
- *
- * `spec` is required (unlike a spec-free signature) because resolving a
- * user-defined type (`struct`, `union`, `enum`) requires looking up its
- * definition among the contract's other spec entries via
- * `spec.findEntry`.
- *
- * @example
- * ```ts
- * import { xdr } from "@stellar/stellar-sdk";
- * import { sorobanTypeToZod } from "@sorokit/contract";
- *
- * const schema = sorobanTypeToZod(xdr.ScSpecTypeDef.scSpecTypeU32(), spec);
- * schema.parse(42); // ok
- * ```
- */
 export function sorobanTypeToZod(type: xdr.ScSpecTypeDef, spec: Spec): z.ZodTypeAny {
   switch (type.type) {
     case "scSpecTypeU32":

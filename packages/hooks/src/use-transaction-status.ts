@@ -4,15 +4,14 @@ import { createRpcServer, normalizeError, queryKeys } from "@sorokit/core";
 import { useSorokitConfig } from "@sorokit/provider";
 
 export interface UseTransactionStatusOptions {
+  /**
+   * Whether the query should be enabled. Defaults to `true`
+   */
   enabled?: boolean;
 }
 
 /**
- * Polls for a submitted transaction's final status, via
- * `rpc.Server.pollTransaction` (using the SDK's own `BasicSleepStrategy`
- * between attempts, not a hand-rolled polling loop). Resolves once the
- * transaction is found (successful or failed) or the poll's attempt limit
- * is reached.
+ * Polls for a submitted transaction's final status
  *
  * @example
  * ```tsx

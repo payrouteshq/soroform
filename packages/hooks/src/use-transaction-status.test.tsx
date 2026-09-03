@@ -19,7 +19,7 @@ const HASH = "c4515e3bdc0897f21cc5dbec8c82cf0a936d4741cb74a8e158eb51b9fb00411a";
 function renderWithProvider(children: React.ReactNode) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <SorokitProvider network="testnet" queryClient={queryClient}>
+    <SorokitProvider network="TESTNET" queryClient={queryClient}>
       {children}
     </SorokitProvider>,
   );

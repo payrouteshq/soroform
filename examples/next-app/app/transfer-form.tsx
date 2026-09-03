@@ -29,7 +29,7 @@ export function TransferForm() {
     await sendAsync({ from: wallet.address, ...values }).catch(() => {});
   });
 
-  const isBusy = status === "simulating" || status === "submitting";
+  const isBusy = status === "SIMULATING" || status === "SUBMITTING";
 
   if (!wallet.isConnected) {
     return (
@@ -75,11 +75,11 @@ export function TransferForm() {
             )}
           </div>
           <Button type="submit" disabled={isBusy}>
-            {status === "idle" || status === "success" ? "Transfer" : status}
+            {status === "IDLE" || status === "SUCCESS" ? "Transfer" : status}
           </Button>
         </form>
         {error && <p className="mt-3 text-sm text-destructive">{error.message}</p>}
-        {status === "success" && (
+        {status === "SUCCESS" && (
           <p className="mt-3 text-sm text-muted-foreground">Sent. Result: {String(data)}</p>
         )}
       </CardContent>

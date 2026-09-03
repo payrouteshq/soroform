@@ -17,7 +17,7 @@ import { fetchContractSpec } from "@sorokit/contract";
 import { resolveSorokitConfig } from "@sorokit/core";
 import { QueryClient } from "@tanstack/react-query";
 
-const config = resolveSorokitConfig({ network: "testnet" });
+const config = resolveSorokitConfig({ network: "TESTNET" });
 const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
 
 export async function buildTransfer(sourceAddress: string, to: string, amount: bigint) {

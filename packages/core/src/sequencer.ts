@@ -2,44 +2,34 @@ import { Account } from "@stellar/stellar-sdk";
 import type { SorokitConfig } from "./config.js";
 import { createRpcServer, type RpcServer } from "./rpc.js";
 
-/** What a queued send is handed when its turn comes up. */
 interface SequencedTransactionContext {
   /**
-   * The RPC server to build the transaction with. It behaves exactly like
-   * the one {@link createRpcServer} returns, except that `getAccount` for
-   * the queued address reports the *projected* sequence number this slot
-   * reserved rather than the last one the network has seen.
+   * The RPC server to build the transaction with.
+   * It behaves exactly like the one {@link createRpcServer} returns
    */
   server: RpcServer;
   /**
-   * Call this as soon as the network has accepted the transaction: it
-   * commits the reservation and releases the account's lane to the next
-   * queued send, without waiting for the ledger to close.
+   * To be called as soon as the network has accepted the transaction
    */
   markSubmitted(): void;
 }
 
 interface Lane {
   /**
-   * The account sequence number to build the next transaction from — one
-   * past the last reservation this lane committed. `null` means nothing is
-   * projected and the network's own answer is authoritative.
+   * The account sequence number to build the next transaction from
    */
   projected: bigint | null;
-  /** Submitted-but-not-yet-settled transactions from this lane. */
+  /**
+   * Submitted-but-not-yet-settled transactions from this lane
+   */
   inFlight: number;
   /**
-   * Set when a submission failed in a way that may not have consumed its
-   * sequence number, so the projection can no longer be trusted. Honored
-   * once the lane drains, since re-reading the network while earlier
-   * transactions are still in flight would hand out a number they already
-   * claimed.
+   * Set when a submission failed in a way that may not have consumed its sequence number, so the projection can no longer be trusted
    */
   needsResync: boolean;
   /**
-   * Resolves once every send queued on this lane so far has released it. A
-   * new send waits on it and installs its own. Never rejects, so one
-   * failed send does not poison the ones behind it.
+   * Resolves once every send queued on this lane so far has released it.
+   * A new send waits on it and installs its own. Never rejects, so one failed send does not poison the ones behind it
    */
   tail: Promise<void>;
 }
@@ -47,13 +37,7 @@ interface Lane {
 /**
  * Wraps an RPC server so `getAccount` for one address reports a sequence
  * number the sequencer chose, leaving every other method (and every other
- * address) untouched. This is the seam that lets Sorokit drive sequence
- * numbers without forking `AssembledTransaction`, which otherwise resolves
- * the account itself.
- *
- * A fresh `Account` is returned per call because `TransactionBuilder.build`
- * mutates the account it is given, and the SDK may resolve the account
- * more than once while assembling (for instance on the state-restore path).
+ * address) untouched.
  */
 function withProjectedSequence(server: RpcServer, address: string, sequence: string): RpcServer {
   return new Proxy(server, {
@@ -115,7 +99,6 @@ export class TransactionSequencer {
   async enqueue<T>(options: {
     config: SorokitConfig;
     address: string;
-    /** Called when the send reaches the front of the queue, before any RPC call. */
     onStart?: () => void;
     task: (context: SequencedTransactionContext) => Promise<T>;
   }): Promise<T> {
@@ -194,12 +177,11 @@ export class TransactionSequencer {
 
   /**
    * Drops every projection, so the next send is built from whatever the
-   * network reports. Queued sends are not cancelled.
+   * network reports; queued sends are not cancelled
    */
   reset(): void {
     this.lanes.clear();
   }
 }
 
-/** The process-wide sequencer every `useContractSend` queues through. */
 export const transactionSequencer = new TransactionSequencer();

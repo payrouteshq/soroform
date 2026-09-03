@@ -8,7 +8,7 @@ const wallet = stellarWalletsKit();
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <SorokitProvider network="testnet" wallet={wallet} devtools>
+    <SorokitProvider network="TESTNET" wallet={wallet} devtools>
       {children}
     </SorokitProvider>
   );

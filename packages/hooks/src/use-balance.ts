@@ -4,17 +4,26 @@ import { createRpcServer, normalizeError, queryKeys } from "@sorokit/core";
 import { useSorokitConfig } from "@sorokit/provider";
 import { formatAmount } from "./format-amount.js";
 
-/** A normalized balance, regardless of which kind of asset it came from. */
 export interface BalanceState {
-  /** The raw integer amount, in the asset's smallest unit. */
+  /**
+   * The raw integer amount, in the asset's smallest unit.
+   */
   raw: bigint;
-  /** `raw` formatted as a decimal string using `decimals`. */
+  /**
+   * `raw` formatted as a decimal string using `decimals`.
+   */
   formatted: string;
-  /** The asset's decimal places. */
+  /**
+   * The asset's decimal places.
+   */
   decimals: number;
 }
 
 export interface UseBalanceOptions {
+  /**
+   * Whether to enable the query.
+   * @default true
+   */
   enabled?: boolean;
 }
 
@@ -26,27 +35,17 @@ function isClassicAssetId(assetId: string): boolean {
 
 function toClassicAsset(assetId: string): Asset {
   if (assetId === "native") return Asset.native();
+
   const [code, issuer] = assetId.split(":");
+
   if (!code || !issuer) {
     throw new Error(`Sorokit: invalid classic asset id "${assetId}", expected "CODE:ISSUER".`);
   }
+
   return new Asset(code, issuer);
 }
 
 /**
- * Fetches an address's balance of a given asset, normalized to
- * `{ raw, formatted, decimals }` regardless of which kind of asset it is,
- * so a consuming component never has to branch on asset type itself.
- *
- * `assetId` accepts `"native"` for XLM, a classic asset in `"CODE:ISSUER"`
- * form, or a Soroban contract address (`C...`). Classic assets (native or
- * `CODE:ISSUER`) resolve through `rpc.Server.getAssetBalance`, which
- * covers both account and contract holders in one call and always uses 7
- * decimal places, the Stellar convention for classic assets and their
- * Stellar Asset Contract representation alike. An arbitrary contract
- * address is treated as a custom Soroban token and resolved by calling its
- * own `balance` and `decimals` methods.
- *
  * @example
  * ```tsx
  * import { useBalance } from "@sorokit/hooks";

@@ -24,7 +24,7 @@ const TOKEN_CONTRACT = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5
 function renderWithProvider(children: React.ReactNode) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <SorokitProvider network="testnet" queryClient={queryClient}>
+    <SorokitProvider network="TESTNET" queryClient={queryClient}>
       {children}
     </SorokitProvider>,
   );

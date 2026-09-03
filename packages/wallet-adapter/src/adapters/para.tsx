@@ -10,47 +10,32 @@ import {
 import { useStellarSigner } from "@getpara/react-sdk/stellar";
 import type { WalletAdapter, WalletAdapterState, WalletConnector } from "../types.js";
 
-/**
- * `createConfig`'s parameter type, extracted structurally from `ParaSDKProvider`
- * itself rather than importing a config type by name, since Para's own
- * naming for it (`ParaProviderProps`, `IParaClientConfig`, ...) has shifted
- * across doc versions.
- */
 type ParaProviderConfig = React.ComponentProps<typeof ParaSDKProvider>["paraClientConfig"];
 
 export interface ParaConnectorOptions {
-  /** Your Para app id, from the [Para developer portal](https://developer.getpara.com/). */
+  /**
+   * Your Para app id, from the [Para developer portal](https://developer.getpara.com/).
+   */
   apiKey: string;
-  /** Defaults to `Environment.BETA`. */
+  /**
+   * Defaults to `Environment.BETA`.
+   * @default `Environment.BETA`
+   */
   environment?: Environment;
-  /** Additional Para client config, passed straight through to Para's own provider. */
+  /**
+   * Additional Para client config, passed straight through to Para's own provider.
+   */
   paraClientConfig?: Omit<ParaProviderConfig, "apiKey" | "env">;
 }
 
 /**
- * A `WalletConnector` backed by `@getpara/react-sdk`, an embedded-wallet
- * SDK (email, passkey, social, and external wallet login) with native
- * Stellar support. Pass it as `SorokitProvider`'s `wallet` prop — unlike
- * `stellarWalletsKit()`/`blux()`, this connector also sets `Provider`,
- * since Para's connect UI only exists as a React component tied to Para's
- * own context; `SorokitProvider` mounts it for you, so you never render
- * Para's own provider yourself.
- *
- * `@getpara/react-sdk` and `@tanstack/react-query` are peer dependencies:
- * install them alongside `@sorokit/wallet-adapter` to use this connector.
- *
- * Built from Para's documentation (`docs.getpara.com`), not exercised
- * against a live Para account — Para requires an `apiKey` from their
- * dashboard to test at all. If something here doesn't match Para's actual
- * runtime behavior, the fix almost certainly belongs in the small
- * `useAdapter` hook below, not in `SorokitProvider` itself.
- *
+
  * @example
  * ```tsx
  * import { SorokitProvider } from "@sorokit/provider";
  * import { para } from "@sorokit/wallet-adapter/para";
  *
- * <SorokitProvider network="testnet" wallet={para({ apiKey: "..." })}>
+ * <SorokitProvider network="TESTNET" wallet={para({ apiKey: "..." })}>
  *   {children}
  * </SorokitProvider>;
  * ```

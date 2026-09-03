@@ -21,7 +21,7 @@ import { stellarWalletsKit } from "@sorokit/wallet-adapter/stellar-wallets-kit";
 
 const wallet = stellarWalletsKit();
 
-<SorokitProvider network="testnet" wallet={wallet} devtools>
+<SorokitProvider network="TESTNET" wallet={wallet} devtools>
   {children}
 </SorokitProvider>`,
   },

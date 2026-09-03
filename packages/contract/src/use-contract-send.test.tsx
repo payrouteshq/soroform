@@ -104,7 +104,7 @@ function renderWithProviders(children: React.ReactNode) {
   return {
     queryClient,
     ...render(
-      <SorokitProvider network="testnet" queryClient={queryClient}>
+      <SorokitProvider network="TESTNET" queryClient={queryClient}>
         {children}
       </SorokitProvider>,
     ),
@@ -157,12 +157,12 @@ describe("useContractSend", () => {
     mockBuild.mockResolvedValue({ sign: mockSign, send: mockSend });
 
     renderWithProviders(<TransferProbe />);
-    expect(screen.getByTestId("status")).toHaveTextContent("idle");
+    expect(screen.getByTestId("status")).toHaveTextContent("IDLE");
 
     screen.getByText("write").click();
 
     await waitFor(() => {
-      expect(screen.getByTestId("status")).toHaveTextContent("success");
+      expect(screen.getByTestId("status")).toHaveTextContent("SUCCESS");
     });
     expect(screen.getByTestId("data")).toHaveTextContent("true");
     expect(mockBuild).toHaveBeenCalledWith(
@@ -184,7 +184,7 @@ describe("useContractSend", () => {
     screen.getByText("write").click();
 
     await waitFor(() => {
-      expect(screen.getByTestId("status")).toHaveTextContent("success");
+      expect(screen.getByTestId("status")).toHaveTextContent("SUCCESS");
     });
     expect(invalidateSpy).toHaveBeenCalled();
   });
@@ -196,7 +196,7 @@ describe("useContractSend", () => {
     screen.getByText("write").click();
 
     await waitFor(() => {
-      expect(screen.getByTestId("status")).toHaveTextContent("error");
+      expect(screen.getByTestId("status")).toHaveTextContent("ERROR");
     });
     expect(mockBuild).not.toHaveBeenCalled();
   });
@@ -213,11 +213,11 @@ describe("useContractSend", () => {
     await waitFor(() => expect(onError).toHaveBeenCalled());
     const error = onError.mock.calls[0]![0] as SorokitError;
 
-    expect(error.kind).toBe("validation-failed");
+    expect(error.kind).toBe("VALIDATION_FAILED");
     expect(error.message).not.toContain('"code"');
     expect(error.cause).toBeInstanceOf(z.ZodError);
     expect((error.cause as z.ZodError).issues.length).toBeGreaterThan(0);
-    expect(screen.getByTestId("kind")).toHaveTextContent("validation-failed");
+    expect(screen.getByTestId("kind")).toHaveTextContent("VALIDATION_FAILED");
   });
 
   it("moves to error when the network call fails, normalizing the error message", async () => {
@@ -228,14 +228,12 @@ describe("useContractSend", () => {
     screen.getByText("write").click();
 
     await waitFor(() => {
-      expect(screen.getByTestId("status")).toHaveTextContent("error");
+      expect(screen.getByTestId("status")).toHaveTextContent("ERROR");
     });
     expect(screen.getByTestId("error")).toHaveTextContent("simulation failed");
   });
 
   it("logs write status transitions to the devtools store in development", async () => {
-    const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = "development";
     mockClientFrom.mockResolvedValue({ spec: buildFixtureSpec() });
     mockSign.mockResolvedValue(undefined);
     mockSend.mockResolvedValue({ result: true });
@@ -245,14 +243,12 @@ describe("useContractSend", () => {
     screen.getByText("write").click();
 
     await waitFor(() => {
-      expect(screen.getByTestId("status")).toHaveTextContent("success");
+      expect(screen.getByTestId("status")).toHaveTextContent("SUCCESS");
     });
     const entries = devtoolsSendLog.getAll();
     expect(entries.length).toBeGreaterThan(0);
-    expect(entries.at(-1)?.status).toBe("success");
+    expect(entries.at(-1)?.status).toBe("SUCCESS");
     expect(entries.at(-1)?.contractId).toBe(CONTRACT_ID);
-
-    process.env.NODE_ENV = originalEnv;
   });
 
   it("builds against the sequencer's server rather than resolving the account itself", async () => {
@@ -265,7 +261,7 @@ describe("useContractSend", () => {
     screen.getByText("write").click();
 
     await waitFor(() => {
-      expect(screen.getByTestId("status")).toHaveTextContent("success");
+      expect(screen.getByTestId("status")).toHaveTextContent("SUCCESS");
     });
     expect(mockBuild).toHaveBeenCalledWith(
       expect.objectContaining({ server: sequencedServer, publicKey: WALLET_ADDRESS }),
@@ -321,7 +317,7 @@ describe("useContractSend", () => {
 
     settle();
     await waitFor(() => {
-      expect(screen.getByTestId("status")).toHaveTextContent("success");
+      expect(screen.getByTestId("status")).toHaveTextContent("SUCCESS");
     });
     expect(pendingTransactions.getAll()).toEqual([]);
   });

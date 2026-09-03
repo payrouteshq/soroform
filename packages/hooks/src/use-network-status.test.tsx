@@ -21,7 +21,7 @@ vi.mock("@stellar/stellar-sdk/rpc", async (importOriginal) => {
 function renderWithProvider(children: React.ReactNode) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <SorokitProvider network="testnet" queryClient={queryClient}>
+    <SorokitProvider network="TESTNET" queryClient={queryClient}>
       {children}
     </SorokitProvider>,
   );

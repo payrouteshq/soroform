@@ -26,7 +26,7 @@ const wallet = stellarWalletsKit();
 
 function App() {
   return (
-    <SorokitProvider network="testnet" wallet={wallet} devtools>
+    <SorokitProvider network="TESTNET" wallet={wallet} devtools>
       <Balance />
     </SorokitProvider>
   );
@@ -58,7 +58,7 @@ packages/
   core/           @sorokit/core            framework-agnostic config, query keys, error normalization
   provider/       @sorokit/provider        SorokitProvider — the entry point: network config, wallet, and devtools all wire in here
   wallet-adapter/ @sorokit/wallet-adapter  useWallet, ConnectWalletButton, plus the stellarWalletsKit()/blux()/para() connectors
-  hooks/          @sorokit/hooks           useAccount, useBalance, useTransactionStatus, useNetworkStatus, usePaymentStream, useEffectStream
+  hooks/          @sorokit/hooks           useBalance, useTransactionStatus, useNetworkStatus, useEffectStream
   contract/       @sorokit/contract        runtime spec-to-Zod pipeline, useContractCall, useContractSend, useSorobanForm
   devtools/       @sorokit/devtools        SorokitDevtools panel
 examples/
