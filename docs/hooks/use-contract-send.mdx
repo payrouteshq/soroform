@@ -3,7 +3,7 @@ title: "useContractSend"
 description: "Build, simulate, sign, and send a state-changing contract method call"
 ---
 
-Builds, simulates, signs, and sends a state-changing contract method call, exposing the full lifecycle as a `status` field rather than a single boolean. Requires a connected wallet. See [The useContractCall / useContractSend state machine](/concepts/call-send-state-machine) for the full phase-by-phase breakdown.
+Builds, simulates, signs, and sends a state-changing contract method call, exposing the full lifecycle as a `status` field rather than a single boolean. Requires a connected wallet.
 
 ```ts
 import { useContractSend } from "@sorokit/contract";
@@ -57,22 +57,14 @@ function TransferButton({ contractId, to }: { contractId: string; to: string }) 
 }
 ```
 
-## Sequence numbers and concurrent sends
+## Concurrent sends
 
-A Stellar transaction carries a sequence number that must be exactly one past the account's current one. Two sends assembled at the same time — a double-clicked button, or two components each firing one — would otherwise both read the same account state, claim the same number, and the second to land would fail with `tx_bad_seq`.
-
-Every send is queued through a global sequencer keyed by the connected wallet address, so this is handled for you with no configuration. Sends from one account are assembled one at a time, and the sequence number is projected forward as each transaction is accepted rather than re-read from a ledger that has not closed yet — so a burst of sends goes out back to back instead of one per ~5 second ledger close. A send waiting its turn reports `status: "queued"`.
-
-The one thing this trades away: a queued send is simulated against a ledger that does not yet contain the send ahead of it. That is fine for repeated independent calls, and wrong only when a call's storage footprint or authorization depends on what the previous call wrote — in that case, `await` the first `sendAsync` before starting the second.
+Two sends from the same wallet fired at once (a double-clicked button, two components each triggering one) are automatically queued so they don't claim the same account sequence number and fail. A send waiting its turn reports `status: "queued"`. If one call's args or authorization depend on what a previous call wrote, `await` the first `sendAsync` before starting the second.
 
 ## Surviving a page reload
 
-Once the network accepts a transaction it is recorded in a queue mirrored into `localStorage`. If the page is reloaded while a send is `"submitting"`, [`SorokitProvider`](/components/sorokit-provider) picks the transaction back up on mount, polls for its outcome, and invalidates the contract's cached reads once it lands. Nothing needs to be wired up for this; entries that never land age out of the queue on their own.
+If the page reloads while a send is `"submitting"`, [`SorokitProvider`](/components/sorokit-provider) picks it back up on mount and polls for its outcome. Nothing needs to be wired up for this.
 
 ## Caching and invalidation
 
-On success, every [`useContractCall`](/hooks/use-contract-call) query for the same `contractId` is invalidated automatically, so calls reflect the new state without a manual refetch. See [Query key and cache invalidation model](/concepts/query-keys-and-caching).
-
-## Devtools logging
-
-In development (`process.env.NODE_ENV === "development"`), every status transition is recorded to `@sorokit/core`'s `devtoolsSendLog` store, which [`SorokitDevtools`](/components/sorokit-devtools) reads from. This has no effect if `@sorokit/devtools` is not installed.
+On success, every [`useContractCall`](/hooks/use-contract-call) query for the same `contractId` is invalidated automatically, so reads reflect the new state without a manual refetch.

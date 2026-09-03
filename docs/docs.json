@@ -15,15 +15,6 @@
         "pages": ["index", "quickstart"]
       },
       {
-        "group": "Core Concepts",
-        "pages": [
-          "concepts/spec-to-zod",
-          "concepts/call-send-state-machine",
-          "concepts/query-keys-and-caching",
-          "concepts/error-handling"
-        ]
-      },
-      {
         "group": "Hooks Reference",
         "pages": [
           "hooks/use-contract-call",
@@ -65,13 +56,13 @@
     "links": [
       {
         "label": "GitHub",
-        "href": "https://github.com/sorokit/sorokit"
+        "href": "https://github.com/payrouteshq/sorokit"
       }
     ]
   },
   "footer": {
     "socials": {
-      "github": "https://github.com/sorokit/sorokit"
+      "github": "https://github.com/payrouteshq/sorokit"
     }
   }
 }

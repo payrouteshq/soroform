@@ -3,7 +3,7 @@ title: "SorokitProvider"
 description: "The single entry point for Sorokit: network config, wallet connection, and devtools all go through this one component"
 ---
 
-The root provider for Sorokit, and the single entry point for wiring an app into it. Resolves a `SorokitConfig` from the given network (and any overrides) and supplies it to the rest of the tree via `useSorokitConfig`, wraps children in a TanStack Query `QueryClientProvider`, and — via the `wallet` and `devtools` props — mounts wallet connection and Sorokit's devtools panel for you. Nothing else needs to be nested under it: no separate `WalletProvider`, no per-SDK provider like `ParaProvider`, no manually rendering `<SorokitDevtools />` somewhere in the tree.
+The root provider for Sorokit, and the single entry point for wiring an app into it: network config, wallet connection, and devtools all go through this one component. Nothing else needs to be nested under it.
 
 ```tsx
 import { SorokitProvider } from "@sorokit/provider";
@@ -69,7 +69,7 @@ export function App({ children }: { children: React.ReactNode }) {
 
 ## Default QueryClient
 
-When no `queryClient` is passed, Sorokit creates one with `staleTime: 5000` (5 seconds) and `refetchOnWindowFocus: false`. Blockchain data does not follow typical web app refetch-on-focus heuristics, and a 5 second stale window keeps repeated reads from hammering your RPC endpoint without going stale for long.
+When no `queryClient` is passed, Sorokit creates one with `staleTime: 5000` and `refetchOnWindowFocus: false`.
 
 ## useSorokitConfig
 
@@ -128,7 +128,7 @@ const wallet = stellarWalletsKit({
 
 ### `blux()`
 
-From `@sorokit/wallet-adapter/blux`. Backed by [`@bluxcc/core`](https://blux.cc), a wallet and authentication SDK supporting Freighter, Rabet, xBull, LOBSTR, Hana, Ledger, Trezor, WalletConnect, and non-wallet login (email, passkey, social) through one modal. `@bluxcc/core` is a peer dependency, along with the wallet SDKs it integrates (see its own peer dependencies).
+From `@sorokit/wallet-adapter/blux`. Backed by [`@bluxcc/core`](https://blux.cc), a wallet and authentication SDK supporting Freighter, Rabet, xBull, LOBSTR, Hana, Ledger, Trezor, WalletConnect, and non-wallet login (email, passkey, social) through one modal. `@bluxcc/core` is a peer dependency.
 
 Requires an `appId` from the [Blux dashboard](https://dashboard.blux.cc/):
 
@@ -164,13 +164,6 @@ export function App({ children }: { children: React.ReactNode }) {
   );
 }
 ```
-
-<Note>
-  Built against Para's documented, type-checked API (`@getpara/react-sdk`'s real published types),
-  not exercised against a live Para account — Para requires a dashboard `apiKey` to test at all. If
-  Para's runtime behavior ever drifts from this, the fix belongs in `para()`'s small `useAdapter`
-  hook, not in `SorokitProvider` itself.
-</Note>
 
 ### Writing your own connector
 

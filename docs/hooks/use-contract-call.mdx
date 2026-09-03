@@ -31,7 +31,7 @@ Everything TanStack Query's `useQuery` returns, typed to `TResult`. The fields y
 | ----------- | ---------------------- | ------------------------------------------------------------------- |
 | `data`      | `TResult \| undefined` | The decoded result, once loaded.                                    |
 | `isLoading` | `boolean`              | Whether the initial fetch is in flight.                             |
-| `error`     | `SorokitError \| null` | A normalized error; see [Error handling](/concepts/error-handling). |
+| `error`     | `SorokitError \| null` | A normalized error, with a `kind` and a plain-language `message`. |
 | `refetch`   | `() => void`           | Manually re-runs the call.                                          |
 
 ## Example
@@ -56,4 +56,4 @@ function Balance({ address }: { address: string }) {
 
 ## Caching
 
-The contract's spec and args schema are fetched and derived once, the first time any hook calls that `contractId`, then cached (see [How the spec-to-Zod pipeline works](/concepts/spec-to-zod)). The call itself is cached under `queryKeys.contractCall(networkPassphrase, contractId, method, args)`, so calling this hook again with the same contract, method, and args reuses the cached result per TanStack Query's usual `staleTime` rules. It is invalidated automatically by [`useContractSend`](/hooks/use-contract-send) on a successful send to the same contract.
+The contract's spec and schema are fetched once and cached, so pointing this hook at a different contract needs no extra setup. Calling it again with the same contract, method, and args reuses the cached result, and it's invalidated automatically by [`useContractSend`](/hooks/use-contract-send) on a successful send to the same contract.

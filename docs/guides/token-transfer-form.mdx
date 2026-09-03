@@ -7,7 +7,7 @@ This walks through a complete token transfer form: a validated input for the rec
 
 ## The bigint problem
 
-`sorobanTypeToZod` maps `i128` (and every other 64-bit-or-larger integer type) to `z.bigint()`, since JS numbers lose precision above 2^53 and token amounts routinely exceed it (see [How the spec-to-Zod pipeline works](/concepts/spec-to-zod)). An HTML `<input>` always produces a string, though, so a plain `register("amount")` would fail validation: the schema wants a `bigint`, not a string.
+Token amounts are validated as `bigint` (JS numbers lose precision above 2^53, which token amounts routinely exceed), but an HTML `<input>` always produces a string. A plain `register("amount")` would fail validation.
 
 `react-hook-form`'s `setValueAs` solves this: it runs before validation, converting the raw input value into the type your schema actually expects.
 
@@ -76,7 +76,7 @@ export function TransferForm() {
 
 ## Why two hooks
 
-`useSorobanForm` and `useContractSend` are both called with the same `contractId` and `method` on purpose. `useSorobanForm` owns field-level validation and error messages as the user types; `useContractSend` owns the build, simulate, sign, and send lifecycle once the form is actually submitted. Both derive from the same cached spec and schema (see [Query key and cache invalidation model](/concepts/query-keys-and-caching)), so there is no duplicated network cost in using both.
+`useSorobanForm` and `useContractSend` are both called with the same `contractId` and `method` on purpose. `useSorobanForm` owns field-level validation and error messages as the user types; `useContractSend` owns the build, simulate, sign, and send lifecycle once the form is actually submitted. Both share the same cached spec and schema, so there's no duplicated network cost in using both.
 
 <Tip>
   If your app already knows a token's real decimal count (from [`useBalance`](/hooks/use-balance)'s
