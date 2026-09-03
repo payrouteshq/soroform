@@ -18,7 +18,7 @@ export function SiteHeader() {
             <SorokitLogo className="p-1" priority />
           </span>
           <span className="font-(family-name:--font-display) text-[1.05rem] font-bold tracking-tight text-foreground">
-            sorokit
+            Sorokit
           </span>
         </Link>
 

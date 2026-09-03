@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { createHorizonServer, queryKeys, type Horizon } from "@sorokit/core";
 import { useSorokitConfig } from "@sorokit/provider";
-import { useHorizonStream$Private, type UseHorizonStream$PrivateResult } from "./stream-core.js";
+import { useHorizonStream, type useHorizonStreamResult } from "./stream-core.js";
 
 export type EffectStreamRecord = Horizon.ServerApi.EffectRecord;
 
@@ -52,12 +52,12 @@ export interface UseEffectStreamOptions {
 export function useEffectStream(
   address: string,
   options: UseEffectStreamOptions = {},
-): UseHorizonStream$PrivateResult<EffectStreamRecord> {
+): useHorizonStreamResult<EffectStreamRecord> {
   const { enabled = true, onEffect, cursor = "now", maxEvents } = options;
   const config = useSorokitConfig();
   const queryClient = useQueryClient();
 
-  return useHorizonStream$Private<EffectStreamRecord>(
+  return useHorizonStream<EffectStreamRecord>(
     () => {
       const horizon = createHorizonServer(config);
       return horizon.effects().forAccount(address).cursor(cursor);

@@ -7,7 +7,7 @@ export interface Streamable<T> {
   }): () => void;
 }
 
-export interface UseHorizonStream$PrivateResult<T> {
+export interface useHorizonStreamResult<T> {
   /**
    * Records received this session, newest first, capped at `maxEvents`
    */
@@ -24,7 +24,7 @@ export interface UseHorizonStream$PrivateResult<T> {
 
 const DEFAULT_MAX_EVENTS = 50;
 
-export function useHorizonStream$Private<T>(
+export function useHorizonStream<T>(
   build: () => Streamable<T> | undefined,
   deps: unknown[],
   options: {
@@ -32,7 +32,7 @@ export function useHorizonStream$Private<T>(
     onMessage?: (record: T) => void;
     maxEvents?: number;
   } = {},
-): UseHorizonStream$PrivateResult<T> {
+): useHorizonStreamResult<T> {
   const { enabled = true, maxEvents = DEFAULT_MAX_EVENTS } = options;
   const [events, setEvents] = React.useState<T[]>([]);
   const [isStreaming, setIsStreaming] = React.useState(false);

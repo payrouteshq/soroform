@@ -7,6 +7,11 @@ One of the most frustrating parts of Stellar development is jumping between your
 
 Sorokit eliminates this friction by embedding a dedicated inspection panel directly into your application.
 
+<Frame>
+  ![Clicking the Sorokit devtools trigger opens the panel to a populated Sends
+  log](/images/devtools-demo.gif)
+</Frame>
+
 ### The One-Prop Setup
 
 You don't need to import separate components or manage sidebars. DevTools are built into the `SorokitProvider`. Simply toggle the `devtools` prop, and the inspector will appear in your development environment.
@@ -29,7 +34,7 @@ export function App() {
 ### Smart Defaults
 
 - **Development Only:** The DevTools panel automatically detects your environment. It renders when `process.env.NODE_ENV` is `development` and disappears entirely in your production build, adding zero weight to your final bundle.
-- **Auto-Theming:** The panel is built with Radix UI and Tailwind CSS. It detects if your app is in dark mode and adjusts its UI to match your workspace seamlessly.
+- **Theme-Matched:** The panel inherits your app's own color tokens (`--background`, `--foreground`, and the rest), so it renders in whatever light or dark theme your app is already in, with no extra setup.
 
 ### Advanced Configuration
 
@@ -46,7 +51,5 @@ If you want the panel to be open by default when you refresh the page, you can p
 
 ### Key Features
 
-1. **The Sends Log:** Every time `useContractSend` is triggered, a new entry appears. You can track the exact moment a transaction moves from `QUEUED` to `SIMULATING` and finally to `SUCCESS`.
-2. **Auth Tree Visualizer:** Soroban's authorization entries are complex. The DevTools panel decodes these entries into a readable format, showing you exactly which signatures are being requested and why.
-3. **Resource Profiling:** See the "weight" of your contract calls. The panel displays CPU instructions, RAM usage, and the simulated minimum resource fee in real-time.
-4. **Cache Inspector:** Powered by an embedded TanStack Query panel, you can see exactly what contract data is cached and manually trigger refetches to test your UI's reactivity.
+1. **The Sends Log:** Every time `useContractSend` is triggered, a new entry appears. You can track the exact moment a transaction moves from `QUEUED` to `SIMULATING`, `NEEDS_SIGNATURE`, `SUBMITTING`, and finally `SUCCESS` (or `ERROR`), with the decoded args and result, the built transaction's operation type, source account, and simulated minimum resource fee, a one-click copy of the transaction XDR, and — once the network accepts it — a link straight to the transaction on Stellar Expert.
+2. **Cache Inspector:** A live view of every `@tanstack/react-query` entry Sorokit's hooks have created, with a status breakdown (fresh, fetching, paused, stale, inactive) and each query's key and observer count, so you can see exactly what's cached without leaving your app.
