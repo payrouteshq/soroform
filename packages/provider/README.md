@@ -16,5 +16,5 @@ import { stellarWalletsKit } from "@sorokit/wallet-adapter/stellar-wallets-kit";
 </SorokitProvider>;
 ```
 
-Full documentation: https://docs.sorokit.dev (see the repository root
+Full documentation: https://docs.sorokit.xyz (see the repository root
 README for the current status of the docs site).

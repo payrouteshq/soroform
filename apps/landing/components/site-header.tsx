@@ -5,7 +5,7 @@ import { GithubIcon } from "@/components/github-icon";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const NAV_LINKS = [
-  { label: "Docs", href: "https://docs.sorokit.dev", icon: BookOpen },
+  { label: "Docs", href: "https://docs.sorokit.xyz", icon: BookOpen },
   { label: "GitHub", href: "https://github.com/payrouteshq/sorokit", icon: GithubIcon },
 ];
 

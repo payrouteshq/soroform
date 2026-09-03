@@ -8,5 +8,5 @@ Built with shadcn/ui components. If your app already uses shadcn, the
 panel picks up your theme automatically, no setup needed. If not, it
 falls back to shadcn's default look.
 
-Full documentation: https://docs.sorokit.dev (see the repository root
+Full documentation: https://docs.sorokit.xyz (see the repository root
 README for the current status of the docs site).

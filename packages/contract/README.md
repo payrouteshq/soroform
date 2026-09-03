@@ -8,5 +8,5 @@ the result, so swapping which contract a hook points at never requires
 rerunning a command. Exposes `sorobanTypeToZod`, `generateContractSchemas`,
 `useContractCall`, `useContractSend`, and `useSorobanForm`.
 
-Full documentation: https://docs.sorokit.dev (see the repository root
+Full documentation: https://docs.sorokit.xyz (see the repository root
 README for the current status of the docs site).

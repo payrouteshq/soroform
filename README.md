@@ -42,7 +42,7 @@ function Balance() {
 }
 ```
 
-Full documentation: https://docs.sorokit.dev (docs site is being built
+Full documentation: https://docs.sorokit.xyz (docs site is being built
 out as part of this repository, see `docs/`).
 
 ## Status

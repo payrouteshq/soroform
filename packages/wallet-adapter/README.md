@@ -27,5 +27,5 @@ the `WalletAdapter` interface exported from the package root, then wrap it
 as `{ useAdapter: () => myAdapter }`, which already satisfies
 `WalletConnector`.
 
-Full documentation: https://docs.sorokit.dev (see the repository root
+Full documentation: https://docs.sorokit.xyz (see the repository root
 README for the current status of the docs site).

@@ -123,7 +123,7 @@ export default function Home() {
               className="mt-10 flex flex-wrap items-center justify-center gap-3"
             >
               <Button asChild size="lg">
-                <Link href="https://docs.sorokit.dev">Read the docs</Link>
+                <Link href="https://docs.sorokit.xyz">Read the docs</Link>
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link href="https://github.com/payrouteshq/sorokit">View on GitHub</Link>
@@ -195,7 +195,7 @@ export default function Home() {
                     description={feature.description}
                     Icon={feature.Icon}
                     className={feature.className}
-                    href="https://docs.sorokit.dev"
+                    href="https://docs.sorokit.xyz"
                     cta="Read the docs"
                     background={
                       <div

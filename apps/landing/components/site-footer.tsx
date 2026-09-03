@@ -7,17 +7,17 @@ const COLUMNS = [
   {
     heading: "Product",
     links: [
-      { label: "Docs", href: "https://docs.sorokit.dev" },
-      { label: "Quickstart", href: "https://docs.sorokit.dev/quickstart" },
-      { label: "Roadmap", href: "https://docs.sorokit.dev/roadmap" },
+      { label: "Docs", href: "https://docs.sorokit.xyz" },
+      { label: "Quickstart", href: "https://docs.sorokit.xyz/quickstart" },
+      { label: "Roadmap", href: "https://docs.sorokit.xyz/roadmap" },
     ],
   },
   {
     heading: "Reference",
     links: [
-      { label: "SorokitProvider", href: "https://docs.sorokit.dev/components/sorokit-provider" },
-      { label: "useContractCall", href: "https://docs.sorokit.dev/hooks/use-contract-call" },
-      { label: "useWallet", href: "https://docs.sorokit.dev/hooks/use-wallet" },
+      { label: "SorokitProvider", href: "https://docs.sorokit.xyz/components/sorokit-provider" },
+      { label: "useContractCall", href: "https://docs.sorokit.xyz/hooks/use-contract-call" },
+      { label: "useWallet", href: "https://docs.sorokit.xyz/hooks/use-wallet" },
     ],
   },
   {
