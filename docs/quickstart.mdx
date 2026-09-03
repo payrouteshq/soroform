@@ -26,11 +26,7 @@ const wallet = stellarWalletsKit();
 
 export function App({ children }) {
   return (
-    <SorokitProvider
-      network="TESTNET"
-      wallet={wallet}
-      devtools={true}
-    >
+    <SorokitProvider network="TESTNET" wallet={wallet} devtools={true}>
       {children}
     </SorokitProvider>
   );

@@ -70,20 +70,20 @@ Stellar and Soroban frequently use 64-bit, 128-bit, or 256-bit integers for toke
 
 ## Parameters
 
-| Field        | Type     | Description                                                                 |
-| ------------ | -------- | --------------------------------------------------------------------------- |
-| `contractId` | `string` | The on-chain address of the contract (`C...`).                              |
-| `method`     | `string` | The name of the specific contract function the form is targeting.           |
-| `network`    | `string` | Optional. Overrides the network from the nearest `SorokitProvider`.         |
+| Field        | Type     | Description                                                         |
+| ------------ | -------- | ------------------------------------------------------------------- |
+| `contractId` | `string` | The on-chain address of the contract (`C...`).                      |
+| `method`     | `string` | The name of the specific contract function the form is targeting.   |
+| `network`    | `string` | Optional. Overrides the network from the nearest `SorokitProvider`. |
 
 ## Return Value
 
 A full `UseFormReturn` object from `react-hook-form`. The properties you'll use most:
 
-| Field          | Description                                                          |
-| -------------- | -------------------------------------------------------------------- |
-| `register`     | Links HTML inputs to the form's state.                               |
-| `handleSubmit` | Wrapper for your submit handler; runs validation first.              |
-| `formState`    | Holds `errors`, `isSubmitting`, `isValid`, and related form state.   |
-| `setValue`     | Programmatically set a field value.                                  |
-| `watch`        | Subscribe to one or more field values as they change.                |
+| Field          | Description                                                        |
+| -------------- | ------------------------------------------------------------------ |
+| `register`     | Links HTML inputs to the form's state.                             |
+| `handleSubmit` | Wrapper for your submit handler; runs validation first.            |
+| `formState`    | Holds `errors`, `isSubmitting`, `isValid`, and related form state. |
+| `setValue`     | Programmatically set a field value.                                |
+| `watch`        | Subscribe to one or more field values as they change.              |

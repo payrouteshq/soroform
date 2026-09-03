@@ -28,11 +28,11 @@ function WalletSection() {
 
 ## Properties
 
-| Field              | Type       | Description                                                                |
-| ------------------ | ---------- | -------------------------------------------------------------------------- |
-| `address`          | `string`   | The user's public key (`G...`). `undefined` if disconnected.               |
-| `isConnected`      | `boolean`  | Helper to quickly check connection status.                                 |
-| `network`          | `string`   | The network passphrase the wallet is currently using.                      |
-| `connect`          | `Function` | Triggers the connector's login/modal flow.                                 |
-| `disconnect`       | `Function` | Clears the session and disconnects the wallet.                             |
-| `signTransaction`  | `Function` | Headless signing function used internally by `useContractSend`.            |
+| Field             | Type       | Description                                                     |
+| ----------------- | ---------- | --------------------------------------------------------------- |
+| `address`         | `string`   | The user's public key (`G...`). `undefined` if disconnected.    |
+| `isConnected`     | `boolean`  | Helper to quickly check connection status.                      |
+| `network`         | `string`   | The network passphrase the wallet is currently using.           |
+| `connect`         | `Function` | Triggers the connector's login/modal flow.                      |
+| `disconnect`      | `Function` | Clears the session and disconnects the wallet.                  |
+| `signTransaction` | `Function` | Headless signing function used internally by `useContractSend`. |
