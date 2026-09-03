@@ -1,63 +1,89 @@
 ---
 title: "useSorobanForm"
-description: "A react-hook-form useForm wired to a contract method's generated Zod schema"
+description: "Contract-aware forms with runtime Zod validation, built on react-hook-form."
 ---
 
-Wraps `react-hook-form`'s `useForm`, sourcing its `resolver` from the Zod args schema generated for the given contract method. The schema is resolved lazily and asynchronously, which `react-hook-form` supports natively, so there is no separate loading state to manage before the form can be used.
+The `useSorobanForm` hook bridges the gap between smart contracts and user interfaces. It wraps `react-hook-form` and automatically generates a Zod validation schema based on your contract's WASM specification.
 
-```ts
-import { useSorobanForm } from "@sorokit/contract";
+## Core Features
 
-function useSorobanForm<TFieldValues extends FieldValues = FieldValues>(
-  options: UseSorobanFormOptions,
-): UseFormReturn<TFieldValues>;
-```
+- **Runtime Validation:** Fetches your contract's spec and builds a Zod schema for the specific method you are calling.
+- **Zero Configuration:** You do not need to manually write Zod objects or TypeScript interfaces for your form fields.
+- **Async Resolution:** Since the schema is derived from the blockchain, the hook handles the asynchronous loading of the validation rules internally.
+- **Standard Integration:** Returns a standard `useForm` object, making it compatible with existing UI libraries like shadcn/ui or MUI.
 
 <Note>
   `react-hook-form` and `@hookform/resolvers` are peer dependencies. This package does not bundle
   its own copy, so your app controls their versions.
 </Note>
 
-## Parameters
-
-| Name         | Type             | Required | Description                                                     |
-| ------------ | ---------------- | -------- | --------------------------------------------------------------- |
-| `contractId` | `string`         | Yes      | The deployed contract's address (`C...`).                       |
-| `method`     | `string`         | Yes      | The method whose args schema this form should validate against. |
-| `network`    | `SorokitNetwork` | No       | Overrides the network from the nearest `SorokitProvider`.       |
-
-## Return value
-
-The full `UseFormReturn` object from `react-hook-form` (`register`, `handleSubmit`, `formState`, `setValue`, and everything else), typed to your field values.
-
-## Example
+## Basic Usage
 
 ```tsx
 import { useSorobanForm } from "@sorokit/contract";
 
-interface TransferFields {
-  to: string;
-  amount: bigint;
-}
-
 function TransferForm({ contractId }: { contractId: string }) {
-  const { register, handleSubmit, formState } = useSorobanForm<TransferFields>({
+  const { register, handleSubmit, formState } = useSorobanForm({
     contractId,
     method: "transfer",
   });
 
+  const onSubmit = (values: Record<string, unknown>) => {
+    console.log("Validated form data:", values);
+  };
+
   return (
-    <form onSubmit={handleSubmit((values) => console.log(values))}>
-      <input {...register("to")} placeholder="Recipient address" />
-      {formState.errors.to && <p>{String(formState.errors.to.message)}</p>}
-      <button type="submit">Transfer</button>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <label>Recipient Address</label>
+      <input {...register("to")} placeholder="G..." />
+      {formState.errors.to && <span>{String(formState.errors.to.message)}</span>}
+
+      <button type="submit">Prepare Transfer</button>
     </form>
   );
 }
 ```
 
-<Tip>
-  Fields typed `bigint` (any `u64`/`u128`/`u256` argument) need the string from a text input
-  converted to a real `bigint` before validation sees it. See [Building a token transfer form end to
-  end](/guides/token-transfer-form) for the full pattern using `setValueAs`.
-</Tip>
+## Handling BigInt Values
+
+Stellar and Soroban frequently use 64-bit, 128-bit, or 256-bit integers for token amounts. Since HTML inputs always return strings, you must convert these values to `bigint` for validation to pass.
+
+- Use the `setValueAs` property within the `register` function.
+- This ensures the string input is transformed into a `bigint` before the Zod schema runs its check, avoiding precision loss from standard JavaScript numbers.
+
+```tsx
+<input
+  type="text"
+  {...register("amount", {
+    setValueAs: (value) => (value === "" ? undefined : BigInt(value)),
+  })}
+/>
+```
+
+## Integration with useContractSend
+
+`useSorobanForm` and [`useContractSend`](/hooks/use-contract-send) are designed to work together:
+
+- **Form layer (`useSorobanForm`):** Validates that an address is well-formatted and that an amount is a valid number.
+- **Action layer (`useContractSend`):** Takes the validated data and handles simulation, signing, and submission.
+- **Shared cache:** Both hooks use the same contract spec cache, so there are no redundant network requests.
+
+## Parameters
+
+| Field        | Type     | Description                                                                 |
+| ------------ | -------- | --------------------------------------------------------------------------- |
+| `contractId` | `string` | The on-chain address of the contract (`C...`).                              |
+| `method`     | `string` | The name of the specific contract function the form is targeting.           |
+| `network`    | `string` | Optional. Overrides the network from the nearest `SorokitProvider`.         |
+
+## Return Value
+
+A full `UseFormReturn` object from `react-hook-form`. The properties you'll use most:
+
+| Field          | Description                                                          |
+| -------------- | -------------------------------------------------------------------- |
+| `register`     | Links HTML inputs to the form's state.                               |
+| `handleSubmit` | Wrapper for your submit handler; runs validation first.              |
+| `formState`    | Holds `errors`, `isSubmitting`, `isValid`, and related form state.   |
+| `setValue`     | Programmatically set a field value.                                  |
+| `watch`        | Subscribe to one or more field values as they change.                |

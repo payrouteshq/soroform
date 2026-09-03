@@ -1,59 +1,55 @@
 ---
 title: "useContractCall"
-description: "Simulate a read-only contract method call and get its decoded result"
+description: "Simulate contract 'reads' with zero boilerplate and built-in caching."
 ---
 
-Simulates a read-only contract method call and returns its decoded result as a TanStack Query result. Requires no connected wallet: reads are simulation-only.
+`useContractCall` is your window into the state of the blockchain. It simulates a read-only method call against a deployed Soroban contract and returns the decoded result as a native JavaScript value. No connected wallet required.
 
-```ts
-import { useContractCall } from "@sorokit/contract";
+## The Experience
 
-function useContractCall<TResult = unknown>(
-  options: UseContractCallOptions,
-): UseQueryResult<TResult>;
-```
-
-## Parameters
-
-| Name         | Type                      | Required | Description                                               |
-| ------------ | ------------------------- | -------- | --------------------------------------------------------- |
-| `contractId` | `string`                  | Yes      | The deployed contract's address (`C...`).                 |
-| `method`     | `string`                  | Yes      | The read-only method to call.                             |
-| `args`       | `Record<string, unknown>` | No       | Named arguments for the method, keyed by parameter name.  |
-| `network`    | `SorokitNetwork`          | No       | Overrides the network from the nearest `SorokitProvider`. |
-| `enabled`    | `boolean`                 | No       | Whether the query should run. Defaults to `true`.         |
-
-## Return value
-
-Everything TanStack Query's `useQuery` returns, typed to `TResult`. The fields you'll use most:
-
-| Field       | Type                   | Description                                                       |
-| ----------- | ---------------------- | ----------------------------------------------------------------- |
-| `data`      | `TResult \| undefined` | The decoded result, once loaded.                                  |
-| `isLoading` | `boolean`              | Whether the initial fetch is in flight.                           |
-| `error`     | `SorokitError \| null` | A normalized error, with a `kind` and a plain-language `message`. |
-| `refetch`   | `() => void`           | Manually re-runs the call.                                        |
-
-## Example
+You pass plain JavaScript objects as arguments. Sorokit fetches the contract's WASM spec at runtime and handles all XDR conversion for you, so you never touch `scValToNative` or manual encoding.
 
 ```tsx
 import { useContractCall } from "@sorokit/contract";
 
-const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
-
-function Balance({ address }: { address: string }) {
-  const { data, isLoading, error } = useContractCall<bigint>({
-    contractId: CONTRACT_ID,
-    method: "balance",
-    args: { id: address },
+function TokenInfo({ contractId }: { contractId: string }) {
+  const { data, isLoading } = useContractCall<string>({
+    contractId,
+    method: "symbol",
   });
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>{error.message}</p>;
-  return <p>{data?.toString()}</p>;
+  if (isLoading) return <span>Loading...</span>;
+  return <h1>Token: {data}</h1>;
 }
 ```
 
-## Caching
+## Performance by Default
 
-The contract's spec and schema are fetched once and cached, so pointing this hook at a different contract needs no extra setup. Calling it again with the same contract, method, and args reuses the cached result, and it's invalidated automatically by [`useContractSend`](/hooks/use-contract-send) on a successful send to the same contract.
+Under the hood, `useContractCall` is a wrapper around **TanStack Query**.
+
+- **Automatic Caching:** If two components call the same method with the same arguments, only one network request is made.
+- **Smart Revalidation:** The cache is automatically invalidated when a wallet transaction might have changed the value (via [`useContractSend`](/hooks/use-contract-send)).
+- **Loading & Error States:** You get `isLoading`, `isError`, and `error` directly, ready for JSX.
+
+## Parameters
+
+| Field        | Type      | Description                                                              |
+| ------------ | --------- | ------------------------------------------------------------------------ |
+| `contractId` | `string`  | The address of the deployed contract (`C...`).                           |
+| `method`     | `string`  | The name of the read-only function (e.g. `"balance"`, `"name"`).         |
+| `args`       | `object`  | An object whose keys match the contract's parameter names.               |
+| `enabled`    | `boolean` | Controls when the query fires (e.g. wait until a user address is known). |
+
+## Type Inference
+
+The contract spec is fetched at runtime, but you can pass a generic type for type safety in your component.
+
+```tsx
+const { data } = useContractCall<bigint>({
+  contractId: TOKEN_CONTRACT_ID,
+  method: "balance",
+  args: { id: userAddress },
+});
+
+// `data` is correctly inferred as `bigint | undefined`
+```

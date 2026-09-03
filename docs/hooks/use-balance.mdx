@@ -1,60 +1,56 @@
 ---
 title: "useBalance"
-description: "Fetch an address's balance of any asset, classic or Soroban, normalized to one shape"
+description: "Fetch and normalize balances across Native, Classic, and Soroban assets."
 ---
 
-Fetches an address's balance of a given asset, normalized to `{ raw, formatted, decimals }` regardless of which kind of asset it is, so a component never has to branch on asset type itself.
+The `useBalance` hook provides a single interface to fetch the balance of any asset on the Stellar network. It automatically detects the asset type and returns a normalized object, so your components do not need to handle different decimal logic for different asset classes.
 
-```ts
-import { useBalance } from "@sorokit/hooks";
+#### Asset ID Formats
 
-function useBalance(
-  address: string,
-  assetId: string,
-  options?: UseBalanceOptions,
-): UseQueryResult<BalanceState>;
-```
+You can pass three types of identifiers to the `assetId` parameter:
 
-## Parameters
+- native: Fetches the XLM balance.
+- CODE:ISSUER: Fetches a classic Stellar asset (e.g., `USDC:GA5Z...`).
+- C...: Fetches the balance from a Soroban token contract.
 
-| Name              | Type      | Required | Description                                                                                           |
-| ----------------- | --------- | -------- | ----------------------------------------------------------------------------------------------------- |
-| `address`         | `string`  | Yes      | The account or contract address whose balance to fetch.                                               |
-| `assetId`         | `string`  | Yes      | `"native"` for XLM, a classic asset as `"CODE:ISSUER"`, or a Soroban token contract address (`C...`). |
-| `options.enabled` | `boolean` | No       | Whether the query should run. Defaults to `true`.                                                     |
-
-## Return value
-
-`data` resolves to a `BalanceState`:
-
-| Field       | Type     | Description                                           |
-| ----------- | -------- | ----------------------------------------------------- |
-| `raw`       | `bigint` | The raw integer amount, in the asset's smallest unit. |
-| `formatted` | `string` | `raw` formatted as a decimal string using `decimals`. |
-| `decimals`  | `number` | The asset's decimal places.                           |
-
-## Example
+#### Usage
 
 ```tsx
 import { useBalance } from "@sorokit/hooks";
 
-function XlmBalance({ address }: { address: string }) {
-  const { data, isLoading } = useBalance(address, "native");
+function AccountBalance({ address }) {
+  const { data, isLoading, error } = useBalance(address, "native");
 
-  if (isLoading) return <p>Loading...</p>;
-  return <p>{data?.formatted} XLM</p>;
+  if (isLoading) return <span>Loading...</span>;
+  if (error) return <span>Error: {error.message}</span>;
+
+  return (
+    <div>
+      <p>Raw Amount: {data.raw.toString()}</p>
+      <p>Display: {data.formatted} XLM</p>
+    </div>
+  );
 }
 ```
 
-```tsx
-// A classic issued asset
-useBalance(address, "USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5");
+## Normalization Logic
 
-// A custom Soroban token contract
-useBalance(address, "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5");
-```
+The hook performs the following background tasks:
 
-## How each asset kind resolves
+- **Decimal Handling:** Classic assets are always treated as 7 decimals. Soroban assets are queried for their specific decimal count at runtime.
+- **BigInt Safety:** The `raw` balance is always returned as a `bigint` to prevent precision loss during mathematical operations.
+- **Smart Caching:** Uses TanStack Query to ensure multiple components requesting the same balance do not trigger redundant network calls.
 
-- `"native"` and `"CODE:ISSUER"` resolve as classic Stellar assets, covering both account and contract holders, and always use 7 decimal places, the Stellar convention for classic assets and their Stellar Asset Contract representation alike.
-- Any other value is treated as a custom Soroban token contract address, and resolved by reading that contract's own balance and decimals.
+## Parameters
+
+- `address`: The `G...` or `C...` address whose balance you want to check.
+- `assetId`: The identifier for the asset.
+- `options`: Standard query options, including `enabled` to defer the fetch.
+
+## Return Value
+
+The hook returns a query result object where `data` contains:
+
+- `raw`: The balance in the smallest unit (stroops or bits) as a `bigint`.
+- `formatted`: A human-readable string with the decimal point in the correct place.
+- `decimals`: The number of decimal places used by the asset.

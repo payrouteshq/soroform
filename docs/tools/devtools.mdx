@@ -1,0 +1,52 @@
+---
+title: "Integrated DevTools"
+description: "Debugging is a feature, not an afterthought. Inspect your transactions right where you build them."
+---
+
+One of the most frustrating parts of Stellar development is jumping between your app and the Stellar Laboratory just to see what happened inside a transaction.
+
+Sorokit eliminates this friction by embedding a dedicated inspection panel directly into your application.
+
+### The One-Prop Setup
+
+You don't need to import separate components or manage sidebars. DevTools are built into the `SorokitProvider`. Simply toggle the `devtools` prop, and the inspector will appear in your development environment.
+
+```tsx
+import { SorokitProvider } from "@sorokit/provider";
+
+export function App() {
+  return (
+    <SorokitProvider
+      network="TESTNET"
+      devtools={true} // [!code highlight]
+    >
+      <YourApp />
+    </SorokitProvider>
+  );
+}
+```
+
+### Smart Defaults
+
+- **Development Only:** The DevTools panel automatically detects your environment. It renders when `process.env.NODE_ENV` is `development` and disappears entirely in your production build, adding zero weight to your final bundle.
+- **Auto-Theming:** The panel is built with Radix UI and Tailwind CSS. It detects if your app is in dark mode and adjusts its UI to match your workspace seamlessly.
+
+### Advanced Configuration
+
+If you want the panel to be open by default when you refresh the page, you can pass a configuration object instead of a boolean.
+
+```tsx
+<SorokitProvider
+  network="TESTNET"
+  devtools={{ initialOpen: true }} // [!code highlight]
+>
+  {/* ... */}
+</SorokitProvider>
+```
+
+### Key Features
+
+1. **The Sends Log:** Every time `useContractSend` is triggered, a new entry appears. You can track the exact moment a transaction moves from `QUEUED` to `SIMULATING` and finally to `SUCCESS`.
+2. **Auth Tree Visualizer:** Soroban's authorization entries are complex. The DevTools panel decodes these entries into a readable format, showing you exactly which signatures are being requested and why.
+3. **Resource Profiling:** See the "weight" of your contract calls. The panel displays CPU instructions, RAM usage, and the simulated minimum resource fee in real-time.
+4. **Cache Inspector:** Powered by an embedded TanStack Query panel, you can see exactly what contract data is cached and manually trigger refetches to test your UI's reactivity.

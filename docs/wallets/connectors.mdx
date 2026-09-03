@@ -1,0 +1,46 @@
+---
+title: "Wallet Connectors"
+description: "Connect to any Stellar wallet using specialized adapters."
+---
+
+Sorokit is designed to be compatible with the entire Stellar ecosystem. Instead of being locked into a single wallet implementation, you use Connectors to choose your identity strategy.
+
+#### Supported Connectors
+
+Sorokit currently provides built-in support for the leading wallet SDKs in the community:
+
+- Stellar Wallets Kit: The standard for extension-based wallets like Freighter, xBull, Albedo, Lobstr, Hana, and Rabet.
+- Blux: A unified modal that supports both browser extensions and modern social logins or passkeys.
+- Para: A dedicated connector for the Para embedded wallet SDK.
+
+#### Setup Example
+
+You choose your connector when setting up the `SorokitProvider`. This decision is isolated to your root file and does not affect how you write your components.
+
+```tsx
+import { SorokitProvider } from "@sorokit/provider";
+import { stellarWalletsKit } from "@sorokit/wallet-adapter/stellar-wallets-kit";
+
+// Use the community standard extensions
+const wallet = stellarWalletsKit();
+
+function App() {
+  return (
+    <SorokitProvider network="TESTNET" wallet={wallet}>
+      <YourApp />
+    </SorokitProvider>
+  );
+}
+```
+
+#### Hot-Swapping Providers
+
+Because Sorokit uses an internal adapter pattern, you can swap your wallet provider at any time. If you decide to move from `stellarWalletsKit` to `blux`, you only change one line of code in your provider setup. All your `useWallet` and `useContractSend` calls remain identical.
+
+#### Custom Connectors
+
+If you are using a specialized wallet or an internal company SDK, you can implement the `WalletAdapter` interface. This allows you to plug any signing logic into Sorokit while still benefiting from the global sequencer and resumable transaction logic.
+
+- Implement the `init`, `connect`, and `signTransaction` methods.
+- Wrap your adapter in a `useAdapter` hook.
+- Pass it to the `wallet` prop of the `SorokitProvider`.

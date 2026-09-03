@@ -1,64 +1,38 @@
 ---
 title: "useWallet"
-description: "Read wallet connection state and signing functions"
+description: "The only hook you need for connection and signing."
 ---
 
-Reads the wallet connection state and signing functions for whichever connector was passed to [`SorokitProvider`](/components/sorokit-provider)'s `wallet` prop. Exported from `@sorokit/wallet-adapter`, not `@sorokit/hooks`.
+The `useWallet` hook is the primary way to interact with a user's account. It abstracts away the differences between various wallet SDKs.
 
-```ts
-import { useWallet } from "@sorokit/wallet-adapter";
-
-function useWallet(): WalletState;
-```
-
-<Warning>Throws if called outside a `SorokitProvider` that was given a `wallet` prop.</Warning>
-
-## Return value
-
-| Field             | Type                                                                 | Description                                                                   |
-| ----------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `address`         | `string \| undefined`                                                | The connected account's public key, or `undefined` if not connected.          |
-| `network`         | `string \| undefined`                                                | The network passphrase the wallet last reported, if known.                    |
-| `isConnected`     | `boolean`                                                            | Whether a wallet is currently connected.                                      |
-| `connect`         | `() => Promise<{ address: string }>`                                 | Opens the wallet picker modal and connects the selected wallet.               |
-| `disconnect`      | `() => Promise<void>`                                                | Disconnects the current wallet.                                               |
-| `signTransaction` | `(xdr, opts?) => Promise<{ signedTxXdr, signerAddress? }>`           | Matches `ClientOptions.signTransaction` from `@stellar/stellar-sdk/contract`. |
-| `signAuthEntry`   | `(authEntry, opts?) => Promise<{ signedAuthEntry, signerAddress? }>` | Matches `ClientOptions.signAuthEntry`.                                        |
-
-## Example
+### Usage
 
 ```tsx
 import { useWallet } from "@sorokit/wallet-adapter";
 
-function AccountBadge() {
+function WalletSection() {
   const { address, isConnected, connect, disconnect } = useWallet();
 
   if (!isConnected) {
-    return <button onClick={() => connect()}>Connect</button>;
+    return <button onClick={() => connect()}>Connect Wallet</button>;
   }
-  return <button onClick={() => disconnect()}>{address}</button>;
+
+  return (
+    <div>
+      <p>Connected as: {address}</p>
+      <button onClick={() => disconnect()}>Logout</button>
+    </div>
+  );
 }
 ```
 
-<Tip>
-  For a ready-made connect/disconnect button, use
-  [`ConnectWalletButton`](/components/connect-wallet-button) instead of building your own from
-  `useWallet`.
-</Tip>
+## Properties
 
-## Wiring into contract.Client directly
-
-`signTransaction` and `signAuthEntry` are shaped to drop straight into `ClientOptions` if you ever need to construct a `contract.Client` yourself instead of going through Sorokit's hooks:
-
-```ts
-import { Client } from "@stellar/stellar-sdk/contract";
-
-const client = await Client.from({
-  contractId,
-  rpcUrl,
-  networkPassphrase,
-  publicKey: wallet.address,
-  signTransaction: wallet.signTransaction,
-  signAuthEntry: wallet.signAuthEntry,
-});
-```
+| Field              | Type       | Description                                                                |
+| ------------------ | ---------- | -------------------------------------------------------------------------- |
+| `address`          | `string`   | The user's public key (`G...`). `undefined` if disconnected.               |
+| `isConnected`      | `boolean`  | Helper to quickly check connection status.                                 |
+| `network`          | `string`   | The network passphrase the wallet is currently using.                      |
+| `connect`          | `Function` | Triggers the connector's login/modal flow.                                 |
+| `disconnect`       | `Function` | Clears the session and disconnects the wallet.                             |
+| `signTransaction`  | `Function` | Headless signing function used internally by `useContractSend`.            |

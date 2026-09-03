@@ -1,15 +1,20 @@
 ---
-title: "Using Sorokit in a Next.js Server Component + Server Action setup"
-description: "Build and simulate on the server, sign and send on the client"
+title: "Next.js Server Actions"
+description: "Optimize performance by simulating transactions on the server."
 ---
 
-Sorokit's hooks are client-side by design: they need a browser wallet to sign with. You can still do the build-and-simulate step on the server, which is useful when you want to keep RPC calls off the client, validate args server-side before a user's wallet ever sees them, or read the same contract state during server rendering that a client hook will read again later (cache warm-up).
+While signing must happen on the client (where the wallet lives), you can significantly speed up your app by performing the simulation and argument building on the server. This reduces the number of RPC calls the browser has to make and keeps your contract specifications off the main thread.
 
-The pattern: a Server Action builds and simulates the transaction and returns its serialized form; a Client Component reconstructs it, signs with the connected wallet, and sends it.
+#### The Workflow
 
-## The Server Action
+- 1. Server: Fetch the contract spec and build the transaction.
+- 2. Server: Run the simulation to calculate fees.
+- 3. Client: Receive the "ready-to-sign" transaction from the server.
+- 4. Client: Sign with the user's wallet and broadcast.
 
-```ts app/actions.ts
+#### The Server Action
+
+```ts
 "use server";
 
 import { AssembledTransaction } from "@stellar/stellar-sdk/contract";
@@ -17,89 +22,50 @@ import { fetchContractSpec } from "@sorokit/contract";
 import { resolveSorokitConfig } from "@sorokit/core";
 import { QueryClient } from "@tanstack/react-query";
 
-const config = resolveSorokitConfig({ network: "TESTNET" });
-const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
-
-export async function buildTransfer(sourceAddress: string, to: string, amount: bigint) {
-  // A short-lived QueryClient just to reuse fetchContractSpec's caching
-  // helper; nothing here needs to persist across requests.
+export async function prepareMintAction(address: string) {
+  const config = resolveSorokitConfig({ network: "TESTNET" });
   const queryClient = new QueryClient();
-  const spec = await fetchContractSpec(CONTRACT_ID, config, queryClient);
-  const args = spec.funcArgsToScVals("transfer", { to, amount });
+
+  const spec = await fetchContractSpec("C...", config, queryClient);
 
   const tx = await AssembledTransaction.build({
-    contractId: CONTRACT_ID,
+    contractId: "C...",
+    method: "mint",
+    args: spec.funcArgsToScVals("mint", { to: address }),
     networkPassphrase: config.networkPassphrase,
     rpcUrl: config.rpcUrl,
-    publicKey: sourceAddress,
-    method: "transfer",
-    args,
-    parseResultXdr: (xdr) => spec.funcResToNative("transfer", xdr),
   });
 
   return tx.toJson();
 }
 ```
 
-Notice `AssembledTransaction.build` is called with no `signTransaction`: the server has no wallet and does not need one to simulate. `AssembledTransaction.build` still performs the simulation, which is the expensive network round-trip this pattern moves off the client.
+#### The Client Component
 
-## The Client Component
-
-```tsx app/transfer-button.tsx
+```tsx
 "use client";
 
-import { useState } from "react";
-import { AssembledTransaction } from "@stellar/stellar-sdk/contract";
-import { fetchContractSpec } from "@sorokit/contract";
-import { useSorokitConfig } from "@sorokit/provider";
 import { useWallet } from "@sorokit/wallet-adapter";
-import { useQueryClient } from "@tanstack/react-query";
-import { buildTransfer } from "../actions";
+import { prepareMintAction } from "./actions";
 
-const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
+export function MintButton() {
+  const { signTransaction } = useWallet();
 
-export function TransferButton({ to }: { to: string }) {
-  const config = useSorokitConfig();
-  const wallet = useWallet();
-  const queryClient = useQueryClient();
-  const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
+  const handleAction = async () => {
+    // Fetch the prepared transaction from the server
+    const json = await prepareMintAction();
 
-  async function handleClick() {
-    if (!wallet.address) return;
-    setStatus("sending");
+    // Reconstruct and sign
+    const tx = AssembledTransaction.fromJson({...}, JSON.parse(json));
+    await tx.signAndSend({ signTransaction });
+  };
 
-    const json = await buildTransfer(wallet.address, to, 100n);
-    const spec = await fetchContractSpec(CONTRACT_ID, config, queryClient);
-
-    const tx = AssembledTransaction.fromJson(
-      {
-        contractId: CONTRACT_ID,
-        networkPassphrase: config.networkPassphrase,
-        rpcUrl: config.rpcUrl,
-        parseResultXdr: (xdr) => spec.funcResToNative("transfer", xdr),
-      },
-      JSON.parse(json),
-    );
-
-    await tx.signAndSend({ signTransaction: wallet.signTransaction });
-    setStatus("sent");
-  }
-
-  return (
-    <button onClick={handleClick} disabled={status === "sending"}>
-      {status === "sent" ? "Sent" : "Transfer"}
-    </button>
-  );
+  return <button onClick={handleAction}>Server-Side Mint</button>;
 }
 ```
 
-<Note>
-  `fetchContractSpec` is called on both sides. Each call hits the same cache key
-  (`queryKeys.contractSpec`), so on the client this resolves instantly if a hook elsewhere in the
-  tree already fetched the same contract's spec; on the server, each request gets its own
-  short-lived `QueryClient` since server code has no persistent client-side cache to share.
-</Note>
+#### Performance Gains
 
-## When to reach for this
-
-Most apps do not need this split; `useContractSend` alone covers the common case with less code. Reach for the server/client split when you specifically want simulation off the client's network path, or when you are already fetching the same contract state during server rendering and want to avoid a second round-trip for a form that appears immediately after.
+- Reduced Client Latency: The browser doesn't need to fetch the WASM spec or run heavy simulations.
+- Security: You can validate the user's input on the server before the transaction is even sent to the wallet.
+- Shared Logic: If you are already fetching data for SEO (SSR), you can reuse that contract state for the subsequent user actions.

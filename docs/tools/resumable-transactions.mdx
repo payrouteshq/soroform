@@ -1,0 +1,31 @@
+---
+title: "Resumable Transactions"
+description: "Ensure transactions survive browser refreshes and tab closures."
+---
+
+One of the most common causes of a poor user experience in blockchain apps is state loss. If a user refreshes their page after signing a transaction but before it is confirmed, the app usually loses track of that action. Sorokit prevents this by persisting in-flight transactions to local storage.
+
+#### How it Works
+
+- Instant Recording: The moment the Stellar network accepts a transaction, Sorokit saves the hash, address, and contract metadata to the browser's `localStorage`.
+- Automatic Recovery: When the `SorokitProvider` mounts (such as after a page reload), it scans for any pending transactions in the storage.
+- Background Polling: If pending transactions are found, Sorokit automatically resumes polling the network in the background to find their outcome.
+- Cache Sync: Once a recovered transaction completes, Sorokit invalidates the relevant queries. This ensures the user's balance and contract data update automatically, even if the user is on a different page than where they started the transaction.
+
+#### User Experience Benefits
+
+- No Ghost Transactions: Users will not be left wondering if their transaction went through after a refresh.
+- Consistent UI: Your app's data remains the source of truth regardless of browser lifecycle events.
+- Automatic Clean-up: Once a transaction settles or becomes too old (over 10 minutes), it is automatically removed from the local storage to keep the browser environment clean.
+
+#### Developer Integration
+
+There is no manual code required to enable this feature. It is built into the core logic of `useContractSend` and `SorokitProvider`.
+
+- Every transaction sent via `useContractSend` is automatically tracked.
+- Tracking begins the millisecond the `SUBMITTING` state is reached.
+- Tracking ends only when a final `SUCCESS` or `ERROR` is determined.
+
+#### Monitoring via DevTools
+
+You can monitor these pending transactions through the integrated DevTools panel. If a transaction is being resumed after a refresh, it will appear in the log with its previous metadata and current network status.

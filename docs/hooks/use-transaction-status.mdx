@@ -1,45 +1,44 @@
 ---
 title: "useTransactionStatus"
-description: "Poll for a submitted transaction's final status"
+description: "Poll for the final outcome of a submitted transaction hash."
 ---
 
-Polls for a submitted transaction's final status. Resolves once the transaction is found, successful or failed, or the poll's attempt limit is reached.
+The `useTransactionStatus` hook allows you to check the status of a transaction that has already been submitted to the network. This is useful when you have a transaction hash from an external source or a multi-signature workflow and need to wait for its confirmation.
 
-```ts
-import { useTransactionStatus } from "@sorokit/hooks";
+#### Features
 
-function useTransactionStatus(
-  hash: string,
-  options?: UseTransactionStatusOptions,
-): UseQueryResult<Api.GetTransactionResponse>;
-```
+- Automatic Polling: The hook uses the SDK's built-in sleep strategy to periodically check the network until the transaction settles.
+- Success and Failure Tracking: It identifies whether a transaction succeeded, failed, or was not found on the network.
+- Simple State Management: Returns standard loading and data states, making it easy to show progress spinners or success messages.
 
-## Parameters
-
-| Name              | Type      | Required | Description                                       |
-| ----------------- | --------- | -------- | ------------------------------------------------- |
-| `hash`            | `string`  | Yes      | The transaction hash to poll for.                 |
-| `options.enabled` | `boolean` | No       | Whether the query should run. Defaults to `true`. |
-
-## Return value
-
-`data` resolves to the SDK's `Api.GetTransactionResponse`, whose `status` field is one of `"SUCCESS"`, `"FAILED"`, or `"NOT_FOUND"`. On success, `returnValue` holds the transaction's raw `ScVal` result.
-
-## Example
+#### Usage
 
 ```tsx
 import { useTransactionStatus } from "@sorokit/hooks";
 
-function TxStatus({ hash }: { hash: string }) {
-  const { data, isLoading } = useTransactionStatus(hash);
+function TransactionTracker({ hash }) {
+  const { data, isLoading, error } = useTransactionStatus(hash);
 
-  if (isLoading) return <p>Polling...</p>;
-  return <p>{data?.status}</p>;
+  if (isLoading) return <span>Waiting for ledger close...</span>;
+  if (error) return <span>Error: {error.message}</span>;
+
+  return (
+    <div>
+      <p>Status: {data.status}</p>
+      {data.status === "SUCCESS" && <p>Transaction confirmed!</p>}
+    </div>
+  );
 }
 ```
 
-<Tip>
-  If you got the transaction from `useContractSend`, you already have its decoded result via
-  `sendAsync`'s return value; reach for `useTransactionStatus` when you have a hash from elsewhere
-  (a webhook, a link, a multi-auth workflow) and need to check on it independently.
-</Tip>
+#### Parameters
+
+- hash: The unique string identifier for the transaction.
+- options: An optional object containing an `enabled` boolean to control when the polling starts.
+
+#### Return Value
+
+The hook returns a query result where `data` is an object containing:
+
+- status: A string indicating the result (SUCCESS, FAILED, or NOT_FOUND).
+- returnValue: The raw XDR result of the transaction if it was a successful contract call.

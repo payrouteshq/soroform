@@ -1,49 +1,70 @@
 ---
 title: "ConnectWalletButton"
-description: "A minimally styled button that opens the wallet picker and shows the connected address"
+description: "A ready-to-use button that handles connection states and account truncation."
 ---
 
-A minimally styled button that opens the wallet picker modal when no wallet is connected, and shows the connected address (disconnecting on click) once one is. Styled entirely through CSS custom properties, so you can restyle it without overriding classes.
+The `ConnectWalletButton` is a drop-in component that manages the entire wallet connection flow. It automatically toggles between a "Connect" state and a "Connected" state based on the user's session.
 
-```tsx
-import { ConnectWalletButton } from "@sorokit/wallet-adapter";
-```
+#### Key Features
 
-<Note>
-  The defaults are intentionally plain: this component is about behavior, not design. Most apps will
-  want their own look; that's what the CSS variables below are for.
-</Note>
+- Automatic Truncation: Long Stellar addresses are shortened (e.g., `GABCDE...STUV`) to fit perfectly in your navigation bar.
+- State Awareness: The button knows when to show the connection modal and when to trigger a logout.
+- Headless Styling: While it comes with clean defaults, it is designed to be restyled via simple CSS variables.
+- Zero Logic Required: You do not need to manually check `isConnected` or handle click events.
 
-## Props
-
-| Name           | Type     | Required | Description                                                              |
-| -------------- | -------- | -------- | ------------------------------------------------------------------------ |
-| `className`    | `string` | No       | Applied to the underlying `<button>`.                                    |
-| `connectLabel` | `string` | No       | Label shown when no wallet is connected. Defaults to `"Connect Wallet"`. |
-
-## Example
+#### Basic Usage
 
 ```tsx
 import { ConnectWalletButton } from "@sorokit/wallet-adapter";
 
 function Header() {
-  return <ConnectWalletButton connectLabel="Sign in" />;
+  return (
+    <nav>
+      <h1>My dApp</h1>
+      <ConnectWalletButton />
+    </nav>
+  );
 }
 ```
 
-## Restyling
+#### Customization via Props
+
+The component accepts a few simple props for basic labeling and layout:
+
+- `connectLabel`: Change the text shown when no wallet is linked (defaults to "Connect Wallet").
+- `className`: Pass your own Tailwind classes or standard CSS classes to adjust position or margins.
+
+```tsx
+<ConnectWalletButton
+  connectLabel="Sign In"
+  className="my-4"
+/>
+```
+
+#### Advanced Theming
+
+To make the button match your brand perfectly, use the built-in CSS custom properties. This is more efficient than overriding complex class hierarchies.
+
+Add these to your global CSS file:
 
 ```css
 :root {
-  --sorokit-button-bg: #4f46e5;
+  --sorokit-button-bg: #101010;
   --sorokit-button-fg: #ffffff;
-  --sorokit-button-radius: 0.75rem;
-  --sorokit-button-padding: 0.6rem 1.2rem;
-  --sorokit-button-font-family: "Inter", sans-serif;
-  --sorokit-button-font-size: 0.9rem;
+  --sorokit-button-radius: 9999px;
+  --sorokit-button-padding: 0.5rem 1.5rem;
+  --sorokit-button-border: 1px solid #303030;
   --sorokit-button-font-weight: 500;
-  --sorokit-button-border: none;
 }
 ```
 
-Every variable falls back to a plain default if unset, so you only need to override the ones you want to change.
+#### Why use this over a custom button
+
+- Consistency: It uses the exact same `connect` and `disconnect` logic as the rest of the Sorokit suite.
+- Safety: It handles the edge cases of wallet rejections and network mismatches internally.
+- Speed: You can go from a blank page to a fully functioning wallet connection UI in one line of code.
+
+#### Properties Reference
+
+- `className`: string (Optional). Applied to the underlying HTML button element.
+- `connectLabel`: string (Optional). The text displayed during the IDLE state.

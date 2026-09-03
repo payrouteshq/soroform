@@ -1,0 +1,69 @@
+---
+title: "The Native Zod Adapter"
+description: "Turn Soroban smart contract specs into instant UI validation at runtime."
+---
+
+The biggest point of friction in Stellar development is the gap between a Smart Contract and a Browser Form.
+
+In a standard setup, you have to manually write code to ensure a user's input matches the contract's expectations (e.g., ensuring an "Amount" is a `u128` or a "Recipient" is a valid `Address`). If the contract changes, your frontend validation breaks silently.
+
+### The Sorokit Way
+
+Sorokit eliminates manual mapping. When you provide a `contractId`, the SDK fetches the contract’s WASM spec and derives a Zod schema for every method automatically.
+
+- **No Code Generation:** There are no CLI commands to run and no generated files to manage.
+- **Sync by Default:** Your frontend validation is derived directly from the on-chain truth.
+- **Developer Experience:** Use the Zod ecosystem you already love (`react-hook-form`, `zod-resolver`) with zero manual glue code.
+
+### How it works
+
+When you use `useSorobanForm` or `useContractCall`, Sorokit performs a runtime mapping of Soroban types to JavaScript types.
+
+| Soroban Type            | JavaScript / Zod Type | Validation Rule                                          |
+| :---------------------- | :-------------------- | :------------------------------------------------------- |
+| `u32` / `i32`           | `number`              | Standard JS Number                                       |
+| `u64` / `i128` / `u256` | `bigint`              | Automatic conversion to BigInt to prevent precision loss |
+| `Address`               | `string`              | Regex validation for `G...` or `C...` addresses          |
+| `Bytes`                 | `Uint8Array`          | Buffer-safe byte arrays                                  |
+| `Vec<T>`                | `Array<T>`            | Recursive array validation                               |
+| `Map<K, V>`             | `Map<K, V>`           | Native JS Map support                                    |
+| `Enum`                  | `union`               | Maps to the underlying numeric or string variants        |
+
+### Example: Instant Form Validation
+
+With Sorokit, creating a validated transfer form takes only a few lines. The `to` field and `amount` field are validated against the contract's actual spec before a transaction is even built.
+
+```tsx
+import { useSorobanForm } from "@sorokit/contract";
+
+function TransferForm() {
+  const { register, formState } = useSorobanForm({
+    contractId: "CDLZ...",
+    method: "transfer",
+  });
+
+  return (
+    <form>
+      {/* This input is automatically validated as a Stellar Address */}
+      <input {...register("to")} />
+      {formState.errors.to && <p>{formState.errors.to.message}</p>}
+
+      {/* This input is automatically validated as a BigInt u128 */}
+      <input {...register("amount")} />
+      {formState.errors.amount && <p>{formState.errors.amount.message}</p>}
+    </form>
+  );
+}
+```
+
+<Tip>
+  Because the schema is derived at runtime, you can swap the `contractId` or target a different
+  network, and your form validation will update instantly without a single line of code changing.
+</Tip>
+
+## Deep Precision
+
+Soroban handles large numbers (like i128) that exceed the safety limit of
+JavaScript's Number type (2^53 - 1). The Zod adapter enforces the use of bigint for these types,
+ensuring that your app never suffers from silent precision loss when handling high-value
+transactions.

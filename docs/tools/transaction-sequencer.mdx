@@ -1,0 +1,30 @@
+---
+title: "Transaction Sequencer"
+description: "Prevent sequence collisions and tx_bad_seq errors automatically."
+---
+
+Stellar requires transactions from the same account to be submitted in a strict linear order. Each transaction must use a sequence number exactly one greater than the last. In a React environment, this is a common source of failure when users click buttons quickly or multiple components trigger actions simultaneously.
+
+The Sorokit Transaction Sequencer is a global management layer that ensures your transactions never collide.
+
+#### How it solves the problem
+
+- Automatic Queuing: If a transaction is already in flight for a specific account, any new transactions are placed in a local queue. You will see the status move to `QUEUED`.
+- Optimistic Bumping: Sorokit does not wait for the Stellar network to close a ledger (which takes about 5 seconds) before allowing the next transaction. It projects the next sequence number forward immediately after a successful submission.
+- Shared State: The sequencer is a singleton. This means if a button in your Header and a form in your Main content both trigger transactions, they will respect each other's order automatically.
+
+#### Internal Workflow
+
+- 1. A hook calls `enqueue`.
+- 2. The sequencer checks if a projection exists for that address.
+- 3. It fetches the current sequence from the network as a baseline.
+- 4. It assigns the highest known number to your transaction.
+- 5. Upon submission, it increments the projection for the next item in the queue.
+
+#### Zero Configuration
+
+You do not need to initialize or manage the sequencer. It is baked into the `useContractSend` hook. Every write operation you perform through Sorokit is protected by this layer by default.
+
+#### Handling Failures
+
+If a transaction fails to reach the network (for example, the user rejects it in their wallet), the sequencer intelligently releases that sequence number so it can be reused by the next item in the queue. This prevents your app from getting "stuck" on a bad sequence projection.

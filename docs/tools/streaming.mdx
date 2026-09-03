@@ -1,0 +1,46 @@
+---
+### Chunk 6: Live UI (Streaming)
+
+This section sells the "Real-time" nature of Sorokit. It explains how the UI stays in sync with the blockchain without the user ever clicking a refresh button.
+---
+
+#### Live Streams (`docs/tools/streaming.mdx`)
+
+````mdx
+---
+title: "Real-time UI"
+description: "UI that reacts to the blockchain, not just user clicks."
+---
+
+In a standard app, if a user receives a payment, their balance doesn't update until they refresh the page or the app triggers a manual poll.
+
+Sorokit uses Horizon's Server-Sent Events (SSE) to make your UI "live."
+
+### Automatic Invalidation
+
+The secret to Sorokit’s streaming is the connection between **Streams** and **Queries**.
+
+When you use `useEffectStream`, Sorokit listens to every event associated with an account (payments, trustline changes, etc.). The moment an event occurs, Sorokit automatically tells TanStack Query to "invalidate" the user's account data.
+
+- **Step 1:** A payment arrives on the Stellar network.
+- **Step 2:** The stream catches the event.
+- **Step 3:** Sorokit instantly triggers a refresh for `useBalance` or `useAccount`.
+- **Step 4:** Your UI updates to show the new balance.
+
+### Usage
+
+```tsx
+import { useEffectStream, useBalance } from "@sorokit/hooks";
+
+function Dashboard({ address }) {
+  // 1. Fetch the balance
+  const { data: balance } = useBalance(address, "native");
+
+  // 2. Start the stream
+  // This automatically refreshes the balance query above on any activity!
+  useEffectStream(address);
+
+  return <div>Current Balance: {balance.formatted} XLM</div>;
+}
+```
+````

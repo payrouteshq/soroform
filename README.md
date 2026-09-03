@@ -6,16 +6,23 @@
 
 <p align="center">wagmi for Stellar.</p>
 
-Sorokit is a React/Next.js SDK layered on top of `@stellar/stellar-sdk`.
-It turns a deployed Soroban contract's spec directly into typed,
-validated React hooks and forms, without touching XDR, ScVal, or manual
-argument encoding by hand. There is no code generation step: hooks fetch
-a contract's spec at runtime from its `contractId` and derive the Zod
-schema and result decoding automatically, so swapping contracts never
-requires rerunning a command. A wallet layer (`useWallet`,
-`ConnectWalletButton`, swappable connectors for Stellar Wallets Kit,
-Blux, and Para) and a development-only devtools panel come from the
-same `SorokitProvider` entry point.
+Sorokit is the React UI layer for the Stellar blockchain. It turns your deployed
+Soroban smart contracts directly into typed, validated React hooks and forms.
+
+Most Stellar tools require you to manually encode arguments or run heavy
+code-generation steps. Sorokit eliminates this by fetching your contract's spec
+at runtime and deriving Zod schemas automatically. Point a hook at a new
+contract ID, and your UI validation updates instantly.
+
+## Key Features
+
+- Zero code generation: No CLI commands to run and no generated files to manage.
+- Runtime Zod validation: Every contract method becomes a type-safe form in seconds.
+- Unified wallet identity: Swap between browser extensions, social logins, and passkeys without changing your component code.
+- Engineered reliability: Transactions survive page refreshes and account sequences are managed automatically to prevent collisions.
+- Integrated devtools: View simulations, auth trees, and resource usage directly in your app.
+
+## Quick Example
 
 ```tsx
 import { SorokitProvider } from "@sorokit/provider";
@@ -33,70 +40,39 @@ function App() {
 }
 
 function Balance() {
-  const { data } = useContractCall<bigint>({
+  const { data, isLoading } = useContractCall<bigint>({
     contractId: "CCJZ...",
     method: "balance",
     args: { id: "GABC..." },
   });
-  return <p>{data?.toString()}</p>;
+
+  if (isLoading) return <p>Loading...</p>;
+  return <p>Balance: {data?.toString()}</p>;
 }
-```
-
-Full documentation: https://docs.sorokit.xyz (docs site is being built
-out as part of this repository, see `docs/`).
-
-## Status
-
-This repository is under active development. See the milestone list in
-the project plan for current progress. Nothing here is published to npm
-yet.
-
-## Repository layout
-
-```
-packages/
-  core/           @sorokit/core            framework-agnostic config, query keys, error normalization
-  provider/       @sorokit/provider        SorokitProvider — the entry point: network config, wallet, and devtools all wire in here
-  wallet-adapter/ @sorokit/wallet-adapter  useWallet, ConnectWalletButton, plus the stellarWalletsKit()/blux()/para() connectors
-  hooks/          @sorokit/hooks           useBalance, useTransactionStatus, useNetworkStatus, useEffectStream
-  contract/       @sorokit/contract        runtime spec-to-Zod pipeline, useContractCall, useContractSend, useSorobanForm
-  devtools/       @sorokit/devtools        SorokitDevtools panel
-examples/
-  next-app/   Next.js 15 App Router example
-  vite-app/   Vite + React example
-apps/
-  landing/    Marketing site
-docs/         Mintlify documentation site
-```
-
-## Development
-
-This is a pnpm workspace managed with Turborepo. Requires Node 22 (see
-`.nvmrc`) and pnpm 10.
-
-```
-pnpm install
-pnpm build
-pnpm lint
-pnpm typecheck
-pnpm test
-```
-
-To record a changeset for a change you are about to commit:
-
-```
-pnpm changeset
 ```
 
 ## Documentation
 
-The docs site lives in `docs/` and is built with Mintlify. To preview it
-locally:
+Full documentation and guides are available at: https://docs.sorokit.xyz
 
-```
-pnpm docs:dev
-```
+## Repository Layout
+
+- packages/core: Framework-agnostic config, query keys, and error normalization.
+- packages/provider: The single entry point for network, wallet, and devtools.
+- packages/wallet-adapter: Connectors for Stellar Wallets Kit, Blux, and Para.
+- packages/hooks: Hooks for balances, transaction status, and network health.
+- packages/contract: The spec-to-Zod pipeline and contract action hooks.
+- packages/devtools: The development-only inspection panel.
+
+## Development
+
+This is a pnpm workspace managed with Turborepo. Requires Node 22 and pnpm 10.
+
+- pnpm install: Install all dependencies.
+- pnpm build: Build all packages.
+- pnpm test: Run the test suite.
+- pnpm changeset: Record a version bump for a contribution.
 
 ## License
 
-Apache-2.0, see `LICENSE`.
+Apache-2.0, see LICENSE.

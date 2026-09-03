@@ -1,132 +1,77 @@
 ---
 title: "Quickstart"
-description: "Install Sorokit, wrap your app in its providers, and call your first hook"
+description: "Go from a fresh React app to a working Stellar integration in minutes."
 ---
 
-This walks through going from a fresh React or Next.js app to a working contract call and send. There is no code generation step: every hook below works from just a `contractId`.
+Sorokit requires no code generation and no complex configuration. This guide will help you set up the SDK and make your first contract call.
 
-## Prerequisites
+#### 1. Install Dependencies
 
-- A React 18+ or Next.js 15+ app
-- A Soroban contract deployed on testnet (or mainnet, with your own RPC URL)
-- A browser wallet extension for testing writes (Freighter, xBull, Albedo, Lobstr, Hana, or Rabet)
+Sorokit is split into modular packages. You will also need to install the peer dependencies that power our validation and data fetching.
 
-## Install
-
-<CodeGroup>
-
-```bash npm
-npm install @sorokit/core @sorokit/provider @sorokit/wallet-adapter @sorokit/contract \
-  @creit.tech/stellar-wallets-kit @stellar/stellar-sdk @tanstack/react-query zod react-hook-form @hookform/resolvers
+```bash
+pnpm add @sorokit/core @sorokit/provider @sorokit/wallet-adapter @sorokit/contract @sorokit/hooks @stellar/stellar-sdk @tanstack/react-query zod react-hook-form @hookform/resolvers @creit.tech/stellar-wallets-kit
 ```
 
-```bash pnpm
-pnpm add @sorokit/core @sorokit/provider @sorokit/wallet-adapter @sorokit/contract \
-  @creit.tech/stellar-wallets-kit @stellar/stellar-sdk @tanstack/react-query zod react-hook-form @hookform/resolvers
-```
+#### 2. Wrap your application
 
-</CodeGroup>
+The `SorokitProvider` is the single entry point. It manages your network settings, handles wallet connections, and injects the DevTools.
 
-`@tanstack/react-query`, `zod`, `react-hook-form`, and `@hookform/resolvers` are peer dependencies: install them alongside Sorokit so your app controls their versions. `@creit.tech/stellar-wallets-kit` is the wallet connector this quickstart uses; see [`SorokitProvider`](/components/sorokit-provider#wallet-connectors) for the other connectors Sorokit ships (`blux()`, `para()`), or for writing your own.
-
-## Wrap your app in SorokitProvider
-
-`SorokitProvider` is the single entry point: it resolves your network configuration, supplies a TanStack Query client to every hook, and — via `wallet` — mounts wallet connection, all in one component. No separate `WalletProvider` to nest.
-
-```tsx app/providers.tsx
-"use client";
-
-import type { ReactNode } from "react";
+```tsx
 import { SorokitProvider } from "@sorokit/provider";
 import { stellarWalletsKit } from "@sorokit/wallet-adapter/stellar-wallets-kit";
 
+// Setup the community wallet connector
 const wallet = stellarWalletsKit();
 
-export function Providers({ children }: { children: ReactNode }) {
+export function App({ children }) {
   return (
-    <SorokitProvider network="TESTNET" wallet={wallet}>
+    <SorokitProvider
+      network="TESTNET"
+      wallet={wallet}
+      devtools={true}
+    >
       {children}
     </SorokitProvider>
   );
 }
 ```
 
-```tsx app/layout.tsx
-import type { ReactNode } from "react";
-import { Providers } from "./providers";
+#### 3. Read from a contract
 
-export default function RootLayout({ children }: { children: ReactNode }) {
-  return (
-    <html lang="en">
-      <body>
-        <Providers>{children}</Providers>
-      </body>
-    </html>
-  );
-}
-```
+Use `useContractCall` to fetch data. You do not need a connected wallet for this since it uses a network simulation.
 
-## Read from a contract
-
-`useContractCall` simulates a read-only method call and returns the decoded result. It needs no connected wallet, since reads are simulation-only.
-
-```tsx app/balance.tsx
-"use client";
-
+```tsx
 import { useContractCall } from "@sorokit/contract";
 
-const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
-
-export function Balance({ address }: { address: string }) {
-  const { data, isLoading, error } = useContractCall<bigint>({
-    contractId: CONTRACT_ID,
-    method: "balance",
-    args: { id: address },
+function TokenName({ contractId }) {
+  const { data, isLoading } = useContractCall<string>({
+    contractId,
+    method: "name",
   });
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>{error.message}</p>;
-  return <p>Balance: {data?.toString()}</p>;
+  if (isLoading) return <div>Loading...</div>;
+  return <div>Contract Name: {data}</div>;
 }
 ```
 
-## Write to a contract
+#### 4. Submit a transaction
 
-`useContractSend` builds, simulates, signs, and sends a state-changing call. Connect a wallet first with `useWallet` or `ConnectWalletButton`.
+Use `useContractSend` for state-changing operations. Ensure you connect a wallet using the `ConnectWalletButton` or the `useWallet` hook first.
 
-```tsx app/transfer.tsx
-"use client";
-
-import { ConnectWalletButton } from "@sorokit/wallet-adapter";
+```tsx
 import { useContractSend } from "@sorokit/contract";
 
-const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
-
-export function TransferButton({ to }: { to: string }) {
-  const { status, sendAsync, error } = useContractSend({
-    contractId: CONTRACT_ID,
-    method: "transfer",
+function MintAction({ contractId }) {
+  const { sendAsync, status } = useContractSend({
+    contractId,
+    method: "mint",
   });
 
   return (
-    <div>
-      <ConnectWalletButton />
-      <button
-        disabled={status === "simulating" || status === "submitting"}
-        onClick={() => sendAsync({ to, amount: 100n })}
-      >
-        {status === "idle" || status === "success" ? "Transfer" : status}
-      </button>
-      {error && <p>{error.message}</p>}
-    </div>
+    <button onClick={() => sendAsync({ to: "G...", amount: 100n })}>
+      {status === "IDLE" ? "Mint Tokens" : status}
+    </button>
   );
 }
 ```
-
-The first call for `CONTRACT_ID` fetches its spec and derives a Zod schema for the `transfer` method automatically; both are cached, so calling either hook again, or pointing them at a different `contractId`, needs no further setup.
-
-## Next steps
-
-<Card title="Hooks Reference" icon="code" href="/hooks/use-contract-call">
-  See every hook's full signature, parameters, and return value.
-</Card>

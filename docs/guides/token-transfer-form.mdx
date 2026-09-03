@@ -1,84 +1,60 @@
 ---
-title: "Building a token transfer form end to end"
-description: "A complete, working transfer form using useSorobanForm and useContractSend together"
+title: "Token Transfer Form"
+description: "Build a complete, validated transfer UI using Sorokit hooks."
 ---
 
-This walks through a complete token transfer form: a validated input for the recipient, a `bigint` amount field, and a submit button wired to `useContractSend`.
+This guide demonstrates how to combine the validation power of `useSorobanForm` with the execution logic of `useContractSend`. We will build a form that captures a recipient address and an amount.
 
-## The bigint problem
+#### Implementation Pattern
 
-Token amounts are validated as `bigint` (JS numbers lose precision above 2^53, which token amounts routinely exceed), but an HTML `<input>` always produces a string. A plain `register("amount")` would fail validation.
+The most efficient way to build this is to use two hooks side-by-side. Both hooks point to the same contract and method, which means they share a single network request for the contract specification.
 
-`react-hook-form`'s `setValueAs` solves this: it runs before validation, converting the raw input value into the type your schema actually expects.
+- `useSorobanForm`: Handles input validation as the user types.
+- `useContractSend`: Handles the blockchain transaction after the user clicks Submit.
 
-## The full form
+#### The Complete Form
 
-```tsx components/transfer-form.tsx
-"use client";
+```tsx
+import { useSorobanForm, useContractSend } from "@sorokit/contract";
 
-import { useSorobanForm } from "@sorokit/contract";
-import { useContractSend } from "@sorokit/contract";
-
-const CONTRACT_ID = "CCJZ5DGASBWQXR5MPFCJXMBI333XE5U3FSJTNQU7RIKE3P5GN2K2WYD5";
-
-interface TransferFields {
-  to: string;
-  amount: bigint;
-}
-
-export function TransferForm() {
-  const { register, handleSubmit, formState } = useSorobanForm<TransferFields>({
-    contractId: CONTRACT_ID,
-    method: "transfer",
-  });
-  const { status, sendAsync, error } = useContractSend<boolean>({
-    contractId: CONTRACT_ID,
+export function TransferForm({ contractId }) {
+  const { register, handleSubmit, formState } = useSorobanForm({
+    contractId,
     method: "transfer",
   });
 
-  const onSubmit = handleSubmit(async (values) => {
+  const { sendAsync, status } = useContractSend({
+    contractId,
+    method: "transfer",
+  });
+
+  const onSubmit = async (values) => {
     await sendAsync(values);
-  });
+  };
 
   return (
-    <form onSubmit={onSubmit}>
-      <label>
-        Recipient
-        <input {...register("to")} placeholder="G..." />
-        {formState.errors.to && <p>{String(formState.errors.to.message)}</p>}
-      </label>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <label>Recipient</label>
+      <input {...register("to")} placeholder="G..." />
+      {formState.errors.to && <span>{String(formState.errors.to.message)}</span>}
 
-      <label>
-        Amount
-        <input
-          type="text"
-          inputMode="decimal"
-          {...register("amount", {
-            setValueAs: (value: string) => {
-              if (value === "") return undefined;
-              // Assumes a 7-decimal asset; adjust to the token's real decimals.
-              return BigInt(Math.round(Number(value) * 10_000_000));
-            },
-          })}
-        />
-        {formState.errors.amount && <p>{String(formState.errors.amount.message)}</p>}
-      </label>
+      <label>Amount (BigInt)</label>
+      <input
+        type="text"
+        {...register("amount", {
+          setValueAs: (v) => (v === "" ? undefined : BigInt(v)),
+        })}
+      />
+      {formState.errors.amount && <span>{String(formState.errors.amount.message)}</span>}
 
-      <button type="submit" disabled={status === "simulating" || status === "submitting"}>
-        {status === "idle" || status === "success" ? "Transfer" : status}
-      </button>
-
-      {error && <p>{error.message}</p>}
+      <button disabled={status === "SUBMITTING"}>{status === "IDLE" ? "Send" : status}</button>
     </form>
   );
 }
 ```
 
-## Why two hooks
+#### Important Considerations
 
-`useSorobanForm` and `useContractSend` are both called with the same `contractId` and `method` on purpose. `useSorobanForm` owns field-level validation and error messages as the user types; `useContractSend` owns the build, simulate, sign, and send lifecycle once the form is actually submitted. Both share the same cached spec and schema, so there's no duplicated network cost in using both.
-
-<Tip>
-  If your app already knows a token's real decimal count (from [`useBalance`](/hooks/use-balance)'s
-  `decimals` field, for example), use that instead of the hardcoded `10_000_000` above.
-</Tip>
+- BigInt Conversion: Smart contracts use high-precision numbers. By using `setValueAs`, you ensure the string from the HTML input is converted to a `bigint` before it reaches the Zod validator.
+- Error Mapping: Notice how `formState.errors.to` works automatically. Sorokit has already derived the validation rules from the contract's WASM file.
+- Loading States: Using the `status` string from `useContractSend` is better than a simple boolean because you can show the user exactly where they are in the process (e.g., "SIMULATING").

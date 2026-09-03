@@ -1,0 +1,39 @@
+---
+title: "Unified Identity"
+description: "Manage user accounts and signing without the library lock-in."
+---
+
+One of the biggest pain points in Stellar development is the tight coupling between your UI and your wallet library. If you start with one wallet kit and want to switch later, you often have to rewrite large portions of your app.
+
+Sorokit solves this by providing a unified identity layer.
+
+#### The Unified Signer Concept
+
+Your components only ever interact with the Sorokit `useWallet` hook. The actual logic for whether that signature comes from a hardware wallet, a browser extension, or a passkey is abstracted away into Connectors.
+
+- Single API: Use the same `signTransaction` function for every wallet type.
+- Decoupled UI: Your "Send" buttons don't need to know which wallet is active.
+- Error Normalization: Wallet-specific errors (like a user closing a popup) are mapped to standard Sorokit error types.
+
+#### Setting up the hook
+
+Once you have configured a connector in your `SorokitProvider`, you can access the user's identity anywhere in your app.
+
+```tsx
+import { useWallet } from "@sorokit/wallet-adapter";
+
+function WalletProfile() {
+  const { address, isConnected, connect, disconnect } = useWallet();
+
+  if (!isConnected) {
+    return <button onClick={connect}>Connect Stellar Wallet</button>;
+  }
+
+  return (
+    <div>
+      <p>Address: {address}</p>
+      <button onClick={disconnect}>Sign Out</button>
+    </div>
+  );
+}
+```

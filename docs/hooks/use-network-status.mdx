@@ -1,38 +1,33 @@
 ---
 title: "useNetworkStatus"
-description: "Fetch RPC node health and the latest ledger, refetched on an interval"
+description: "Monitor the health and ledger state of the Stellar network."
 ---
 
-Fetches RPC node health and the latest ledger. Refetches every 30 seconds, making it suitable for a network status indicator.
+The `useNetworkStatus` hook provides real-time information about the RPC node and the current state of the blockchain. It is designed to power network indicators or "Status Dots" in your application.
 
-```ts
-import { useNetworkStatus } from "@sorokit/hooks";
+#### Features
 
-function useNetworkStatus(options?: UseNetworkStatusOptions): UseQueryResult<NetworkStatus>;
-```
+- Combined Results: Returns both the RPC health status and the latest ledger sequence in a single call.
+- Auto-Polling: Refetches data every 30 seconds by default to ensure the information is current.
+- Global State: Since it uses a shared query key, the network status is synchronized across all components in your app.
 
-## Parameters
-
-| Name              | Type      | Required | Description                                       |
-| ----------------- | --------- | -------- | ------------------------------------------------- |
-| `options.enabled` | `boolean` | No       | Whether the query should run. Defaults to `true`. |
-
-## Return value
-
-`data` resolves to a `NetworkStatus`:
-
-| Field          | Type                          | Description                                               |
-| -------------- | ----------------------------- | --------------------------------------------------------- |
-| `health`       | `Api.GetHealthResponse`       | RPC node health, including `status: "healthy"`.           |
-| `latestLedger` | `Api.GetLatestLedgerResponse` | The latest ledger's sequence, hash, and protocol version. |
-
-## Example
+#### Usage
 
 ```tsx
 import { useNetworkStatus } from "@sorokit/hooks";
 
-function StatusDot() {
+function ConnectionStatus() {
   const { data } = useNetworkStatus();
-  return <span>{data?.health.status ?? "unknown"}</span>;
+
+  const isHealthy = data?.health.status === "healthy";
+  const ledger = data?.latestLedger.sequence;
+
+  return (
+    <div>
+      <span className={isHealthy ? "bg-green-500" : "bg-red-500"} />
+      <span>{isHealthy ? "Connected" : "Service Disruption"}</span>
+      {ledger && <p>Latest Ledger: {ledger}</p>}
+    </div>
+  );
 }
 ```
