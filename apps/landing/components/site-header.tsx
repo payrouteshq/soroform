@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
 import { GithubIcon } from "@/components/github-icon";
+import { SorokitLogo } from "@/components/sorokit-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const NAV_LINKS = [
@@ -15,7 +15,7 @@ export function SiteHeader() {
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2.5">
           <span className="relative size-7 overflow-hidden rounded-md ring-1 ring-border">
-            <Image src="/sorokit-logo.png" alt="" fill className="object-contain p-1" priority />
+            <SorokitLogo className="p-1" priority />
           </span>
           <span className="font-(family-name:--font-display) text-[1.05rem] font-bold tracking-tight text-foreground">
             sorokit

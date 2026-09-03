@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { QueryCachePanel } from "./query-cache-panel.js";
 import { SendLogPanel } from "./send-log-panel.js";
+import { SorokitMark } from "./sorokit-mark.js";
 import css from "./styles.generated.css";
 
 export interface SorokitDevtoolsProps {
@@ -19,10 +20,12 @@ export function SorokitDevtools(props: SorokitDevtoolsProps) {
       <style dangerouslySetInnerHTML={{ __html: css }} />
       {!isOpen ? (
         <Button
+          size="icon"
+          aria-label="Open Sorokit devtools"
           className="fixed right-4 bottom-4 z-99998 rounded-full"
           onClick={() => setIsOpen(true)}
         >
-          Sorokit
+          <SorokitMark className="size-4" />
         </Button>
       ) : (
         <div className="bg-background text-foreground fixed inset-x-0 bottom-0 z-99999 flex h-88 flex-col border-t">

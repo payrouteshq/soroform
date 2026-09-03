@@ -58,7 +58,7 @@ export interface UseContractSendResult<TResult = unknown> {
   /**
    * Validates args, simulates, signs, and sends the transaction.
    */
-  sendAsync: (args?: Record<string, unknown>) => Promise<TResult>;
+  sendAsync: <TArgs extends object = Record<string, unknown>>(args?: TArgs) => Promise<TResult>;
   /**
    * Resets `status`, `data`, `error`, and `hash` back to their initial values.
    */
@@ -95,10 +95,10 @@ class SubmissionWatcher extends Watcher {
  *   return (
  *     <div>
  *       <button
- *         disabled={status === "simulating" || status === "submitting"}
+ *         disabled={status === "SIMULATING" || status === "SUBMITTING"}
  *         onClick={() => sendAsync({ to: "G...", amount: 100n })}
  *       >
- *         {status === "idle" || status === "success" ? "Transfer" : status}
+ *         {status === "IDLE" || status === "SUCCESS" ? "Transfer" : status}
  *       </button>
  *       {error && <p>{error.message}</p>}
  *     </div>
@@ -240,7 +240,8 @@ export function useContractSend<TResult = unknown>(
   });
 
   const sendAsync = React.useCallback(
-    (args?: Record<string, unknown>) => mutation.mutateAsync(args),
+    <TArgs extends object = Record<string, unknown>>(args?: TArgs) =>
+      mutation.mutateAsync(args as Record<string, unknown> | undefined),
     [mutation],
   );
 

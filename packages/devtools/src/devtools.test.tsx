@@ -25,13 +25,13 @@ describe("SorokitDevtools", () => {
   it("renders a collapsed toggle in development", () => {
     process.env.NODE_ENV = "development";
     renderWithQueryClient(<SorokitDevtools />);
-    expect(screen.getByRole("button", { name: "Sorokit" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Open Sorokit devtools" })).toBeInTheDocument();
   });
 
   it("opens the panel on toggle click, defaulting to the Sends tab", () => {
     process.env.NODE_ENV = "development";
     renderWithQueryClient(<SorokitDevtools />);
-    fireEvent.click(screen.getByRole("button", { name: "Sorokit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Open Sorokit devtools" }));
     expect(screen.getByText(/No contract sends logged yet/)).toBeInTheDocument();
   });
 

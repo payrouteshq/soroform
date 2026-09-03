@@ -4,7 +4,8 @@ import { QueryClient } from "@tanstack/react-query";
 import { SorokitProvider } from "@sorokit/provider";
 import { useBalance } from "./use-balance.js";
 
-const { mockGetAssetBalance, mockQueryContract } = vi.hoisted(() => ({
+const { mockGetAccountEntry, mockGetAssetBalance, mockQueryContract } = vi.hoisted(() => ({
+  mockGetAccountEntry: vi.fn(),
   mockGetAssetBalance: vi.fn(),
   mockQueryContract: vi.fn(),
 }));
@@ -12,6 +13,7 @@ const { mockGetAssetBalance, mockQueryContract } = vi.hoisted(() => ({
 vi.mock("@stellar/stellar-sdk/rpc", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@stellar/stellar-sdk/rpc")>();
   class FakeServer {
+    getAccountEntry = mockGetAccountEntry;
     getAssetBalance = mockGetAssetBalance;
     queryContract = mockQueryContract;
   }
@@ -41,15 +43,26 @@ function Probe(props: { assetId: string }) {
 }
 
 describe("useBalance", () => {
-  it("resolves a native balance via getAssetBalance with 7 decimals", async () => {
-    mockGetAssetBalance.mockResolvedValue({
-      latestLedger: 100,
-      balanceEntry: { amount: "15000000", authorized: true, clawback: false },
-    });
+  it("resolves a native balance via getAccountEntry with 7 decimals", async () => {
+    // Native XLM has no trustline representation, so it can't go through
+    // getAssetBalance the way an issued asset does; the balance lives
+    // directly on the account entry instead.
+    mockGetAccountEntry.mockResolvedValue({ balance: 15_000_000n });
     renderWithProvider(<Probe assetId="native" />);
     await waitFor(() => {
       expect(screen.getByTestId("state")).toHaveTextContent(
         '{"raw":"15000000","formatted":"1.5","decimals":7}',
+      );
+    });
+    expect(mockGetAssetBalance).not.toHaveBeenCalled();
+  });
+
+  it("returns a zero native balance when the account is not yet funded", async () => {
+    mockGetAccountEntry.mockRejectedValue(new Error("Account not found"));
+    renderWithProvider(<Probe assetId="native" />);
+    await waitFor(() => {
+      expect(screen.getByTestId("state")).toHaveTextContent(
+        '{"raw":"0","formatted":"0","decimals":7}',
       );
     });
   });
@@ -67,9 +80,11 @@ describe("useBalance", () => {
     });
   });
 
-  it("returns a zero balance when there is no trustline", async () => {
+  it("returns a zero balance for an issued asset with no trustline entry", async () => {
     mockGetAssetBalance.mockResolvedValue({ latestLedger: 100 });
-    renderWithProvider(<Probe assetId="native" />);
+    renderWithProvider(
+      <Probe assetId="USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5" />,
+    );
     await waitFor(() => {
       expect(screen.getByTestId("state")).toHaveTextContent(
         '{"raw":"0","formatted":"0","decimals":7}',

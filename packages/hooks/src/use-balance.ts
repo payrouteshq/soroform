@@ -1,6 +1,6 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { Asset } from "@stellar/stellar-sdk";
-import { createRpcServer, normalizeError, queryKeys } from "@sorokit/core";
+import { createRpcServer, normalizeError, queryKeys, type RpcServer } from "@sorokit/core";
 import { useSorokitConfig } from "@sorokit/provider";
 import { formatAmount } from "./format-amount.js";
 
@@ -46,6 +46,23 @@ function toClassicAsset(assetId: string): Asset {
 }
 
 /**
+ * `RpcServer.getAssetBalance` always reads a G-address's balance through
+ * `getTrustline`, but native XLM has no trustline representation
+ * (`Asset.native().toTrustLineXdrObject()` throws), so it can never be
+ * looked up that way. The native balance lives directly on the account
+ * entry instead.
+ */
+async function fetchNativeBalance(server: RpcServer, address: string): Promise<bigint> {
+  try {
+    const entry = await server.getAccountEntry(address);
+    return entry.balance;
+  } catch {
+    // Account not yet funded on this network.
+    return 0n;
+  }
+}
+
+/**
  * @example
  * ```tsx
  * import { useBalance } from "@sorokit/hooks";
@@ -71,9 +88,14 @@ export function useBalance(
       const server = createRpcServer(config);
       try {
         if (isClassicAssetId(assetId)) {
-          const asset = toClassicAsset(assetId);
-          const response = await server.getAssetBalance(address, asset, config.networkPassphrase);
-          const raw = response.balanceEntry ? BigInt(response.balanceEntry.amount) : 0n;
+          let raw: bigint;
+          if (assetId === "native") {
+            raw = await fetchNativeBalance(server, address);
+          } else {
+            const asset = toClassicAsset(assetId);
+            const response = await server.getAssetBalance(address, asset, config.networkPassphrase);
+            raw = response.balanceEntry ? BigInt(response.balanceEntry.amount) : 0n;
+          }
           return {
             raw,
             formatted: formatAmount(raw, CLASSIC_ASSET_DECIMALS),

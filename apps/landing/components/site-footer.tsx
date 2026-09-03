@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { GithubIcon } from "@/components/github-icon";
 import { PayroutesLogo } from "@/components/payroutes-logo";
+import { SorokitLogo } from "@/components/sorokit-logo";
 
 const COLUMNS = [
   {
@@ -44,7 +44,7 @@ export function SiteFooter() {
         <div className="col-span-2 flex flex-col gap-3 sm:col-span-1">
           <Link href="/" className="flex items-center gap-2.5">
             <span className="relative size-6 overflow-hidden">
-              <Image src="/sorokit-logo.png" alt="" fill className="object-contain" />
+              <SorokitLogo />
             </span>
             <span className="font-(family-name:--font-display) text-[1.05rem] font-bold tracking-tight text-foreground">
               sorokit

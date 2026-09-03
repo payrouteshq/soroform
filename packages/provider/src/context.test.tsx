@@ -179,7 +179,7 @@ describe("SorokitProvider devtools prop", () => {
         <span>hello</span>
       </SorokitProvider>,
     );
-    expect(screen.queryByRole("button", { name: "Sorokit" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Open Sorokit devtools" })).not.toBeInTheDocument();
   });
 
   it("renders devtools with defaults when passed true", () => {
@@ -189,7 +189,7 @@ describe("SorokitProvider devtools prop", () => {
         <span>hello</span>
       </SorokitProvider>,
     );
-    expect(screen.getByRole("button", { name: "Sorokit" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Open Sorokit devtools" })).toBeInTheDocument();
   });
 
   it("forwards an options object to SorokitDevtools", () => {

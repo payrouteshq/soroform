@@ -26,7 +26,7 @@ const FEATURES = [
   {
     name: "One entry point",
     description:
-      "SorokitProvider wires up network config, wallet connection, and devtools in a single component. No nested providers to get wrong.",
+      "SorokitProvider wires up network config, wallet connection, and devtools in a single component.",
     Icon: Layers,
     className: "col-span-3 lg:col-span-1",
   },

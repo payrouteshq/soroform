@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { NATIVE_SAC_CONTRACT_ID } from "./contract";
 
 interface TransferFields {
+  from: string;
   to: string;
   amount: bigint;
 }
@@ -18,6 +19,7 @@ export function TransferForm() {
   const { register, handleSubmit, formState } = useSorobanForm<TransferFields>({
     contractId: NATIVE_SAC_CONTRACT_ID,
     method: "transfer",
+    extraArgs: { from: wallet.address },
   });
   const { status, sendAsync, error, data } = useContractSend<null>({
     contractId: NATIVE_SAC_CONTRACT_ID,
@@ -25,8 +27,7 @@ export function TransferForm() {
   });
 
   const onSubmit = handleSubmit(async (values) => {
-    if (!wallet.address) return;
-    await sendAsync({ from: wallet.address, ...values }).catch(() => {});
+    await sendAsync(values).catch(() => {});
   });
 
   const isBusy = status === "SIMULATING" || status === "SUBMITTING";

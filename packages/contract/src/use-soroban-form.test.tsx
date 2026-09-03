@@ -21,6 +21,20 @@ function buildFixtureSpec(): Spec {
   return new Spec([xdr.ScSpecEntry.scSpecEntryFunctionV0(transfer)]);
 }
 
+function buildFixtureSpecWithAuthArg(): Spec {
+  const transfer = new xdr.ScSpecFunctionV0({
+    doc: "",
+    name: "transfer",
+    inputs: [
+      new xdr.ScSpecFunctionInputV0({ doc: "", name: "from", type: T.scSpecTypeAddress() }),
+      new xdr.ScSpecFunctionInputV0({ doc: "", name: "to", type: T.scSpecTypeAddress() }),
+      new xdr.ScSpecFunctionInputV0({ doc: "", name: "amount", type: T.scSpecTypeI128() }),
+    ],
+    outputs: [T.scSpecTypeBool()],
+  });
+  return new Spec([xdr.ScSpecEntry.scSpecEntryFunctionV0(transfer)]);
+}
+
 const { mockClientFrom } = vi.hoisted(() => ({ mockClientFrom: vi.fn() }));
 
 vi.mock("@stellar/stellar-sdk/contract", async (importOriginal) => {
@@ -103,5 +117,77 @@ describe("useSorobanForm", () => {
     await waitFor(() => {
       expect(screen.getByTestId("errors")).toHaveTextContent("amount");
     });
+  });
+});
+
+interface TransferFieldsWithAuthArg {
+  from: string;
+  to: string;
+  amount: bigint;
+}
+
+function TransferFormWithAuthArg(props: {
+  initial: Partial<TransferFieldsWithAuthArg>;
+  extraArgs?: Partial<TransferFieldsWithAuthArg>;
+  onValid?: (values: TransferFieldsWithAuthArg) => void;
+}) {
+  const { setValue, handleSubmit, formState } = useSorobanForm<TransferFieldsWithAuthArg>({
+    contractId: CONTRACT_ID,
+    method: "transfer",
+    extraArgs: props.extraArgs,
+  });
+
+  return (
+    <div>
+      <span data-testid="errors">{JSON.stringify(Object.keys(formState.errors))}</span>
+      <button
+        onClick={() => {
+          if (props.initial.to !== undefined) setValue("to", props.initial.to);
+          if (props.initial.amount !== undefined) setValue("amount", props.initial.amount);
+          void handleSubmit((values) => props.onValid?.(values))();
+        }}
+      >
+        submit
+      </button>
+    </div>
+  );
+}
+
+describe("useSorobanForm: args required by the contract but not registered as form fields", () => {
+  it("blocks submission when a required arg has no field and no extraArgs", async () => {
+    mockClientFrom.mockResolvedValue({ spec: buildFixtureSpecWithAuthArg() });
+    const onValid = vi.fn();
+    renderWithProviders(
+      <TransferFormWithAuthArg initial={{ to: VALID_ADDRESS, amount: 100n }} onValid={onValid} />,
+    );
+
+    screen.getByText("submit").click();
+
+    await waitFor(() => {
+      expect(screen.getByTestId("errors")).toHaveTextContent("from");
+    });
+    expect(onValid).not.toHaveBeenCalled();
+  });
+
+  it("merges extraArgs into validation and the submitted values", async () => {
+    mockClientFrom.mockResolvedValue({ spec: buildFixtureSpecWithAuthArg() });
+    const onValid = vi.fn();
+    renderWithProviders(
+      <TransferFormWithAuthArg
+        initial={{ to: VALID_ADDRESS, amount: 100n }}
+        extraArgs={{ from: VALID_ADDRESS }}
+        onValid={onValid}
+      />,
+    );
+
+    screen.getByText("submit").click();
+
+    await waitFor(() => {
+      expect(onValid).toHaveBeenCalledTimes(1);
+    });
+    expect(screen.getByTestId("errors")).toHaveTextContent("[]");
+    expect(onValid).toHaveBeenCalledWith(
+      expect.objectContaining({ from: VALID_ADDRESS, to: VALID_ADDRESS, amount: 100n }),
+    );
   });
 });
