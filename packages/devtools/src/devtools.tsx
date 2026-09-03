@@ -1,7 +1,7 @@
 import * as React from "react";
-import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { QueryCachePanel } from "./query-cache-panel.js";
 import { SendLogPanel } from "./send-log-panel.js";
 import css from "./styles.generated.css";
 
@@ -45,7 +45,7 @@ export function SorokitDevtools(props: SorokitDevtoolsProps) {
               <SendLogPanel />
             </TabsContent>
             <TabsContent value="cache" className="min-h-0 flex-1">
-              <ReactQueryDevtoolsPanel style={{ height: "100%", position: "relative" }} />
+              <QueryCachePanel />
             </TabsContent>
           </Tabs>
         </div>

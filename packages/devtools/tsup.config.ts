@@ -6,13 +6,7 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   clean: true,
-  external: [
-    "react",
-    "react-dom",
-    "@tanstack/react-query",
-    "@tanstack/react-query-devtools",
-    "@sorokit/core",
-  ],
+  external: ["react", "react-dom", "@tanstack/react-query", "@sorokit/core"],
   banner: { js: '"use client";' },
   loader: { ".css": "text" },
 });

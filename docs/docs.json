@@ -8,45 +8,81 @@
     "dark": "#15803D"
   },
   "favicon": "/favicon.png",
+  "tabs": [
+    {
+      "name": "Documentation",
+      "url": "index"
+    },
+    {
+      "name": "Wallet Adapter",
+      "url": "wallets/setup"
+    },
+    {
+      "name": "Resources",
+      "url": "guides/token-transfer-form"
+    }
+  ],
   "navigation": {
-    "pages": [
+    "tabs": [
       {
-        "group": "Getting Started",
-        "pages": ["index", "quickstart"]
-      },
-      {
-        "group": "The React Hooks",
-        "pages": [
-          "hooks/use-contract-call",
-          "hooks/use-contract-send",
-          "hooks/use-soroban-form",
-          "hooks/use-balance",
-          "hooks/use-transaction-status",
-          "hooks/use-network-status"
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": ["index", "quickstart"]
+          },
+          {
+            "group": "The React Hooks",
+            "pages": [
+              "hooks/use-contract-call",
+              "hooks/use-contract-send",
+              "hooks/use-soroban-form",
+              "hooks/use-balance",
+              "hooks/use-transaction-status",
+              "hooks/use-network-status"
+            ]
+          },
+          {
+            "group": "The Toolkit",
+            "pages": [
+              "tools/devtools",
+              "tools/zod-adapter",
+              "tools/transaction-sequencer",
+              "tools/resumable-transactions",
+              "tools/streaming"
+            ]
+          }
         ]
       },
       {
-        "group": "The Toolkit",
-        "pages": [
-          "tools/devtools",
-          "tools/zod-adapter",
-          "tools/transaction-sequencer",
-          "tools/resumable-transactions",
-          "tools/streaming"
+        "tab": "Wallet Adapter",
+        "groups": [
+          {
+            "group": "Identity",
+            "pages": ["wallets/setup", "wallets/connectors"]
+          },
+          {
+            "group": "Reference",
+            "pages": ["hooks/use-wallet", "components/connect-wallet-button"]
+          }
         ]
       },
       {
-        "group": "Identity & Wallets",
-        "pages": [
-          "wallets/setup",
-          "wallets/connectors",
-          "hooks/use-wallet",
-          "components/connect-wallet-button"
+        "tab": "Resources",
+        "groups": [
+          {
+            "group": "Advanced Guides",
+            "pages": ["guides/token-transfer-form", "guides/nextjs-server-actions"]
+          },
+          {
+            "group": "Monetization",
+            "pages": ["monetization/stellartools"]
+          },
+          {
+            "group": "Starters",
+            "pages": ["examples"]
+          }
         ]
-      },
-      {
-        "group": "Advanced Guides",
-        "pages": ["guides/token-transfer-form", "guides/nextjs-server-actions"]
       }
     ]
   },
