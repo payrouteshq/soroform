@@ -27,12 +27,12 @@ function useContractCall<TResult = unknown>(
 
 Everything TanStack Query's `useQuery` returns, typed to `TResult`. The fields you'll use most:
 
-| Field       | Type                   | Description                                                         |
-| ----------- | ---------------------- | ------------------------------------------------------------------- |
-| `data`      | `TResult \| undefined` | The decoded result, once loaded.                                    |
-| `isLoading` | `boolean`              | Whether the initial fetch is in flight.                             |
+| Field       | Type                   | Description                                                       |
+| ----------- | ---------------------- | ----------------------------------------------------------------- |
+| `data`      | `TResult \| undefined` | The decoded result, once loaded.                                  |
+| `isLoading` | `boolean`              | Whether the initial fetch is in flight.                           |
 | `error`     | `SorokitError \| null` | A normalized error, with a `kind` and a plain-language `message`. |
-| `refetch`   | `() => void`           | Manually re-runs the call.                                          |
+| `refetch`   | `() => void`           | Manually re-runs the call.                                        |
 
 ## Example
 
