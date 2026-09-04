@@ -1,6 +1,6 @@
 {
   "name": "@sorokit/hooks",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "General-purpose React hooks for accounts, balances, transaction status, network status, and live Horizon streams.",
   "license": "Apache-2.0",
   "type": "module",
