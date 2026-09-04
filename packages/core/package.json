@@ -1,6 +1,6 @@
 {
   "name": "@sorokit/core",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Framework-agnostic core utilities for Sorokit: config types, query key factories, SDK passthroughs, and error normalization.",
   "license": "Apache-2.0",
   "type": "module",

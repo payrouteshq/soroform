@@ -1,6 +1,6 @@
 {
   "name": "@sorokit/contract",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Soroban contract spec to Zod schema pipeline, and typed React hooks for contract reads and writes.",
   "license": "Apache-2.0",
   "type": "module",

@@ -1,6 +1,6 @@
 {
   "name": "@sorokit/devtools",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Development-only devtools panel for inspecting Sorokit contract read and write activity.",
   "license": "Apache-2.0",
   "type": "module",
