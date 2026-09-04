@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import { Braces, Layers, ShieldCheck, Wallet, Wrench } from "lucide-react";
+import { Braces, CreditCard, Layers, ShieldCheck, Wallet, Wrench } from "lucide-react";
 import Link from "next/link";
 import { BentoCard, BentoGrid } from "@/components/ui/bento-grid";
 import { Button } from "@/components/ui/button";
@@ -106,16 +106,15 @@ export default function Home() {
               once
               className="mt-6 font-(family-name:--font-display) text-4xl font-extrabold tracking-tight text-balance sm:text-6xl"
             >
-              Ship Soroban dApps without touching XDR.
+              Build Stellar apps at 100x speed.
             </TextAnimate>
 
             <motion.p
               variants={item}
               className="mt-6 max-w-xl text-balance text-muted-foreground sm:text-lg"
             >
-              Sorokit turns a deployed contract&apos;s spec into typed, validated React hooks. One
-              provider wires up network config, wallet connection, and devtools, with no code
-              generation and no hand-rolled signing glue.
+              The React UI layer for Stellar. Turn smart contracts into typed hooks and forms with
+              zero code generation. Stop writing plumbing, start writing products.
             </motion.p>
 
             <motion.div
@@ -165,7 +164,7 @@ export default function Home() {
               From install to your first hook.
             </motion.h2>
             <motion.p variants={item} className="mt-3 text-balance text-muted-foreground">
-              Three steps, no detours: install the packages, wire up a wallet, call a contract.
+              Three steps: install the packages, wire up a wallet, call a contract.
             </motion.p>
             <motion.div variants={item} className="mt-10 flex justify-center">
               <OnboardingTabs />
@@ -207,6 +206,34 @@ export default function Home() {
                 ))}
               </BentoGrid>
             </motion.div>
+          </motion.div>
+        </section>
+
+        <section className="mx-auto w-full max-w-5xl px-6 pb-28">
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={item}
+            className="relative overflow-hidden rounded-xl border border-border bg-card px-6 py-14 text-center sm:px-14"
+          >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_80%_at_50%_0%,color-mix(in_oklch,var(--primary),transparent_92%),transparent)]"
+            />
+            <CreditCard className="mx-auto size-8 text-foreground" strokeWidth={1.5} />
+            <h3 className="mt-4 font-(family-name:--font-display) text-2xl font-bold tracking-tight sm:text-3xl">
+              Ready to charge for your app?
+            </h3>
+            <p className="mx-auto mt-3 max-w-md text-balance text-muted-foreground">
+              Pair Sorokit with StellarTools for checkouts, subscriptions, and payouts — a
+              Stripe-like payment stack built for Stellar.
+            </p>
+            <Button asChild size="lg" className="mt-8">
+              <Link href="https://docs.sorokit.xyz/monetization/stellartools">
+                Explore StellarTools
+              </Link>
+            </Button>
           </motion.div>
         </section>
       </main>
