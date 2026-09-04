@@ -230,9 +230,7 @@ export default function Home() {
               Stripe-like payment stack built for Stellar.
             </p>
             <Button asChild size="lg" className="mt-8">
-              <Link href="https://docs.sorokit.xyz/monetization/stellartools">
-                Explore StellarTools
-              </Link>
+              <Link href="https://stellartools.dev?utm_source=sorokit">Explore StellarTools</Link>
             </Button>
           </motion.div>
         </section>
